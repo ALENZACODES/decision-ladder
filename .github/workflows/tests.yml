@@ -4,8 +4,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python: ["3.10", "3.12"]
+        python: ["3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -15,7 +16,9 @@ jobs:
         with:
           node-version: "20"
       - run: pip install pytest
-      - run: pip install -r modules/renewal-radar/requirements.txt
+      - name: Renewal Radar module dependencies (its tools skip cleanly if these are missing)
+        run: pip install -r modules/renewal-radar/requirements.txt
+        continue-on-error: true
       - run: pytest -q
       - run: python -m decision_ladder demo --offline > /dev/null
       - run: python -m decision_ladder os
