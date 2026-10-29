@@ -179,17 +179,18 @@ Model-backed endpoints are rate-limited per IP (`DL_RATE_PER_MIN`), so a public 
 
 ## Live results (Nemotron on Nebius Token Factory)
 
-Measured on 2026-10-29 by the `live` workflow on GitHub's runners with my Token Factory key (run 40894783422; the raw reports are on the [`live-results`](https://github.com/ALENZACODES/decision-ladder/tree/live-results) branch). No offline stand-in is involved in these numbers.
+Measured on 2026-10-29 by the `live` workflow on GitHub's runners with my Token Factory key; the raw reports of the latest run are on the [`live-results`](https://github.com/ALENZACODES/decision-ladder/tree/live-results) branch. No offline stand-in is involved in these numbers. Two runs after the fixes below, same code apart from the last commit, to show the run-to-run spread:
 
-| Check | Result |
-|---|---|
-| Nemotron models visible to the key | 5: Nano 30B-A3B, Super 120B-A12B, **Ultra 550B-A55B**, 3.5 Super VL, 3.5 Lightning |
-| Smoke test (models, Super tool calling, copilot provenance, Nano extraction, Ultra memo, memo provenance) | **8/8** |
-| Eval, 17 cases, Super with Nano routing: right tool | **16/17** |
-| Eval: answer matches the tool-computed figure | **13/14** |
-| Eval: every figure traced to a tool (after at most one repair turn) | **15/17**; the other 2 carry visible `[unverified]` marks |
-| Ultra decision memos, all 5 sample files | **5/5 fully traced** (16 to 29 figures each) |
-| Cost | about $0.18 for the eval and $0.02 for the smoke test (token counts in the reports) |
+| Check | Run 40894783422 | Run 40897388836 |
+|---|---|---|
+| Nemotron models visible to the key | 5: Nano 30B-A3B, Super 120B-A12B, **Ultra 550B-A55B**, 3.5 Super VL, 3.5 Lightning | same |
+| Smoke test (8 checks) | **8/8** | 7/8 (one copilot figure, 30.7%, not in any tool result: marked `[unverified]`) |
+| Eval, 17 cases: right tool | **16/17** | 15/17 |
+| Eval: answer matches the tool-computed figure | **13/14** | 12/14 |
+| Eval: every figure traced to a tool (at most one repair turn) | 15/17 | **17/17** |
+| Ultra decision memos, 5 sample files, every figure traced | **5/5** | **5/5** |
+| Eval median latency per question | 14.0 s | 4.1 s |
+| Cost | about $0.18 for the eval, $0.02 for the smoke test | similar |
 
 What the first live run (40892144934) caught and what changed:
 - the verifier read "APR 4.19%" as the date "April 4", flagging correct figures; fixed, with a test;
@@ -197,7 +198,7 @@ What the first live run (40892144934) caught and what changed:
 - Nano sometimes routed "break a TD mortgage" or a renewal question away from the servicing tools; keyword stages are now added to Nano's choice (eval tool choice went from 14/17 to 16/17);
 - Ultra once computed an "$86,000 income gap" itself; the verifier flagged it, as designed.
 
-Remaining misses in the latest eval: in one case Super passed slightly different inputs to `max_purchase_price` and quoted $710,000 instead of $689,000 (the figure was traced to its own tool call but not to the expected inputs); for the renewal-letter question it asked for the current payment instead of calling a tool.
+Remaining misses: Super sometimes passes slightly different inputs to `max_purchase_price` and quotes $710,000 instead of $689,000 (traced to its own tool call, not to the expected inputs); for the renewal-letter question it asks for the current payment instead of calling a tool; and in the last run it reached for the new Servicing Desk schedule tool instead of `renewal_payment_shock` for a renewal-shock question.
 
 ## Tests and evaluation
 
