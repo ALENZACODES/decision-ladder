@@ -189,18 +189,20 @@ Model-backed endpoints are rate-limited per IP (`DL_RATE_PER_MIN`), so a public 
 
 ![Every figure traced to a calculator](docs/images/hero/provenance.jpg)
 
-Measured on 2026-10-29 by the `live` workflow on GitHub's runners with my Token Factory key; the raw reports of the latest run are on the [`live-results`](https://github.com/ALENZACODES/decision-ladder/tree/live-results) branch. No offline stand-in is involved in these numbers. Two runs after the fixes below, same code apart from the last commit, to show the run-to-run spread:
+Measured on 2026-10-29 by the `live` workflow on GitHub's runners with my Token Factory key; the raw reports of the latest run are on the [`live-results`](https://github.com/ALENZACODES/decision-ladder/tree/live-results) branch. No offline stand-in is involved in these numbers. Three runs after the fixes below, to show the run-to-run spread; the third also had a Tavily key:
 
-| Check | Run 40894783422 | Run 40897388836 |
-|---|---|---|
-| Nemotron models visible to the key | 5: Nano 30B-A3B, Super 120B-A12B, **Ultra 550B-A55B**, 3.5 Super VL, 3.5 Lightning | same |
-| Smoke test (8 checks) | **8/8** | 7/8 (one copilot figure, 30.7%, not in any tool result: marked `[unverified]`) |
-| Eval, 17 cases: right tool | **16/17** | 15/17 |
-| Eval: answer matches the tool-computed figure | **13/14** | 12/14 |
-| Eval: every figure traced to a tool (at most one repair turn) | 15/17 | **17/17** |
-| Ultra decision memos, 5 sample files, every figure traced | **5/5** | **5/5** |
-| Eval median latency per question | 14.0 s | 4.1 s |
-| Cost | about $0.18 for the eval, $0.02 for the smoke test | similar |
+| Check | Run 40894783422 | Run 40897388836 | Run 40909847212 (with Tavily) |
+|---|---|---|---|
+| Nemotron models visible to the key | 5: Nano 30B-A3B, Super 120B-A12B, **Ultra 550B-A55B**, 3.5 Super VL, 3.5 Lightning | same | same |
+| Smoke test | **8/8** | 7/8 | **9/9** (adds live Tavily) |
+| Eval, 17 cases: right tool | **16/17** | 15/17 | **16/17** |
+| Eval: answer matches the tool-computed figure | **13/14** | 12/14 | **13/14** |
+| Eval: every figure traced to a tool (at most one repair turn) | 15/17 | **17/17** | 16/17 |
+| Ultra decision memos, 5 sample files, every figure traced | **5/5** | **5/5** | 4/5 (one "$724" not in any tool result, marked `[unverified]`) |
+| Eval median latency per question | 14.0 s | 4.1 s | 6.5 s |
+| Cost | about $0.18 for the eval, $0.02 for the smoke test | similar | similar |
+
+**Tavily, live (run 40909847212).** Search restricted to official sources returned the Bank of Canada's October 28, 2026 and July 15, 2026 rate announcements and OSFI's 2026-2027 Annual Risk Outlook and credit-risk consultation. Tavily Extract read RBC's and TD's own rate pages: the 5-year figures on the pages (TD: 4.84, 4.24, 6.09; RBC: 5.14, 4.84, 5.24 among others) did not include the posted rates in the OS's rate book captured on Oct 15 (TD 6.14, RBC 6.19), so both were flagged `changed_or_not_shown` for the broker to confirm before quoting a penalty. That is the check doing its job: either the posted rate moved since Oct 15 or the page shows only special offers.
 
 What the first live run (40892144934) caught and what changed:
 - the verifier read "APR 4.19%" as the date "April 4", flagging correct figures; fixed, with a test;
