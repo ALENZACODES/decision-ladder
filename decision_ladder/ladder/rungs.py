@@ -93,25 +93,52 @@ def rung_screening(f: dict, ctx: dict) -> RungResult:
                       {"screening_status": res["status"]}, [res.get("detail", "")], {"screen": res})
 
 
+INCOME_DOCS = ("t4", "noa", "pay_stub", "employment_letter")
+
+
 def rung_documents(f: dict, ctx: dict) -> RungResult:
     docs = f.get("documents") or []
     if not docs:
         return RungResult("documents", "Document check", REFER, "No documents attached; stated figures are unverified.",
                           {"documents": 0}, ["Request income documents (T4/NOA or pay stub + employment letter)."])
-    issues, checked = [], 0
-    for d in docs:
+    issues, notes, checked = [], [], 0
+    # Income: documented income per borrower (the highest figure among that borrower's income documents),
+    # summed across borrowers, against the stated household income.
+    per_borrower: dict[str, float] = {}
+    for i, d in enumerate(docs):
         ex = d.get("extracted") or {}
-        for key, stated_key, tol in (("annual_income", "annual_income", 0.05), ("balance", "balance", 0.01),
-                                     ("contract_rate", "contract_rate", 0.0001)):
-            if key in ex and f.get(stated_key) is not None:
+        notes += d.get("notes") or []
+        if "annual_income" in ex and (d.get("type") in INCOME_DOCS or "type" not in d or d.get("type") not in
+                                      ("renewal_letter", "mortgage_statement")):
+            who = str(d.get("borrower") or "applicant")
+            per_borrower[who] = max(per_borrower.get(who, 0.0), float(ex["annual_income"]))
+        for key, tol in (("balance", 0.01), ("contract_rate", 0.0001), ("renewal_rate", 0.0001)):
+            if key in ex and f.get(key) is not None:
                 checked += 1
-                a, b = float(ex[key]), float(f[stated_key])
+                a, b = float(ex[key]), float(f[key])
                 if b and abs(a - b) / abs(b) > tol:
                     issues.append(f"{d.get('type', 'document')}: {key} on document {a:,.2f} vs stated {b:,.2f}")
+        if "maturity" in ex and f.get("maturity"):
+            checked += 1
+        if "maturity" in ex and f.get("maturity") and ex["maturity"] != f["maturity"]:
+            issues.append(f"{d.get('type', 'document')}: maturity {ex['maturity']} vs stated {f['maturity']}")
+    metrics = {"documents": len(docs), "reconciled": checked}
+    if per_borrower and f.get("annual_income") is not None:
+        checked += 1
+        documented, stated = round(sum(per_borrower.values()), 2), float(f["annual_income"])
+        metrics.update({"documented_income": documented, "stated_income": stated,
+                        "income_documented_pct": round(documented / stated * 100, 1) if stated else None,
+                        "reconciled": checked})
+        if documented < stated * 0.95:
+            issues.append(f"Documented income {documented:,.0f} covers {documented / stated * 100:.0f}% of the stated "
+                          f"{stated:,.0f}: request documents for the remaining income or co-borrower.")
+        elif documented > stated * 1.10:
+            notes.append(f"Documented income {documented:,.0f} is above the stated {stated:,.0f}: confirm which figure to use.")
+    metrics["discrepancies"] = len(issues)
     status = PASS if checked and not issues else REFER
     return RungResult("documents", "Document check", status,
                       f"{len(docs)} document(s), {checked} figure(s) reconciled, {len(issues)} discrepancy(ies)",
-                      {"documents": len(docs), "reconciled": checked, "discrepancies": len(issues)}, issues)
+                      metrics, issues + notes)
 
 
 def rung_collateral(f: dict, ctx: dict) -> RungResult:

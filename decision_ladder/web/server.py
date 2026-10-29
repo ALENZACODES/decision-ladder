@@ -7,7 +7,8 @@ Endpoints (JSON in, JSON out):
   GET  /api/tools           tool specs Nemotron sees
   GET  /api/market          rate-book market snapshot
   POST /api/ladder          {file, research?: bool, memo?: bool, message?: bool}  -> ladder run
-  POST /api/intake          {text, run?: bool}                                    -> extraction (+ ladder run)
+  POST /api/intake          {text, documents?: [text], run?: bool}                -> extraction (+ ladder run)
+  POST /api/document        {text}                                                -> one document read (type, figures, quotes)
   POST /api/ask             {question, context?: {}, history?: []}                -> copilot answer + trace
   POST /api/book            {csv, as_of?: "YYYY-MM-DD", drafts?: int}             -> ranked renewal queue
   POST /api/tool            {name, args}                                          -> direct tool call (no model)
@@ -32,12 +33,14 @@ from ..agent import tools as T
 from ..agent.loop import Copilot
 from ..book.scan import scan
 from ..engines import ratebook
+from ..intake.documents import read_document
 from ..intake.extract import extract
 from ..ladder.runner import LadderEngine
 from ..llm.client import LLMError, NemotronClient
 from ..llm.offline import offline_client
 from ..research.tavily import Research, ResearchError, offline_transport
 from ..samples import SAMPLE_BOOK_CSV, SAMPLE_EMAIL, SAMPLES
+from ..samples_docs import SAMPLE_DOCS
 
 STATIC = Path(__file__).resolve().parent / "static"
 MAX_BODY = 512 * 1024
@@ -50,6 +53,14 @@ class Services:
         key = os.environ.get("NEBIUS_API_KEY")
         self.live = bool(key) and not (offline or os.environ.get("DL_OFFLINE") == "1")
         self.research_live = bool(os.environ.get("TAVILY_API_KEY"))
+        self.resolution: dict | None = None
+        if self.live and os.environ.get("DL_RESOLVE_MODELS", "1") == "1":
+            try:
+                c = NemotronClient()
+                self.resolution = c.resolve_models()
+                os.environ["DL_MODEL_REASONER"], os.environ["DL_MODEL_FAST"] = c.reasoner, c.fast
+            except LLMError as e:
+                self.resolution = {"error": str(e)}
 
     def llm(self) -> NemotronClient:
         return NemotronClient() if self.live else offline_client()
@@ -64,7 +75,8 @@ class Services:
                 "provider": "Nebius Token Factory" if self.live else "offline scripted stand-in (no model)",
                 "base_url": c.base_url if self.live else None,
                 "research": "tavily-live" if self.research_live else "offline-fixtures",
-                "tools": len(T.TOOLS) + 1}
+                "tools": len(T.TOOLS) + 1, "model_resolution": self.resolution,
+                "thinking": c.thinking}
 
 
 class RateLimiter:
@@ -127,7 +139,7 @@ def make_handler(svc: Services, limiter: RateLimiter):
             if path == "/api/health":
                 return self._json(svc.health())
             if path == "/api/samples":
-                return self._json({"files": SAMPLES, "email": SAMPLE_EMAIL, "book_csv": SAMPLE_BOOK_CSV})
+                return self._json({"files": SAMPLES, "email": SAMPLE_EMAIL, "book_csv": SAMPLE_BOOK_CSV, "documents": SAMPLE_DOCS})
             if path == "/api/tools":
                 return self._json({"tools": T.specs()})
             if path == "/api/market":
@@ -170,14 +182,26 @@ def make_handler(svc: Services, limiter: RateLimiter):
                     return self._json(run.to_dict())
                 if path == "/api/intake":
                     text = str(body.get("text") or "")[:20000]
-                    if not text.strip():
+                    if not text.strip() and not body.get("documents"):
                         raise ValueError("text required")
                     llm = svc.llm()
                     out = extract(text, llm)
+                    docs = [str(d)[:20000] for d in (body.get("documents") or [])[:6] if str(d).strip()]
+                    out["documents"] = [read_document(d, llm) for d in docs]
                     if body.get("run"):
                         f = dict(out["file"])
+                        if out["documents"]:
+                            f["documents"] = out["documents"]
                         f.setdefault("as_of", time.strftime("%Y-%m-%d"))
                         out["ladder"] = LadderEngine(llm, svc.research()).run(f).to_dict()
+                    out["usage"] = llm.usage.to_dict()
+                    return self._json(out)
+                if path == "/api/document":
+                    text = str(body.get("text") or "")[:20000]
+                    if not text.strip():
+                        raise ValueError("text required")
+                    llm = svc.llm()
+                    out = read_document(text, llm)
                     out["usage"] = llm.usage.to_dict()
                     return self._json(out)
                 if path == "/api/ask":

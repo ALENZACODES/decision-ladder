@@ -42,10 +42,13 @@ def run_smoke() -> int:
         ids = llm.list_models()
         nv = [i for i in ids if "nemotron" in i.lower() or i.lower().startswith("nvidia/")]
         check("models visible", bool(ids), {"count": len(ids), "nvidia": nv})
-        check("configured reasoner available", llm.reasoner in ids, llm.reasoner)
-        check("configured fast model available", llm.fast in ids, llm.fast)
-        if llm.reasoner not in ids and nv:
-            print(f"  hint: export DL_MODEL_REASONER={nv[0]}")
+        res = llm.resolve_models()
+        check("NVIDIA Nemotron reasoner resolved", "nemotron" in llm.reasoner.lower() and llm.reasoner in ids, res)
+        check("NVIDIA Nemotron fast model resolved", "nemotron" in llm.fast.lower() and llm.fast in ids,
+              {"fast": llm.fast, "reason": res["fast_reason"]})
+        report["resolved_models"] = res
+        if res["reasoner_reason"] != "configured" or res["fast_reason"] != "configured":
+            print(f"  note: set DL_MODEL_REASONER={llm.reasoner} DL_MODEL_FAST={llm.fast} to pin these")
     except LLMError as e:
         check("models visible", False, str(e))
 

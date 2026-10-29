@@ -70,7 +70,7 @@ def _plan(question: str, tool_names: set[str]) -> list[tuple[str, dict]]:
             calls.append(("find_path_to_yes" if any(w in q for w in ("how", "fix", "path", "what would")) else "qualify_purchase", f))
     if any(w in q for w in ("market", "bank of canada", "policy rate", "prime", "bond", "spread")):
         calls.append(("market_snapshot", {}))
-    if "web_research" in tool_names and any(w in q for w in ("latest", "news", "this week", "announce", "osfi", "fsra", "today")):
+    if "web_research" in tool_names and any(w in q for w in ("latest", "recent", "news", "this week", "announce", "osfi", "fsra", "today")):
         calls.append(("web_research", {"query": question[:200], "scope": "official"}))
     if any(w in q for w in ("renewal shock", "payment shock", "renew")) and ctx.get("original_principal"):
         calls.append(("renewal_payment_shock", {k: ctx[k] for k in ("original_principal", "original_rate", "original_amort_years",
@@ -149,6 +149,12 @@ class OfflineTransport:
         system = next((m["content"] for m in msgs if m["role"] == "system"), "")
         last = msgs[-1]
         usage = {"prompt_tokens": sum(len(str(m.get("content", ""))) // 4 for m in msgs), "completion_tokens": 60}
+        if "underwriting documents" in system:
+            from ..intake.documents import read
+            r = read(last["content"])
+            fields = {k: {"value": v, "quote": r["quotes"].get(k, "")} for k, v in r["extracted"].items()
+                      if not isinstance(v, (list, bool))}
+            return self._msg(json.dumps({"type": r["type"], "fields": fields}), usage)
         if payload.get("response_format") or "JSON" in system and "fields" in system:
             from ..intake.extract import pattern_extract
             text = last["content"]
@@ -169,12 +175,15 @@ class OfflineTransport:
                                                          "finish_reason": "tool_calls"}], "usage": usage}
         if last["role"] == "tool" or (last["role"] == "user" and not tools):
             results = []
+            names = {c["id"]: c["function"]["name"] for m in msgs if m["role"] == "assistant"
+                     for c in m.get("tool_calls") or []}
             for m in msgs:
                 if m["role"] == "tool":
+                    name = m.get("name") or names.get(m.get("tool_call_id"), "")
                     try:
-                        results.append((m.get("name", ""), json.loads(m["content"])))
+                        results.append((name, json.loads(m["content"])))
                     except json.JSONDecodeError:
-                        results.append((m.get("name", ""), {"error": "unreadable"}))
+                        results.append((name, {"error": "unreadable"}))
             return self._msg(_summarize(results), usage)
         return self._msg("[offline] No answer.", usage)
 

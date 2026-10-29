@@ -44,7 +44,8 @@
     if (typeof v === "number") {
       const key = String(k).toLowerCase();
       if (/(rate|gds|tds|ltv|pct|gap|policy|prime|goc|reference|change_pct)/.test(key) && Math.abs(v) < 100) return fmtNum(v, 2) + (/(points|score|priority)/.test(key) ? "" : "%");
-      if (/(payment|price|premium|balance|value|loan|penalty|saving|income|debt|total|cost|cashback|fees|basis)/.test(key)) return fmtMoney(v);
+      if (/(^|_)year$|tax_year|_years?$/.test(key) && Number.isInteger(v)) return String(v);
+      if (/(payment|price|premium|balance|value|loan|penalty|saving|income|debt|total|cost|cashback|fees|basis|tax_annual|gross|owing)/.test(key)) return fmtMoney(v);
       return fmtNum(v, 2);
     }
     return String(v);
@@ -183,6 +184,13 @@
     pick.addEventListener("change", setFile);
     setFile();
     $("#intakeText").value = s.email;
+    const DOC_LABELS = { pay_stub: "Pay stub", t4: "T4 slip", employment_letter: "Employment letter", renewal_letter: "Renewal letter" };
+    for (const [k, txt] of Object.entries(s.documents || {})) {
+      $("#docChips").appendChild(h("button", { class: "chip", type: "button", onclick: () => {
+        const cur = $("#docText").value.trim();
+        $("#docText").value = (cur ? cur + "\n---\n" : "") + txt.trim();
+      } }, "+ " + (DOC_LABELS[k] || label(k))));
+    }
     $("#bookCsv").value = s.book_csv.trim();
   }
 
@@ -323,7 +331,8 @@
   async function doIntake(btn, runIt) {
     return busy(btn, async () => {
       const text = $("#intakeText").value;
-      const out = await api("/api/intake", { text, run: runIt });
+      const documents = $("#docText").value.split(/^\s*---\s*$/m).map((d) => d.trim()).filter(Boolean);
+      const out = await api("/api/intake", { text, documents, run: runIt });
       renderIntake(out);
       const lad = $("#intakeLadder");
       lad.textContent = "";
@@ -364,6 +373,21 @@
     if ((out.dropped || []).length) {
       box.appendChild(h("div", { class: "card" }, h("h2", {}, "Dropped model values (no evidence in text)"),
         h("ul", { class: "find" }, out.dropped.map((x) => h("li", { class: "unv" }, `${label(x.field)} = ${fmtVal(x.field, x.value)}: ${x.reason}`)))));
+    }
+    for (const d of out.documents || []) {
+      const rows = Object.entries(d.extracted || {}).map(([k, v]) => h("tr", {},
+        h("td", {}, label(k)), h("td", {}, Array.isArray(v) ? v.map((x) => fmtNum(x) + "%").join(", ") : fmtVal(k, v)),
+        h("td", { class: "quote" }, (d.quotes || {})[k] || "")));
+      const m = d.model || {};
+      box.appendChild(h("div", { class: "card" },
+        h("div", { class: "row between" }, h("h2", {}, "Document: " + label(d.type || "unknown")),
+          h("span", { class: "hint" }, `classifier confidence ${fmtNum((d.confidence || 0) * 100, 0)}%` +
+            (m.error ? " · model error" : m.type !== undefined ? ` · Nemotron agrees on ${(m.agree || []).length}, adds ${(m.added || []).length}` : ""))),
+        rows.length ? h("div", { class: "tbl-wrap" }, h("table", {}, h("thead", {}, h("tr", {}, ["Figure", "Value", "Quoted from document"].map((t) => h("th", {}, t)))), h("tbody", {}, rows)))
+          : h("div", { class: "empty" }, "No figures recognised."),
+        (m.conflicts || []).length ? h("ul", { class: "find" }, m.conflicts.map((c) => h("li", { class: "unv" },
+          `${label(c.field)}: reader ${fmtVal(c.field, c.reader)} vs Nemotron ${fmtVal(c.field, c.model)} ("${c.quote}")`))) : null,
+        (d.notes || []).length ? h("ul", { class: "find" }, d.notes.map((n) => h("li", {}, n))) : null));
     }
     if (out.usage) box.appendChild(h("div", { class: "card" }, usageStrip(out.usage)));
   }

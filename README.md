@@ -1,5 +1,7 @@
 # Decision Ladder
 
+[![tests](https://github.com/ALENZACODES/decision-ladder/actions/workflows/tests.yml/badge.svg)](https://github.com/ALENZACODES/decision-ladder/actions/workflows/tests.yml)
+
 **Canadian mortgage decisions, top down. Nemotron reasons; calculators decide.**
 
 Decision Ladder takes a mortgage file and moves it up eleven rungs, from intake to a decision a licensed broker can act on. **NVIDIA Nemotron**, served by **Nebius Token Factory**, plans the work, reads client emails, calls tools, and writes the broker's decision memo and the client message. Tested deterministic engines do every calculation: the OSFI B-20 stress test, default-insurance premiums, lender-specific prepayment penalties, renewal shock and the rate book. A **provenance verifier** checks every figure in the model's text against the tool results and marks anything it can't trace. **Tavily** brings in news the dated rate book doesn't have yet, searching official Canadian sources only.
@@ -45,6 +47,7 @@ Every rung returns `PASS`, `REFER`, `FAIL` or `SKIP`. If a rung crashes, it retu
 | **Broker copilot**: free-form questions, multi-tool plans (19 calculator/data tools + `web_research`) | Nemotron 3 Super | Must call tools for any number. The verifier checks the answer. One repair turn, then unsupported figures are marked `[unverified]` |
 | **Decision memo** from the ladder results | Nemotron 3 Super | Same verifier against the ladder JSON. Falls back to a deterministic template if the model fails |
 | **Intake**: client email → structured file | Nemotron 3 Nano (JSON mode) | Every value must quote the exact source text. Values with ungrounded quotes are dropped. Disagreements with the pattern extractor are flagged, never silently resolved |
+| **Documents**: pay stub, T4, NOA, employment letter, renewal letter, mortgage statement (pasted text) | Nemotron 3 Nano (JSON mode) + a deterministic reader | Same quote-grounding rule. The Documents rung reconciles documented income per borrower, balance, rate and maturity against the file |
 | **Client message drafts** (file status, renewal outreach) | Nemotron 3 Nano | Outbound guardrail blocks rate quotes, approval promises, guarantees, pressure language and requests for SIN, passwords or cards |
 
 All model calls go through one small client (`decision_ladder/llm/client.py`) that speaks Token Factory's OpenAI-compatible Chat Completions API using only `urllib`. It handles tool calls, JSON mode (with a fallback if the server rejects `response_format`), `<think>` stripping, retries with backoff on 408/429/5xx, and per-model token and cost accounting.
@@ -64,6 +67,10 @@ All model calls go through one small client (`decision_ladder/llm/client.py`) th
 
 ```bash
 git clone https://github.com/ALENZACODES/decision-ladder && cd decision-ladder
+
+# Fastest: one command that asks for your keys, checks models, runs the smoke test + eval, then opens the app
+#   Windows: double-click "Go Live.cmd"   (or: powershell -ExecutionPolicy Bypass -File scripts\go_live.ps1)
+#   macOS/Linux: bash scripts/go_live.sh
 
 # 1. No keys: offline demo (scripted stand-in, clearly labelled, no model calls)
 python -m decision_ladder demo --offline
@@ -85,7 +92,11 @@ python -m decision_ladder eval     # copilot evaluation: tool selection, accurac
 pip install pytest && pytest -q    # the test suite needs no network and no keys
 ```
 
-If Token Factory renames a model, set `DL_MODEL_REASONER` / `DL_MODEL_FAST` to an ID shown by `python -m decision_ladder models`.
+**Model IDs.** At startup (live mode) the server checks the configured IDs against `/v1/models`. If one isn't listed, it switches to a visible Nemotron model ("super" for the reasoner, "nano" for the fast model) and reports the switch in `/api/health`. To pin a model, set `DL_MODEL_REASONER` / `DL_MODEL_FAST`.
+
+**Reasoning mode.** Nemotron 3 reasons by default. Decision Ladder sends `chat_template_kwargs: {"enable_thinking": false}`, because the calculators do the thinking that has to be exact, and that keeps answers fast. Set `DL_THINKING=1` to turn reasoning on for the reasoner. If the endpoint rejects the flag, the client stops sending it and retries the call once. If a server returns Nemotron's raw tool-call markup (Qwen3-Coder XML or `<TOOLCALL>` JSON) as text instead of `tool_calls`, the client parses it back into tool calls.
+
+**Demo video.** `node scripts/record_demo.mjs` drives the running app through the video script with on-screen captions and writes `demo/decision-ladder-demo.mp4`, plus `narration.srt`/`narration.txt` for a voice-over (needs `npm i playwright` and ffmpeg).
 
 ## Deploy
 
@@ -111,7 +122,8 @@ Model-backed endpoints are rate-limited per IP (`DL_RATE_PER_MIN`), so a public 
 | GET | `/api/tools` | | the tool specs Nemotron sees |
 | GET | `/api/market`, `/api/history` | | rate-book snapshot and series |
 | POST | `/api/ladder` | `{file, research?, memo?, message?}` | rungs, verdict, memo, verification, message, research, usage |
-| POST | `/api/intake` | `{text, run?}` | extracted file with quotes, conflicts, dropped values (+ ladder run) |
+| POST | `/api/intake` | `{text, documents?, run?}` | extracted file with quotes, conflicts, dropped values, documents read (+ ladder run) |
+| POST | `/api/document` | `{text}` | one document: type, figures, quotes, model agreement |
 | POST | `/api/ask` | `{question, context?, history?}` | answer, verification, tool trace, usage |
 | POST | `/api/book` | `{csv, as_of?, drafts?}` | ranked renewal queue |
 | POST | `/api/tool` | `{name, args}` | direct tool call, no model (for testing tools in CI) |
@@ -128,7 +140,7 @@ Decision Ladder brings together two of my earlier October 2026 projects and adds
 - **Renewal Radar** (Oct 2026): the lender-method penalty engine (`decision_ladder/penalty/`, with its tests) and the rate-watch data in `decision_ladder/data/`.
 - **MortgageLoanOps** (Oct 2026, MIT): qualification, insured rules, payments, IRD quick estimate, lender categories, screening interface, guardrail and home-value index (`decision_ladder/engines/`).
 
-New for this hackathon: the Token Factory client, the offline stand-in, the ladder and its rungs, the path-to-yes solvers, the insurance premium engine, renewal and switch economics, the rate-book API, the copilot tool loop, the provenance verifier and repair loop, grounded intake extraction, Tavily research, the renewal book scan, the web app, the evals, the smoke test and the deployment files.
+New for this hackathon: the Token Factory client (tool calling, inline tool-call recovery, model auto-resolution, reasoning control), the offline stand-in, the ladder and its rungs, the path-to-yes solvers, the insurance premium engine, renewal and switch economics, the rate-book API, the copilot tool loop, the provenance verifier and repair loop, grounded intake extraction, document reading, Tavily research, the renewal book scan, the web app, the evals, the smoke test and the deployment files.
 
 ## Limitations
 

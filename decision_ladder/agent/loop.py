@@ -103,7 +103,7 @@ class Copilot:
                 steps.append(Step("research" if name == "web_research" else "tool", name, args, out,
                                   (time.perf_counter() - t0) * 1000))
                 evidence.append(out)
-                msgs.append({"role": "tool", "tool_call_id": call["id"], "name": name, "content": T.dumps(out)[:12000]})
+                msgs.append({"role": "tool", "tool_call_id": call["id"], "content": T.dumps(out)[:12000]})
         else:
             res = self.llm.chat(msgs + [{"role": "user", "content": "Answer now using only the tool results above."}],
                                 purpose="copilot-final")
@@ -129,7 +129,7 @@ class Copilot:
                         args, out = {}, {"error": str(e)}
                     steps.append(Step("repair", name, args, out))
                     evidence.append(out)
-                    msgs.append({"role": "tool", "tool_call_id": call["id"], "name": name, "content": T.dumps(out)[:12000]})
+                    msgs.append({"role": "tool", "tool_call_id": call["id"], "content": T.dumps(out)[:12000]})
                 fix = self.llm.chat(msgs, purpose="copilot-repair-final")
             rep2 = verify.verify(fix.content, *evidence)
             if fix.content and len(rep2.unsupported) <= len(rep.unsupported):

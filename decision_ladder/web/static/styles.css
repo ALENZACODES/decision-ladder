@@ -246,3 +246,4 @@ tr.conf td { background: var(--fail-bg); }
   .chatform { flex-direction: column; align-items: stretch; }
 }
 td.nowrap { white-space: nowrap; }
+.mt { margin-top: 18px; }

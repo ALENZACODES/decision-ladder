@@ -173,3 +173,13 @@ def test_rate_limiter():
     from decision_ladder.web.server import RateLimiter
     rl = RateLimiter(2)
     assert rl.allow("a") and rl.allow("a") and not rl.allow("a") and rl.allow("b")
+
+
+def test_document_endpoint_and_intake_with_documents(base_url):
+    from decision_ladder.samples_docs import PAY_STUB, T4_SLIP
+    s, out = _post(base_url + "/api/document", {"text": PAY_STUB})
+    assert s == 200 and out["type"] == "pay_stub"
+    s, out = _post(base_url + "/api/intake", {"text": SAMPLE_EMAIL, "documents": [PAY_STUB, T4_SLIP], "run": True})
+    assert s == 200 and len(out["documents"]) == 2
+    docs = next(r for r in out["ladder"]["rungs"] if r["key"] == "documents")
+    assert docs["metrics"]["documented_income"] == 99000

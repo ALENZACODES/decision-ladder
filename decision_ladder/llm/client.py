@@ -22,6 +22,7 @@ from __future__ import annotations
 import json
 import os
 import random
+import re
 import time
 import urllib.error
 import urllib.request
@@ -143,6 +144,10 @@ class NemotronClient:
         self.sleep = sleep
         self.usage = Usage()
         self.log: list[dict] = []
+        # Nemotron 3 reasons by default. Reasoning tokens cost time and can eat max_tokens, so the default
+        # is OFF; set DL_THINKING=1 to turn it on for the reasoner (memo + copilot).
+        self.thinking = os.environ.get("DL_THINKING", "0") == "1"
+        self.send_template_kwargs = os.environ.get("DL_SEND_THINKING_FLAG", "1") == "1"
 
     # ------------------------------------------------------------------ low level
     def _post(self, payload: dict) -> dict:
@@ -171,7 +176,21 @@ class NemotronClient:
             payload["tool_choice"] = tool_choice or "auto"
         if json_mode:
             payload["response_format"] = {"type": "json_object"}
-        out = self._post(payload)
+        think = self.thinking and model == self.reasoner and not json_mode
+        if self.send_template_kwargs and "nemotron" in model.lower():
+            payload["chat_template_kwargs"] = {"enable_thinking": think}
+            if think:
+                payload["max_tokens"] = max(max_tokens, 4000)
+        try:
+            out = self._post(payload)
+        except LLMError as e:
+            if getattr(e, "status", None) == 400 and "chat_template_kwargs" in payload:
+                # endpoint does not accept the flag: stop sending it and retry once
+                self.send_template_kwargs = False
+                payload = {k: v for k, v in payload.items() if k != "chat_template_kwargs"}
+                out = self._post(payload)
+            else:
+                raise
         choices = out.get("choices") or []
         if not choices:
             raise LLMError(f"no choices in response: {str(out)[:300]}")
@@ -181,6 +200,14 @@ class NemotronClient:
             content = "".join(p.get("text", "") for p in content if isinstance(p, dict))
         content = strip_reasoning(content)
         calls = [_norm_call(c, i) for i, c in enumerate(msg.get("tool_calls") or [])]
+        if not calls and tools and content:
+            # some servers return the model's raw tool-call markup in content instead of tool_calls
+            parsed, rest = parse_inline_tool_calls(content, {t["function"]["name"] for t in tools})
+            if parsed:
+                calls, content = parsed, rest
+        if not calls and not content:
+            raise LLMError(f"empty response from {model} (finish_reason={choices[0].get('finish_reason')}); "
+                           "if reasoning is on, raise max_tokens or set DL_THINKING=0")
         res = ChatResult(content, calls, choices[0].get("finish_reason") or "", out.get("model", model), out)
         self.log.append({"purpose": purpose, "model": model, "finish": res.finish_reason,
                          "tool_calls": [c["function"]["name"] for c in calls],
@@ -205,6 +232,14 @@ class NemotronClient:
     def list_models(self) -> list[str]:
         out = self.transport("models", None, "GET")
         return sorted(m.get("id", "") for m in out.get("data", []))
+
+    def resolve_models(self) -> dict:
+        """Check the configured model IDs against /v1/models and switch to a visible Nemotron if needed."""
+        ids = self.list_models()
+        self.reasoner, r1 = pick_model(ids, self.reasoner, ("super", "ultra", "nemotron-3", "nemotron"))
+        self.fast, r2 = pick_model(ids, self.fast, ("nano", "lightning", "mini", "nemotron"))
+        return {"reasoner": self.reasoner, "reasoner_reason": r1, "fast": self.fast, "fast_reason": r2,
+                "nemotron_models": [m for m in ids if "nemotron" in m.lower()]}
 
 
 # ---------------------------------------------------------------------- helpers
@@ -251,6 +286,73 @@ def parse_json_object(text: str) -> dict:
                 except json.JSONDecodeError:
                     start = None
     raise LLMError(f"model did not return a JSON object: {text[:200]!r}")
+
+
+_QWEN_CALL = re.compile(r"<tool_call>\s*<function=([\w.-]+)>(.*?)</function>\s*</tool_call>", re.S)
+_QWEN_PARAM = re.compile(r"<parameter=([\w.-]+)>\s*(.*?)\s*</parameter>", re.S)
+_JSON_BLOCKS = (re.compile(r"<TOOLCALL>\s*(\[.*?\])\s*</TOOLCALL>", re.S),
+                re.compile(r"<tool_call>\s*(\{.*?\})\s*</tool_call>", re.S))
+
+
+def _param_value(raw: str):
+    raw = raw.strip()
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        return raw
+
+
+def parse_inline_tool_calls(text: str, allowed: set[str]) -> tuple[list[dict], str]:
+    """Recover tool calls written into the message text.
+
+    Handles the Qwen3-Coder XML format Nemotron 3 Super emits (``<tool_call><function=name><parameter=k>v
+    </parameter></function></tool_call>``), Nemotron's ``<TOOLCALL>[{...}]</TOOLCALL>`` JSON list and
+    ``<tool_call>{json}</tool_call>``. Only names in ``allowed`` are accepted."""
+    calls: list[dict] = []
+    rest = text
+    for m in _QWEN_CALL.finditer(text):
+        name = m.group(1)
+        if name in allowed:
+            args = {k: _param_value(v) for k, v in _QWEN_PARAM.findall(m.group(2))}
+            calls.append({"name": name, "arguments": args})
+        rest = rest.replace(m.group(0), "")
+    for rx in _JSON_BLOCKS:
+        for m in rx.finditer(rest):
+            try:
+                val = json.loads(m.group(1))
+            except json.JSONDecodeError:
+                continue
+            for item in val if isinstance(val, list) else [val]:
+                if isinstance(item, dict) and item.get("name") in allowed:
+                    args = item.get("arguments") or item.get("parameters") or {}
+                    if isinstance(args, str):
+                        try:
+                            args = json.loads(args)
+                        except json.JSONDecodeError:
+                            args = {}
+                    calls.append({"name": item["name"], "arguments": args})
+            rest = rest.replace(m.group(0), "")
+    out = [{"id": f"inline_{i}", "type": "function",
+            "function": {"name": c["name"], "arguments": json.dumps(c["arguments"])}} for i, c in enumerate(calls)]
+    return out, rest.strip()
+
+
+def pick_model(available: list[str], configured: str, prefer: tuple[str, ...]) -> tuple[str, str]:
+    """Return (model_id, reason). Keeps ``configured`` if the key can see it, otherwise picks the best
+    NVIDIA Nemotron match by preference keywords (case-insensitive)."""
+    if configured in available:
+        return configured, "configured"
+    low = {m.lower(): m for m in available}
+    if configured.lower() in low:
+        return low[configured.lower()], "configured (case-insensitive match)"
+    nv = [m for m in available if "nemotron" in m.lower()]
+    for kw in prefer:
+        hits = sorted((m for m in nv if kw in m.lower()), key=len)
+        if hits:
+            return hits[0], f"auto: configured id not listed; picked Nemotron model matching '{kw}'"
+    if nv:
+        return sorted(nv)[0], "auto: first Nemotron model listed"
+    return configured, "not listed and no Nemotron model visible to this key"
 
 
 def tool_args(call: dict) -> dict:
