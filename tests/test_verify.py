@@ -67,3 +67,16 @@ def test_annotate_marks_unsupported():
 ])
 def test_rounding_rules(e, v, kind, ok):
     assert verify._matches(v, e, kind) is ok
+
+
+def test_apr_is_not_read_as_a_date():
+    from decision_ladder.agent import verify as V
+    rep = V.verify("APR 4.190% and APR 4.84% on Dec 15, 2026", {"a": 4.19, "b": 4.84})
+    assert rep.ok and [c.value for c in rep.claims] == [4.19, 4.84]
+
+
+def test_annotate_marks_each_occurrence_once():
+    from decision_ladder.agent import verify as V
+    t = "stressed at 6.84% and again 6.84%; 16.84% elsewhere"
+    out = V.annotate(t, V.verify(t, {"x": 16.84}))
+    assert out.count("[unverified]") == 2 and "16.84% elsewhere" in out

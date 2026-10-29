@@ -208,9 +208,18 @@ def test_thinking_on_raises_token_budget_for_reasoner_only(monkeypatch):
     assert rec.calls[1][1]["chat_template_kwargs"]["enable_thinking"] is False
 
 
-def test_empty_response_raises():
+def test_empty_response_raises_after_one_retry():
+    rec = Recorder([ok(""), ok("")])
     with pytest.raises(LLMError, match="empty response"):
-        NemotronClient(Recorder([ok("")])).chat([{"role": "user", "content": "q"}])
+        NemotronClient(rec).chat([{"role": "user", "content": "q"}])
+    assert len(rec.calls) == 2 and "empty" in rec.calls[1][1]["messages"][-1]["content"]
+
+
+def test_empty_response_recovers_on_retry():
+    rec = Recorder([ok(""), ok("the answer")])
+    c = NemotronClient(rec)
+    assert c.chat([{"role": "user", "content": "q"}]).content == "the answer"
+    assert c.log[-1]["purpose"].endswith("(retry after empty reply)")
 
 
 def test_pick_model():

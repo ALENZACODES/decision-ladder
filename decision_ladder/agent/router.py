@@ -21,7 +21,7 @@ CORE_STAGE = {
     "renewal_payment_shock": ["servicing"], "compare_renewal_offers": ["servicing"], "switch_lender_check": ["servicing"],
     "home_value_estimate": ["property"], "market_snapshot": ["market"], "bank_rates": ["market", "servicing"],
     "rate_change": ["market"], "lender_match": ["underwriting"], "lender_directory": ["underwriting", "lead"],
-    "penalty_methods": ["servicing"], "message_guardrail": ["lead"], "identity_screening": ["documents"],
+    "penalty_methods": ["servicing"], "message_guardrail": ["lead", "compliance"], "identity_screening": ["documents"],
     "web_research": ["market"], "lender_rate_check": ["market", "servicing"],
 }
 ALWAYS = {"market_snapshot"}   # cheap, frequently useful context
@@ -40,6 +40,7 @@ KEYWORDS = {
     "servicing": r"\b(renew|penalty|ird|break|refinanc|prepay|switch|maturity|payout)\b",
     "market": r"\b(bank of canada|boc|policy rate|prime|bond|yield|inflation|cpi|market|rate cycle|news|osfi|fsra|latest)\b",
     "commercial": r"\b(commercial|private credit|dscr|noi|cap rate|debt yield|multifamily|mezz|bridge loan|investor)\b",
+    "compliance": r"\b(compliance|ok to send|okay to send|send to (a|the) client|disclos|fintrac|apr|suitab|conflict of interest|interest act)\b",
 }
 
 
@@ -77,10 +78,18 @@ def route(llm: NemotronClient | None, question: str, available: set[str]) -> dic
             by = "offline stand-in (keywords)" if llm.offline else "nemotron-nano"
         except LLMError as e:
             reason = f"router error: {e}"
+    kw = keyword_stages(question)
     if not stages:
-        stages = keyword_stages(question)
+        stages = kw
         if stages:
             by = "keywords"
+    else:
+        # Live runs showed Nano sometimes misses an obvious stage (e.g. "break a TD mortgage" -> underwriting only).
+        # Keyword stages are added to its choice, never removed from it.
+        extra = [k for k in kw if k not in stages]
+        if extra:
+            stages = stages + extra
+            by += " + keywords"
     tools = set()
     for s in stages:
         tools |= st.get(s, set())

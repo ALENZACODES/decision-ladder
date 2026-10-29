@@ -212,6 +212,25 @@ class NemotronClient:
             if parsed:
                 calls, content = parsed, rest
         if not calls and not content:
+            # Seen live with Nemotron Super after long tool results: no content, no tool_calls, finish=stop.
+            # 1) the answer or call may sit in the reasoning field; 2) otherwise ask once more, explicitly.
+            reasoning = msg.get("reasoning_content") or msg.get("reasoning") or ""
+            if isinstance(reasoning, str) and reasoning.strip():
+                if tools:
+                    calls, _ = parse_inline_tool_calls(reasoning, {t["function"]["name"] for t in tools})
+                if not calls and not tools:
+                    content = strip_reasoning(reasoning).strip()
+            if not calls and not content and not getattr(self, "_retrying_empty", False):
+                self._retrying_empty = True
+                try:
+                    nudge = {"role": "user", "content": "Your last reply was empty. Reply now: call one of the tools, "
+                                                        "or give the final answer using only figures from tool results."}
+                    return self.chat(messages + [nudge], model=model, tools=tools, tool_choice=tool_choice,
+                                     temperature=temperature, max_tokens=max_tokens, json_mode=json_mode,
+                                     purpose=(purpose + " (retry after empty reply)").strip())
+                finally:
+                    self._retrying_empty = False
+        if not calls and not content:
             raise LLMError(f"empty response from {model} (finish_reason={choices[0].get('finish_reason')}); "
                            "if reasoning is on, raise max_tokens or set DL_THINKING=0")
         res = ChatResult(content, calls, choices[0].get("finish_reason") or "", out.get("model", model), out)

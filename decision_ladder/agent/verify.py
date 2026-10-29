@@ -17,7 +17,10 @@ from dataclasses import dataclass, field
 
 _NUM = re.compile(
     r"(?P<cur>\$|CAD\s?|C\$)?\s?(?P<num>\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)\s?(?P<suf>[kKmM](?![a-zA-Z])|million|thousand)?\s?(?P<pct>%|percent|pp|percentage points|bps)?")
-_DATE = re.compile(r"\b(?:19|20)\d{2}-\d{2}(?:-\d{2})?\b|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2}(?:,\s*\d{4})?", re.I)
+# Month-day dates are matched case-sensitively and the day must not continue as a number, so "APR 4.19%" is a
+# rate, not "April 4".
+_DATE = re.compile(r"\b(?:19|20)\d{2}-\d{2}(?:-\d{2})?\b|"
+                   r"\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2}(?![\d.%])(?:,\s*\d{4})?")
 
 
 @dataclass
@@ -150,6 +153,6 @@ def verify(text: str, *evidence) -> Report:
 def annotate(text: str, report: Report) -> str:
     """Mark unsupported figures inline so a reader can never mistake them for calculated values."""
     out = text
-    for c in report.unsupported:
-        out = out.replace(c.text, f"{c.text} [unverified]", 1)
+    for t in dict.fromkeys(c.text for c in report.unsupported):   # each distinct figure once, every occurrence
+        out = re.sub(r"(?<![\d.,$])" + re.escape(t) + r"(?![\d])", lambda m: m.group(0) + " [unverified]", out)
     return out

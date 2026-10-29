@@ -527,8 +527,8 @@ def _staged_ladder():
         ("market", rung_market, "market", ["renewal-radar", "canada-rate-cycle-dashboard", "canada-policy-rate-bond-yield-mortgage-rate"]),
         ("exit_cost", rung_exit_cost, "servicing", ["renewal-radar", "renewal-check", "mortgageloanops"]),
         ("renewal_outlook", O.rung_renewal_outlook, "servicing", ["renewal-shock-radar"]),
-        ("commercial", O.rung_commercial, "commercial", ["private-credit-screener"]),
-        ("compliance", rung_compliance, "compliance", ["mortgageloanops"]),
+        ("commercial", O.rung_commercial, "commercial", ["private-credit-screener", "decision-ladder"]),
+        ("compliance", rung_compliance, "compliance", ["mortgageloanops", "decision-ladder"]),
         ("decision", rung_decision, "decision", ["decision-ladder"]),
     ]
 
