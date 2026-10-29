@@ -1,0 +1,38 @@
+name: container smoke
+# Builds the production image and checks it end to end with no keys: health, every module app served
+# (including Renewal Radar's own FastAPI app through the OS proxy), and a full ladder run.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t dl .
+      - run: |
+          docker run -d --name dl -p 8000:8000 -e DL_OFFLINE=1 dl
+          for i in $(seq 1 40); do curl -sf localhost:8000/api/health && break; sleep 2; done
+          echo
+          python3 - <<'PY'
+          import json, urllib.request as u
+          os_ = json.load(u.urlopen("http://localhost:8000/api/os"))
+          bad = []
+          for m in os_["modules"]:
+              if not m["ui_url"]:
+                  continue
+              try:
+                  r = u.urlopen("http://localhost:8000" + m["ui_url"], timeout=90)
+                  print(m["key"], r.status, len(r.read()))
+              except Exception as e:
+                  print(m["key"], "FAILED", e); bad.append(m["key"])
+          f = json.load(u.urlopen("http://localhost:8000/api/samples"))["files"]["oakville_stretch"]
+          req = u.Request("http://localhost:8000/api/ladder", data=json.dumps({"file": f}).encode(),
+                          headers={"Content-Type": "application/json"}, method="POST")
+          run = json.load(u.urlopen(req, timeout=120))
+          print("ladder:", run["verdict"], len(run["rungs"]), "rungs")
+          assert run["verdict"] == "RESTRUCTURE" and not bad, bad
+          PY
+      - if: always()
+        run: docker logs dl | tail -50

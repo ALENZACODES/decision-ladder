@@ -1,0 +1,91 @@
+name: live (Nemotron on Token Factory)
+# Runs the whole live session on GitHub's runners, which can reach Nebius and Tavily:
+# model check -> smoke test -> eval -> live server -> demo video, and uploads everything as artifacts.
+# Needs repository secrets NEBIUS_API_KEY (and optionally TAVILY_API_KEY):
+#   GitHub -> repo -> Settings -> Secrets and variables -> Actions -> New repository secret.
+# Start it from the Actions tab ("Run workflow") or: gh workflow run live.yml
+on:
+  workflow_dispatch:
+    inputs:
+      record_video:
+        description: "Record the demo video"
+        type: boolean
+        default: true
+permissions:
+  contents: read
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      NEBIUS_API_KEY: ${{ secrets.NEBIUS_API_KEY }}
+      TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+      DL_RATE_PER_MIN: "200"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: check the key is set (value never printed)
+        run: test -n "$NEBIUS_API_KEY" || (echo "Add the NEBIUS_API_KEY repository secret first" && exit 1)
+      - run: pip install -r modules/renewal-radar/requirements.txt pytest
+      - name: models visible to the key
+        run: python -m decision_ladder models | tee models.txt
+      - name: live smoke test
+        run: python -m decision_ladder smoke | tee smoke.txt
+        continue-on-error: true
+      - name: eval (17 cases)
+        run: python -m decision_ladder eval | tee eval.txt
+        continue-on-error: true
+      - name: live ladder runs (all samples, with research)
+        run: |
+          python - <<'PY'
+          import json
+          from decision_ladder.__main__ import _llm, _research
+          from decision_ladder.ladder.runner import LadderEngine
+          from decision_ladder.samples import SAMPLES
+          out = {}
+          for k, f in SAMPLES.items():
+              f = {a: b for a, b in f.items() if a != "label"}
+              run = LadderEngine(_llm(False), _research(False)).run(
+                  f, research_queries=["Bank of Canada interest rate announcement", "OSFI mortgage underwriting update"])
+              d = run.to_dict()
+              out[k] = {"verdict": d["verdict"], "memo": d["memo"], "memo_model": d["memo_model"],
+                        "memo_source": d["memo_source"], "memo_verification": d["memo_verification"],
+                        "message": d["message"], "usage": d["usage"], "timings_ms": d["timings_ms"],
+                        "research": [{"query": r.get("query"), "rate_check": r.get("rate_check"),
+                                      "sources": [s.get("url") for s in r.get("sources", [])]} for r in d["research"]]}
+              print(k, d["verdict"], d["memo_model"], d["memo_verification"], d["usage"].get("approx_cost_usd"))
+          json.dump(out, open("live_ladder_report.json", "w"), indent=2, default=str)
+          PY
+        continue-on-error: true
+      - name: record the demo video against the live server
+        if: ${{ inputs.record_video }}
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+          npm i --no-save playwright@1 && npx playwright install --with-deps chromium
+          (python -m decision_ladder serve 8000 > server.log 2>&1 &)
+          for i in $(seq 1 30); do curl -sf localhost:8000/api/health > health.json && break; sleep 2; done
+          cat health.json
+          node scripts/record_demo.mjs http://localhost:8000
+        continue-on-error: true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-results
+          path: |
+            models.txt
+            smoke.txt
+            eval.txt
+            smoke_report.json
+            eval_report.json
+            live_ladder_report.json
+            health.json
+            server.log
+            demo/decision-ladder-demo.mp4
+            demo/narration.txt
+            demo/narration.srt
+          if-no-files-found: ignore
