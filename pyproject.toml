@@ -1,0 +1,24 @@
+[project]
+name = "decision-ladder"
+version = "1.0.0"
+description = "Top-down Canadian mortgage decision system: deterministic calculators + NVIDIA Nemotron on Nebius Token Factory + Tavily research"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "John Khan" }]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+decision-ladder = "decision_ladder.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["decision_ladder*"]
+
+[tool.setuptools.package-data]
+decision_ladder = ["data/*", "web/static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,216 @@
+"""HTTP API and web UI (standard library only).
+
+Endpoints (JSON in, JSON out):
+
+  GET  /api/health          mode (live/offline), model IDs, research mode, version
+  GET  /api/samples         sample files, sample email, sample renewal book CSV
+  GET  /api/tools           tool specs Nemotron sees
+  GET  /api/market          rate-book market snapshot
+  POST /api/ladder          {file, research?: bool, memo?: bool, message?: bool}  -> ladder run
+  POST /api/intake          {text, run?: bool}                                    -> extraction (+ ladder run)
+  POST /api/ask             {question, context?: {}, history?: []}                -> copilot answer + trace
+  POST /api/book            {csv, as_of?: "YYYY-MM-DD", drafts?: int}             -> ranked renewal queue
+  POST /api/tool            {name, args}                                          -> direct tool call (no model)
+
+Live mode needs NEBIUS_API_KEY. Without it the server runs the scripted offline stand-in and labels every
+model-shaped output as offline. TAVILY_API_KEY enables live research; otherwise labelled fixtures are used.
+"""
+from __future__ import annotations
+
+import json
+import mimetypes
+import os
+import threading
+import time
+from http import HTTPStatus
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from urllib.parse import urlparse
+
+from .. import __version__
+from ..agent import tools as T
+from ..agent.loop import Copilot
+from ..book.scan import scan
+from ..engines import ratebook
+from ..intake.extract import extract
+from ..ladder.runner import LadderEngine
+from ..llm.client import LLMError, NemotronClient
+from ..llm.offline import offline_client
+from ..research.tavily import Research, ResearchError, offline_transport
+from ..samples import SAMPLE_BOOK_CSV, SAMPLE_EMAIL, SAMPLES
+
+STATIC = Path(__file__).resolve().parent / "static"
+MAX_BODY = 512 * 1024
+
+
+class Services:
+    """Builds a fresh client per request so usage counters are per-request, and shares config."""
+
+    def __init__(self, offline: bool | None = None):
+        key = os.environ.get("NEBIUS_API_KEY")
+        self.live = bool(key) and not (offline or os.environ.get("DL_OFFLINE") == "1")
+        self.research_live = bool(os.environ.get("TAVILY_API_KEY"))
+
+    def llm(self) -> NemotronClient:
+        return NemotronClient() if self.live else offline_client()
+
+    def research(self) -> Research:
+        return Research() if self.research_live else Research(transport=offline_transport)
+
+    def health(self) -> dict:
+        c = self.llm()
+        return {"ok": True, "version": __version__, "mode": "live" if self.live else "offline",
+                "models": {"reasoner": c.reasoner, "fast": c.fast},
+                "provider": "Nebius Token Factory" if self.live else "offline scripted stand-in (no model)",
+                "base_url": c.base_url if self.live else None,
+                "research": "tavily-live" if self.research_live else "offline-fixtures",
+                "tools": len(T.TOOLS) + 1}
+
+
+class RateLimiter:
+    """Per-IP token bucket so a public demo URL cannot drain the Token Factory credits."""
+
+    def __init__(self, per_minute: int = 20):
+        self.rate = per_minute / 60.0
+        self.cap = float(per_minute)
+        self.buckets: dict[str, tuple[float, float]] = {}
+        self.lock = threading.Lock()
+
+    def allow(self, ip: str) -> bool:
+        now = time.monotonic()
+        with self.lock:
+            tokens, last = self.buckets.get(ip, (self.cap, now))
+            tokens = min(self.cap, tokens + (now - last) * self.rate)
+            if tokens < 1:
+                self.buckets[ip] = (tokens, now)
+                return False
+            self.buckets[ip] = (tokens - 1, now)
+            return True
+
+
+def make_handler(svc: Services, limiter: RateLimiter):
+    class Handler(BaseHTTPRequestHandler):
+        server_version = "DecisionLadder/" + __version__
+
+        def log_message(self, fmt, *args):  # quieter logs, no bodies (PII)
+            if os.environ.get("DL_ACCESS_LOG") == "1":
+                super().log_message(fmt, *args)
+
+        # ---------------------------------------------------------- helpers
+        def _send(self, code: int, body: bytes, ctype: str = "application/json") -> None:
+            self.send_response(code)
+            self.send_header("Content-Type", ctype)
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.send_header("Referrer-Policy", "no-referrer")
+            self.send_header("Content-Security-Policy",
+                             "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self'")
+            self.end_headers()
+            self.wfile.write(body)
+
+        def _json(self, obj, code: int = 200) -> None:
+            self._send(code, json.dumps(obj, default=str).encode())
+
+        def _body(self) -> dict:
+            n = int(self.headers.get("Content-Length") or 0)
+            if n > MAX_BODY:
+                raise ValueError("request too large")
+            raw = self.rfile.read(n) if n else b"{}"
+            data = json.loads(raw or b"{}")
+            if not isinstance(data, dict):
+                raise ValueError("JSON object expected")
+            return data
+
+        # ---------------------------------------------------------- routes
+        def do_GET(self):
+            path = urlparse(self.path).path
+            if path == "/api/health":
+                return self._json(svc.health())
+            if path == "/api/samples":
+                return self._json({"files": SAMPLES, "email": SAMPLE_EMAIL, "book_csv": SAMPLE_BOOK_CSV})
+            if path == "/api/tools":
+                return self._json({"tools": T.specs()})
+            if path == "/api/market":
+                return self._json(ratebook.market_snapshot())
+            if path == "/api/history":
+                return self._json({
+                    "policy_rate": ratebook.history("policy_rate", start="2021-01-01", every=5),
+                    "goc_5y": ratebook.history("goc_bond_yield", term_months=60, start="2021-01-01", every=5),
+                    "posted_5y": ratebook.history("big6_typical_posted", term_months=60, start="2021-01-01"),
+                    "new_uninsured_5y": ratebook.history("actual_rate_new_uninsured", term_months=60, start="2021-01-01"),
+                })
+            return self._static(path)
+
+        def _static(self, path: str):
+            rel = "index.html" if path in ("/", "") else path.lstrip("/")
+            if rel.startswith("static/"):
+                rel = rel[len("static/"):]
+            target = (STATIC / rel).resolve()
+            if not str(target).startswith(str(STATIC)) or not target.is_file():
+                return self._json({"error": "not found"}, 404)
+            ctype = mimetypes.guess_type(str(target))[0] or "application/octet-stream"
+            if ctype.startswith("text/") or ctype in ("application/javascript",):
+                ctype += "; charset=utf-8"
+            self._send(200, target.read_bytes(), ctype)
+
+        def do_POST(self):
+            path = urlparse(self.path).path
+            ip = self.headers.get("X-Forwarded-For", self.client_address[0]).split(",")[0].strip()
+            if path != "/api/tool" and not limiter.allow(ip):
+                return self._json({"error": "rate limited: try again in a minute"}, HTTPStatus.TOO_MANY_REQUESTS)
+            try:
+                body = self._body()
+                if path == "/api/ladder":
+                    f = body.get("file") or {}
+                    if not isinstance(f, dict) or not f:
+                        raise ValueError("file object required")
+                    eng = LadderEngine(svc.llm(), svc.research())
+                    qs = ["Bank of Canada interest rate announcement", "OSFI mortgage underwriting B-20 update"] if body.get("research") else None
+                    run = eng.run(f, write_memo=body.get("memo", True), draft_message=body.get("message", True), research_queries=qs)
+                    return self._json(run.to_dict())
+                if path == "/api/intake":
+                    text = str(body.get("text") or "")[:20000]
+                    if not text.strip():
+                        raise ValueError("text required")
+                    llm = svc.llm()
+                    out = extract(text, llm)
+                    if body.get("run"):
+                        f = dict(out["file"])
+                        f.setdefault("as_of", time.strftime("%Y-%m-%d"))
+                        out["ladder"] = LadderEngine(llm, svc.research()).run(f).to_dict()
+                    out["usage"] = llm.usage.to_dict()
+                    return self._json(out)
+                if path == "/api/ask":
+                    q = str(body.get("question") or "")[:4000]
+                    if not q.strip():
+                        raise ValueError("question required")
+                    cop = Copilot(svc.llm(), svc.research())
+                    hist = [m for m in (body.get("history") or [])[-8:] if isinstance(m, dict) and m.get("role") in ("user", "assistant")]
+                    res = cop.ask(q, context=body.get("context") or None, history=hist)
+                    return self._json(res.to_dict())
+                if path == "/api/book":
+                    csv_text = str(body.get("csv") or "")[:200000]
+                    if not csv_text.strip():
+                        raise ValueError("csv required")
+                    drafts = max(0, min(5, int(body.get("drafts", 3))))
+                    return self._json(scan(csv_text, body.get("as_of"), svc.llm() if drafts else None, drafts))
+                if path == "/api/tool":
+                    return self._json(T.run(str(body.get("name")), body.get("args") or {}))
+                return self._json({"error": "not found"}, 404)
+            except (ValueError, json.JSONDecodeError) as e:
+                return self._json({"error": str(e)}, 400)
+            except (LLMError, ResearchError) as e:
+                return self._json({"error": f"upstream: {e}"}, 502)
+
+    return Handler
+
+
+def serve(port: int = 8000, host: str = "0.0.0.0", offline: bool | None = None) -> None:
+    svc = Services(offline)
+    httpd = ThreadingHTTPServer((host, port), make_handler(svc, RateLimiter(int(os.environ.get("DL_RATE_PER_MIN", "20")))))
+    h = svc.health()
+    print(f"Decision Ladder {h['version']} on http://{host}:{port}  mode={h['mode']}  reasoner={h['models']['reasoner']}  research={h['research']}")
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        pass
