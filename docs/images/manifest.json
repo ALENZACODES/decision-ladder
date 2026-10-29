@@ -718,5 +718,47 @@
   "brief_file": "states/restructure.png",
   "sha256_original": "0262d477ecb7f40d485bcf52facad1a1371d909ff522ac501e626165a715d369",
   "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "J01": {
+  "file": "docs/images/gallery/gallery-architecture.jpg",
+  "brief_file": "gallery/gallery-architecture.png",
+  "sha256_original": "fd0376160698402f9bd9634e18adf410fb3d969b2e678ecac45d8d01f8ed1a98",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "J02": {
+  "file": "docs/images/gallery/gallery-modules.jpg",
+  "brief_file": "gallery/gallery-modules.png",
+  "sha256_original": "91df6485a0b48dda96ddad464d4333e065de9df77635352652f317b714a920d1",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "J03": {
+  "file": "docs/images/gallery/gallery-desks.jpg",
+  "brief_file": "gallery/gallery-desks.png",
+  "sha256_original": "7f16a550a48f0aa6ab7885c8c80c502596b3c41497e718ebd0739aba329aad2b",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "J04": {
+  "file": "docs/images/gallery/gallery-data.jpg",
+  "brief_file": "gallery/gallery-data.png",
+  "sha256_original": "4654a31da2ea28e4f4ad92d5ae0662952e71cb11ec737490dc528d06541fa17d",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "J05": {
+  "file": "docs/images/gallery/gallery-trust.jpg",
+  "brief_file": "gallery/gallery-trust.png",
+  "sha256_original": "18607fe58bfbd37d4ac3b33965a68f8b3e38cba14da06f0ed48fe1d1bf309918",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "J06": {
+  "file": "docs/images/gallery/linkedin-post.jpg",
+  "brief_file": "gallery/linkedin-post.png",
+  "sha256_original": "31da63b210043442373ad5ce6f10361f105cf6149a0a54081211d56606d1ede7",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "J07": {
+  "file": "docs/images/gallery/x-post.jpg",
+  "brief_file": "gallery/x-post.png",
+  "sha256_original": "e0538d4b44ab2689a44609437f5374a811783c74b64d33ad9d4fbb4c8faf0116",
+  "generated_with": "ChatGPT image generation (author's prompts)"
  }
 }
