@@ -9,7 +9,10 @@ Two NVIDIA open models are used, each for what it is good at:
 * the *reasoner* (default ``nvidia/nemotron-3-super-120b-a12b``) plans the ladder, calls tools and writes
   the broker memo;
 * the *fast* model (default ``nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B``) does cheap, high-volume work:
-  intent routing, document field extraction and second-pass compliance review.
+  intent routing, document field extraction and client message drafts;
+* the *ultra* model (Nemotron 3 Ultra, when your key can see it) is used where the hackathon brief says to
+  "reach for Ultra": the final credit decision memo over the whole client journey. If Ultra is not
+  available the reasoner is used, and the run reports which model wrote the memo.
 
 Model IDs on Token Factory change over time. Override them with ``DL_MODEL_REASONER`` /
 ``DL_MODEL_FAST``, and run ``python -m decision_ladder models`` to list what your key can see.
@@ -32,6 +35,7 @@ from typing import Any, Callable, Protocol
 DEFAULT_BASE_URL = "https://api.tokenfactory.nebius.com/v1/"
 DEFAULT_REASONER = "nvidia/nemotron-3-super-120b-a12b"
 DEFAULT_FAST = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B"
+DEFAULT_ULTRA = "nvidia/nemotron-3-ultra"   # resolved against /v1/models at startup; falls back to the reasoner
 
 # USD per 1M tokens (input, output) as published for Token Factory on 2026-10-20. Used only to show an
 # approximate cost next to each run; your invoice is authoritative.
@@ -128,10 +132,12 @@ class NemotronClient:
 
     def __init__(self, transport: Transport | None = None, *, api_key: str | None = None,
                  base_url: str | None = None, reasoner: str | None = None, fast: str | None = None,
+                 ultra: str | None = None,
                  max_retries: int = 3, sleep: Callable[[float], None] = time.sleep, offline: bool = False):
         self.base_url = base_url or os.environ.get("NEBIUS_BASE_URL", DEFAULT_BASE_URL)
         self.reasoner = reasoner or os.environ.get("DL_MODEL_REASONER", DEFAULT_REASONER)
         self.fast = fast or os.environ.get("DL_MODEL_FAST", DEFAULT_FAST)
+        self.ultra = ultra or os.environ.get("DL_MODEL_ULTRA", DEFAULT_ULTRA)
         self.offline = offline
         if transport is None:
             key = api_key or os.environ.get("NEBIUS_API_KEY")
@@ -176,7 +182,7 @@ class NemotronClient:
             payload["tool_choice"] = tool_choice or "auto"
         if json_mode:
             payload["response_format"] = {"type": "json_object"}
-        think = self.thinking and model == self.reasoner and not json_mode
+        think = self.thinking and model in (self.reasoner, self.ultra) and not json_mode
         if self.send_template_kwargs and "nemotron" in model.lower():
             payload["chat_template_kwargs"] = {"enable_thinking": think}
             if think:
@@ -238,7 +244,16 @@ class NemotronClient:
         ids = self.list_models()
         self.reasoner, r1 = pick_model(ids, self.reasoner, ("super", "ultra", "nemotron-3", "nemotron"))
         self.fast, r2 = pick_model(ids, self.fast, ("nano", "lightning", "mini", "nemotron"))
+        if self.ultra in ids:
+            r3 = "configured"
+        else:
+            ultras = sorted((m for m in ids if "nemotron" in m.lower() and "ultra" in m.lower()), key=len)
+            if ultras:
+                self.ultra, r3 = ultras[0], "auto: picked the Nemotron Ultra model listed"
+            else:
+                self.ultra, r3 = self.reasoner, "no Nemotron Ultra visible to this key: the reasoner writes the decision memo"
         return {"reasoner": self.reasoner, "reasoner_reason": r1, "fast": self.fast, "fast_reason": r2,
+                "ultra": self.ultra, "ultra_reason": r3,
                 "nemotron_models": [m for m in ids if "nemotron" in m.lower()]}
 
 

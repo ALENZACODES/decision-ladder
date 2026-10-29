@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doc Quest: your mortgage paperwork, three steps at a time</title>
+<meta name="description" content="Turn a lender's wall of jargon into a short, plain-language list made for you, served three steps at a time.">
+<meta name="author" content="John Khan">
+<meta property="og:image" content="https://alenzacodes.github.io/doc-quest/assets/social.png">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><div class="wrap top-in">
+  <span class="brand"><svg aria-hidden="true" viewBox="0 0 32 32" width="26" height="26"><rect x="6" y="3" width="20" height="26" rx="3" fill="#fff" stroke="#011F5B" stroke-width="2.5"/><path d="M11 16l4 4 7-8" fill="none" stroke="#990000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg> Doc Quest</span>
+  <div class="tools">
+    <label class="switch"><input type="checkbox" id="simple"> <span>Simpler words</span></label>
+    <button type="button" id="restart" class="link">Start over</button>
+  </div>
+</div></header>
+
+<main id="main" class="wrap">
+  <!-- Step 1: questions -->
+  <section id="ask" aria-labelledby="ask-h">
+    <div class="intro">
+      <h1 id="ask-h">Your mortgage paperwork, three steps at a time.</h1>
+      <p class="lede">Lenders hand you one long list full of terms like NOA, T1 General and gift letter. Answer five quick questions and get only the papers you need, in plain words, with where to find each one.</p>
+    </div>
+
+    <div class="compare" aria-label="What the lender sends versus what you get">
+      <figure class="before">
+        <figcaption>What the lender sends</figcaption>
+        <ul id="wall"></ul>
+      </figure>
+      <figure class="after">
+        <figcaption>What you'll see here</figcaption>
+        <div class="mini"><span class="n">1</span><b>Job letter</b><small>Email HR today. Takes a few days.</small></div>
+        <div class="mini"><span class="n">2</span><b>Photo ID</b><small>Your wallet. 5 min.</small></div>
+        <div class="mini"><span class="n">3</span><b>Your latest pay stubs</b><small>Your payroll portal. 5 min.</small></div>
+      </figure>
+    </div>
+
+    <form id="qs" class="qs">
+      <fieldset>
+        <legend><span class="qn">1</span> How are you paid?</legend>
+        <div class="opts">
+          <label><input type="radio" name="work" value="salaried" checked><span>Salary</span></label>
+          <label><input type="radio" name="work" value="hourly"><span>Hourly or with overtime</span></label>
+          <label><input type="radio" name="work" value="commission"><span>Commission or bonus</span></label>
+          <label><input type="radio" name="work" value="self"><span>I run my own business</span></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend><span class="qn">2</span> Where is your down payment coming from? <small>Pick all that apply</small></legend>
+        <div class="opts">
+          <label><input type="checkbox" name="src" value="savings" checked><span>Savings</span></label>
+          <label><input type="checkbox" name="src" value="fhsa"><span>FHSA</span></label>
+          <label><input type="checkbox" name="src" value="rrsp"><span>RRSP (Home Buyers' Plan)</span></label>
+          <label><input type="checkbox" name="src" value="gift"><span>A gift from family</span></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend><span class="qn">3</span> Have you lived in Canada for less than five years?</legend>
+        <div class="opts">
+          <label><input type="radio" name="newcomer" value="y"><span>Yes</span></label>
+          <label><input type="radio" name="newcomer" value="n" checked><span>No</span></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend><span class="qn">4</span> Do you own any property right now?</legend>
+        <div class="opts">
+          <label><input type="radio" name="own" value="y"><span>Yes</span></label>
+          <label><input type="radio" name="own" value="n" checked><span>No</span></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend><span class="qn">5</span> Is someone applying with you?</legend>
+        <div class="opts">
+          <label><input type="radio" name="partner" value="y"><span>Yes</span></label>
+          <label><input type="radio" name="partner" value="n" checked><span>No, just me</span></label>
+        </div>
+      </fieldset>
+      <button type="submit" class="btn big">Show my list</button>
+      <p class="privacy">Nothing is uploaded. Your answers and progress stay in this browser.</p>
+    </form>
+  </section>
+
+  <!-- Step 2: the list -->
+  <section id="plan" hidden aria-labelledby="plan-h">
+    <div class="plan-head">
+      <h1 id="plan-h" tabindex="-1">Your next three</h1>
+      <div class="prog" id="prog"></div>
+    </div>
+    <p class="partner-note" id="partnerNote" hidden></p>
+    <ol class="cards" id="next"></ol>
+    <div class="done-all" id="doneAll" hidden>
+      <h2>That's everything for your pre-approval.</h2>
+      <p>Send the files to your lender or broker. The three papers below come after your offer is accepted.</p>
+    </div>
+
+    <details class="more" id="laterWrap">
+      <summary>Coming up after these <span id="laterCount"></span></summary>
+      <ul class="rest" id="rest"></ul>
+    </details>
+    <details class="more">
+      <summary>After your offer is accepted <span id="offerCount"></span></summary>
+      <ul class="rest" id="offer"></ul>
+    </details>
+    <details class="more">
+      <summary>Done <span id="doneCount"></span></summary>
+      <ul class="rest" id="doneList"></ul>
+    </details>
+
+    <details class="more" id="srcs">
+      <summary>Where this list comes from</summary>
+      <div class="srcbody">
+        <p>The lender list on the first screen is a combined checklist I put together from the documents Canadian lenders commonly ask for. It isn't copied from any one lender. These public pages back it up:</p>
+        <ul>
+          <li><a href="https://www.canada.ca/en/financial-consumer-agency/services/mortgages/preapproval-qualify-mortgage.html">Getting preapproved for a mortgage</a>, Financial Consumer Agency of Canada: ID, proof of employment, down payment, debts, and two years of notices of assessment if self-employed.</li>
+          <li><a href="https://www.bmo.com/appointment/whattobring/lending">What to bring to your lending appointment</a>, BMO: two IDs for a purchase, a T1 General with its notice of assessment for self-employed or variable income, the signed offer and the listing.</li>
+          <li><a href="https://www.accesscu.ca/media/3714/accesspreapprovalchecklist.pdf">Mortgage pre-approval checklist</a>, Access Credit Union: letter of employment with a pay stub, and a 90-day history of the down payment funds.</li>
+          <li><a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/what-home-buyers-plan.html">The Home Buyers' Plan</a>, Canada Revenue Agency: the $60,000 withdrawal limit.</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="actions">
+      <button type="button" class="btn ghost" id="edit">Change my answers</button>
+      <button type="button" class="btn ghost" id="print">Print the full list</button>
+    </div>
+    <p class="fine">Lenders differ, and yours may ask for something extra or skip something here. This list covers the usual asks from Canadian lenders for a home purchase. It isn't advice.</p>
+  </section>
+  <p class="sr-only" id="live" aria-live="polite"></p>
+</main>
+<footer class="foot"><div class="wrap">Built by John Khan. <a href="https://github.com/ALENZACODES/doc-quest">Source on GitHub</a></div></footer>
+<script src="docs.js"></script>
+<script src="logic.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

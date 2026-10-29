@@ -1,0 +1,9 @@
+.git
+**/__pycache__
+**/.pytest_cache
+demo/
+docs/screenshots/
+modules/renewal-radar/docs/_pdf_preview
+modules/*/docs/*.png
+eval_report.json
+smoke_report.json

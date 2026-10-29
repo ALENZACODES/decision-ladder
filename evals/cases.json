@@ -1,45 +1,327 @@
 {
-  "description": "Copilot evaluation cases. expect_tools: at least one of these must be called. expect_numbers: the answer must contain each value (matched with the verifier's rounding rules). Expected numbers are produced by the deterministic engines, not written by hand.",
-  "cases": [
-    {"id": "stress-fail-options",
-     "question": "A client earns 150000, wants a 900000 home with 90000 down at 4.29% over 25 years, has 900 a month of other debt and 6000 property tax. Do they pass the stress test? If not, what is the highest price that would pass?",
-     "expect_tools": ["qualify_purchase", "find_path_to_yes", "max_purchase_price"],
-     "expect_from": {"tool": "max_purchase_price", "args": {"price": 900000, "down_payment": 90000, "annual_income": 150000, "contract_rate": 4.29, "amort_years": 25, "other_debt_monthly": 900, "property_tax_annual": 6000}, "paths": ["max_price"]}},
-    {"id": "qualifying-rate",
-     "question": "What qualifying rate applies to a 3.09% contract rate under the B-20 stress test, and what is the stressed payment on a 600000 mortgage over 25 years?",
-     "expect_tools": ["qualify_purchase", "mortgage_payment"],
-     "expect_from": {"tool": "mortgage_payment", "args": {"principal": 600000, "annual_rate": 5.25, "amort_years": 25}, "paths": ["monthly_payment"]}},
-    {"id": "insurance-premium",
-     "question": "How much CMHC premium on a 650000 purchase with 40000 down over 25 years in Ontario, and how much PST is paid at closing?",
-     "expect_tools": ["insurance_premium"],
-     "expect_from": {"tool": "insurance_premium", "args": {"price": 650000, "down_payment": 40000, "amort_years": 25, "province": "ON"}, "paths": ["premium", "pst_on_premium"]}},
-    {"id": "td-penalty",
-     "question": "What is the penalty to break a TD fixed mortgage: balance 640000 at 5.29%, term 2023-08-01 to 2028-08-01, posted rate at funding 6.84%, payout on 2026-10-28?",
-     "expect_tools": ["penalty_by_lender"],
-     "expect_from": {"tool": "penalty_by_lender", "args": {"lender": "TD", "balance": 640000, "contract_rate": 5.29, "term_start": "2023-08-01", "maturity": "2028-08-01", "original_posted_rate": 6.84, "payout_date": "2026-10-28"}, "paths": ["estimate.total_estimate"]}},
-    {"id": "renewal-shock",
-     "question": "A 600000 mortgage taken in late 2021 at 1.99% over 25 years renews after 59 months at 4.84%. What happens to the monthly payment?",
-     "expect_tools": ["renewal_payment_shock"],
-     "expect_from": {"tool": "renewal_payment_shock", "args": {"original_principal": 600000, "original_rate": 1.99, "original_amort_years": 25, "months_elapsed": 59, "renewal_rate": 4.84}, "paths": ["payment_after"]}},
-    {"id": "offer-compare",
-     "question": "Compare renewing at 4.84% vs switching at 4.29% with 0 fees on a 512400 balance with 20 years left, over a 5 year term. Which costs less and by how much?",
-     "expect_tools": ["compare_renewal_offers"],
-     "expect_from": {"tool": "compare_renewal_offers", "args": {"balance": 512400, "remaining_amort_years": 20, "term_years": 5, "offers": [{"label": "renew", "rate": 4.84}, {"label": "switch", "rate": 4.29, "fees": 0}]}, "paths": ["offers.1.extra_cost_vs_best"]}},
-    {"id": "market",
-     "question": "What are the Bank of Canada policy rate and the 5-year Government of Canada bond yield in the rate book right now?",
-     "expect_tools": ["market_snapshot", "rate_change"],
-     "expect_from": {"tool": "market_snapshot", "args": {}, "paths": ["policy_rate.rate", "goc_curve.60.rate"]}},
-    {"id": "bank-posted",
-     "question": "What is RBC's posted 5-year fixed rate in the rate book?",
-     "expect_tools": ["bank_rates"],
-     "expect_from": {"tool": "bank_rates", "args": {"bank": "RBC"}, "paths": ["posted.60"]}},
-    {"id": "guardrail",
-     "question": "Is this text OK to send to a client: 'Great news, you're pre-approved at 3.99%! Act now, this rate expires tonight.'",
-     "expect_tools": ["message_guardrail"],
-     "expect_from": null},
-    {"id": "no-invention",
-     "question": "Roughly what would a 1,000,000 mortgage payment be at 4.5% over 30 years?",
-     "expect_tools": ["mortgage_payment"],
-     "expect_from": {"tool": "mortgage_payment", "args": {"principal": 1000000, "annual_rate": 4.5, "amort_years": 30}, "paths": ["monthly_payment"]}}
-  ]
+ "description": "Copilot evaluation cases. expect_tools: at least one of these must be called. expect_numbers: the answer must contain each value (matched with the verifier's rounding rules). Expected numbers are produced by the deterministic engines, not written by hand. expect_from may be a list: the answer is accurate if it matches any one of them (e.g. lender-exact vs generic method).",
+ "cases": [
+  {
+   "id": "stress-fail-options",
+   "question": "A client earns 150000, wants a 900000 home with 90000 down at 4.29% over 25 years, has 900 a month of other debt and 6000 property tax. Do they pass the stress test? If not, what is the highest price that would pass?",
+   "expect_tools": [
+    "qualify_purchase",
+    "find_path_to_yes",
+    "max_purchase_price"
+   ],
+   "expect_from": {
+    "tool": "max_purchase_price",
+    "args": {
+     "price": 900000,
+     "down_payment": 90000,
+     "annual_income": 150000,
+     "contract_rate": 4.29,
+     "amort_years": 25,
+     "other_debt_monthly": 900,
+     "property_tax_annual": 6000
+    },
+    "paths": [
+     "max_price"
+    ]
+   }
+  },
+  {
+   "id": "qualifying-rate",
+   "question": "What qualifying rate applies to a 3.09% contract rate under the B-20 stress test, and what is the stressed payment on a 600000 mortgage over 25 years?",
+   "expect_tools": [
+    "qualify_purchase",
+    "mortgage_payment"
+   ],
+   "expect_from": {
+    "tool": "mortgage_payment",
+    "args": {
+     "principal": 600000,
+     "annual_rate": 5.25,
+     "amort_years": 25
+    },
+    "paths": [
+     "monthly_payment"
+    ]
+   }
+  },
+  {
+   "id": "insurance-premium",
+   "question": "How much CMHC premium on a 650000 purchase with 40000 down over 25 years in Ontario, and how much PST is paid at closing?",
+   "expect_tools": [
+    "insurance_premium"
+   ],
+   "expect_from": {
+    "tool": "insurance_premium",
+    "args": {
+     "price": 650000,
+     "down_payment": 40000,
+     "amort_years": 25,
+     "province": "ON"
+    },
+    "paths": [
+     "premium",
+     "pst_on_premium"
+    ]
+   }
+  },
+  {
+   "id": "td-penalty",
+   "question": "What is the penalty to break a TD fixed mortgage: balance 640000 at 5.29%, term 2023-08-01 to 2028-08-01, posted rate at funding 6.84%, payout on 2026-10-28?",
+   "expect_tools": [
+    "penalty_by_lender",
+    "rr_bank_penalty"
+   ],
+   "expect_from": [
+    {
+     "tool": "rr_bank_penalty",
+     "args": {
+      "lender": "TD",
+      "balance": 640000,
+      "contract_rate": 5.29,
+      "start": "2023-08-01",
+      "maturity": "2028-08-01",
+      "payout": "2026-10-28",
+      "posted_at_origination": 6.84
+     },
+     "paths": [
+      "penalty"
+     ]
+    },
+    {
+     "tool": "penalty_by_lender",
+     "args": {
+      "lender": "TD",
+      "balance": 640000,
+      "contract_rate": 5.29,
+      "term_start": "2023-08-01",
+      "maturity": "2028-08-01",
+      "original_posted_rate": 6.84,
+      "payout_date": "2026-10-28"
+     },
+     "paths": [
+      "estimate.total_estimate"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "renewal-shock",
+   "question": "A 600000 mortgage taken in late 2021 at 1.99% over 25 years renews after 59 months at 4.84%. What happens to the monthly payment?",
+   "expect_tools": [
+    "renewal_payment_shock"
+   ],
+   "expect_from": {
+    "tool": "renewal_payment_shock",
+    "args": {
+     "original_principal": 600000,
+     "original_rate": 1.99,
+     "original_amort_years": 25,
+     "months_elapsed": 59,
+     "renewal_rate": 4.84
+    },
+    "paths": [
+     "payment_after"
+    ]
+   }
+  },
+  {
+   "id": "offer-compare",
+   "question": "Compare renewing at 4.84% vs switching at 4.29% with 0 fees on a 512400 balance with 20 years left, over a 5 year term. Which costs less and by how much?",
+   "expect_tools": [
+    "compare_renewal_offers"
+   ],
+   "expect_from": {
+    "tool": "compare_renewal_offers",
+    "args": {
+     "balance": 512400,
+     "remaining_amort_years": 20,
+     "term_years": 5,
+     "offers": [
+      {
+       "label": "renew",
+       "rate": 4.84
+      },
+      {
+       "label": "switch",
+       "rate": 4.29,
+       "fees": 0
+      }
+     ]
+    },
+    "paths": [
+     "offers.1.extra_cost_vs_best"
+    ]
+   }
+  },
+  {
+   "id": "market",
+   "question": "What are the Bank of Canada policy rate and the 5-year Government of Canada bond yield in the rate book right now?",
+   "expect_tools": [
+    "market_snapshot",
+    "rate_change"
+   ],
+   "expect_from": {
+    "tool": "market_snapshot",
+    "args": {},
+    "paths": [
+     "policy_rate.rate",
+     "goc_curve.60.rate"
+    ]
+   }
+  },
+  {
+   "id": "bank-posted",
+   "question": "What is RBC's posted 5-year fixed rate in the rate book?",
+   "expect_tools": [
+    "bank_rates"
+   ],
+   "expect_from": {
+    "tool": "bank_rates",
+    "args": {
+     "bank": "RBC"
+    },
+    "paths": [
+     "posted.60"
+    ]
+   }
+  },
+  {
+   "id": "guardrail",
+   "question": "Is this text OK to send to a client: 'Great news, you're pre-approved at 3.99%! Act now, this rate expires tonight.'",
+   "expect_tools": [
+    "message_guardrail"
+   ],
+   "expect_from": null
+  },
+  {
+   "id": "no-invention",
+   "question": "Roughly what would a 1,000,000 mortgage payment be at 4.5% over 30 years?",
+   "expect_tools": [
+    "mortgage_payment"
+   ],
+   "expect_from": {
+    "tool": "mortgage_payment",
+    "args": {
+     "principal": 1000000,
+     "annual_rate": 4.5,
+     "amort_years": 30
+    },
+    "paths": [
+     "monthly_payment"
+    ]
+   }
+  },
+  {
+   "id": "cash-to-close",
+   "question": "A first-time buyer in Ontario has $60,000 saved and wants a $700,000 home. How much cash do they need on closing day with the minimum down payment, and are they short?",
+   "expect_tools": [
+    "cash_to_close_ontario",
+    "closing_costs_estimate"
+   ],
+   "expect_from": {
+    "tool": "cash_to_close_ontario",
+    "args": {
+     "price": 700000,
+     "savings": 60000,
+     "first_time": true
+    },
+    "paths": [
+     "cashToClose"
+    ]
+   }
+  },
+  {
+   "id": "toronto-ltt",
+   "question": "What is the total land transfer tax on a $900,000 home in the City of Toronto for a first-time buyer, after rebates?",
+   "expect_tools": [
+    "land_transfer_tax",
+    "cash_to_close_ontario",
+    "closing_costs_estimate"
+   ],
+   "expect_from": {
+    "tool": "land_transfer_tax",
+    "args": {
+     "price": 900000,
+     "province": "ON",
+     "toronto": true,
+     "first_time": true
+    },
+    "paths": [
+     "total"
+    ]
+   }
+  },
+  {
+   "id": "benchmark-oakville",
+   "question": "What is the benchmark price of a semi-detached home in Oakville right now, and how has it changed over 12 months?",
+   "expect_tools": [
+    "benchmark_home_price",
+    "postal_area_home_value"
+   ],
+   "expect_from": {
+    "tool": "benchmark_home_price",
+    "args": {
+     "place": "Oakville",
+     "property_type": "semi"
+    },
+    "paths": [
+     "benchmark_price"
+    ]
+   }
+  },
+  {
+   "id": "affordability-index",
+   "question": "How affordable is housing in Canada right now according to the Bank of Canada affordability index, compared with its long-run average?",
+   "expect_tools": [
+    "housing_affordability_index"
+   ],
+   "expect_from": {
+    "tool": "housing_affordability_index",
+    "args": {},
+    "paths": [
+     "affordability_index_pct",
+     "long_run_average_pct"
+    ]
+   }
+  },
+  {
+   "id": "commercial-dscr",
+   "question": "Screen a commercial bridge loan: $6.5M on a $10M 24-unit apartment building with $620,000 NOI at 8.5% interest-only for 2 years. What is the DSCR and grade?",
+   "expect_tools": [
+    "private_credit_deal_screen"
+   ],
+   "expect_from": {
+    "tool": "private_credit_deal_screen",
+    "args": {
+     "loan": 6500000,
+     "value": 10000000,
+     "noi": 620000,
+     "rate": 8.5,
+     "amort": 0,
+     "termYrs": 2
+    },
+    "paths": [
+     "metrics.dscr"
+    ]
+   }
+  },
+  {
+   "id": "doc-checklist",
+   "question": "Which documents does a salaried first-time buyer whose parents are gifting part of the down payment need to collect, and which should they ask for first?",
+   "expect_tools": [
+    "buyer_document_checklist"
+   ],
+   "expect_from": null
+  },
+  {
+   "id": "renewal-xray",
+   "question": "A client's renewal letter says: outstanding balance at maturity $504,200, current rate 1.99%, matures December 15, 2026, 5 year fixed closed 4.84%. If they keep paying what they pay now, how much longer does the mortgage take?",
+   "expect_tools": [
+    "renewal_offer_check",
+    "rr_letter_xray",
+    "renewal_payment_shock"
+   ],
+   "expect_from": null
+  }
+ ]
 }

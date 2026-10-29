@@ -1,0 +1,64 @@
+
+<section class="panel bt" id="bt" aria-labelledby="btTitle">
+  <div class="bt-head">
+    <div>
+      <div class="eyebrow">Backtest <span id="btLive" class="live"></span></div>
+      <h2 id="btTitle">How close would this page have been?</h2>
+      <p class="hint">Every assessed home with a history in Calgary, Edmonton, Vancouver and the rest of Alberta and British Columbia was priced from each earlier assessment it had, using only what was known at that time and this page's own price index, then checked against what the city assessed later. Every street in Canada was also typed back into the address box to see which home the page lands on.</p>
+    </div>
+    <div class="bt-actions">
+      <button type="button" class="cta" id="btSaveAll">Save everything (.zip)</button>
+    </div>
+  </div>
+  <div class="bt-msg" id="btMsg" aria-live="polite"></div>
+  <div class="bt-mine" id="btMine" hidden></div>
+  <div class="tiles" id="btTiles"></div>
+  <div class="bt-filter">
+    <span class="k">Area</span>
+    <div class="seg" id="btCity" role="group" aria-label="Area shown in the backtest charts"></div>
+  </div>
+  <div class="charts bt-charts">
+    <div class="chart">
+      <div class="chart-top"><h3>How far off the predictions were</h3><div class="tools"><button type="button" data-png="b1">PNG</button><button type="button" data-csv="b1">CSV</button></div></div>
+      <div class="chart-sub">Share of predictions by error. Left of zero: predicted too low.</div>
+      <div class="box" id="b1"></div>
+    </div>
+    <div class="chart">
+      <div class="chart-top"><h3>Error grows with years ahead</h3><div class="tools"><button type="button" data-png="b2">PNG</button><button type="button" data-csv="b2">CSV</button></div></div>
+      <div class="chart-sub">Median error, by how many years separated the starting assessment from the one predicted.</div>
+      <div class="box" id="b2"></div>
+    </div>
+    <div class="chart wide">
+      <div class="chart-top"><h3>The page's index against what assessments actually did</h3><div class="tools"><button type="button" data-png="b3">PNG</button><button type="button" data-csv="b3">CSV</button></div></div>
+      <div class="chart-sub">Median change in assessed value over each three-year roll period, next to the change this page's regional index shows for the same valuation dates.</div>
+      <div class="box" id="b3"></div>
+    </div>
+    <div class="chart">
+      <div class="chart-top"><h3>Predicted against assessed, 2025–26 rolls</h3><div class="tools"><button type="button" data-png="b4">PNG</button><button type="button" data-csv="b4">CSV</button></div></div>
+      <div class="chart-sub">An even sample of predictions. On the line means exactly right; both axes are logarithmic.</div>
+      <div class="box" id="b4"></div>
+    </div>
+    <div class="chart">
+      <div class="chart-top"><h3>Houses against condos</h3><div class="tools"><button type="button" data-png="b7">PNG</button><button type="button" data-csv="b7">CSV</button></div></div>
+      <div class="chart-sub">Median error with the page's index, and from the median of the other homes on the same street.</div>
+      <div class="box" id="b7"></div>
+    </div>
+    <div class="chart wide">
+      <div class="chart-top"><h3>What every address's estimate rests on</h3><div class="tools"><button type="button" data-png="b5">PNG</button><button type="button" data-csv="b5">CSV</button></div></div>
+      <div class="chart-sub" id="b5sub">Each address in the National Address Register, by the best evidence the page has for it.</div>
+      <div class="legend-q" id="b5leg"></div>
+      <div class="box tall" id="b5"></div>
+    </div>
+    <div class="chart wide">
+      <div class="chart-top"><h3>Typing every street back in</h3><div class="tools"><button type="button" data-png="b6">PNG</button><button type="button" data-csv="b6">CSV</button></div></div>
+      <div class="chart-sub" id="b6sub">One address from every street in Canada, typed as "number street, town", then Enter.</div>
+      <div class="box tall" id="b6"></div>
+    </div>
+  </div>
+  <details id="btFsaWrap">
+    <summary>Every postal area tested <span class="ss">— click headers to sort</span></summary>
+    <div class="tools" style="margin:6px 0"><button type="button" data-csv="fsa">CSV</button></div>
+    <div class="tbl"><table id="btFsa"><thead></thead><tbody></tbody></table></div>
+  </details>
+  <p class="ss" id="btNotes"></p>
+</section>

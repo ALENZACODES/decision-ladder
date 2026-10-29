@@ -1,0 +1,13 @@
+.venv/
+data/
+*.log
+__pycache__/
+static/data/streets/
+static/data/addr/
+static/data/legal/
+static/data/history/
+static/data/detail/
+site/
+models/avm.txt
+static/sample_test.json
+static/backtest.json

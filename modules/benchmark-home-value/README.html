@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Benchmark Home Value: guide</title>
+<style>
+:root{--bg:#f3f5f9;--surface:#fff;--fg:#0b1a33;--muted:#56627a;--line:#d6dce8;--accent:#011f5b;--accent-2:#990000;--good:#2e7d4f;
+  --body:"Segoe UI",system-ui,-apple-system,sans-serif;--mono:Consolas,"IBM Plex Mono",ui-monospace,monospace;--brand:Georgia,"Times New Roman",serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1324;--surface:#121c33;--fg:#e8edf7;--muted:#9aa8c2;--line:#26324d;--accent:#82afd3;--accent-2:#e06666;--good:#6fcf97;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b1324;--surface:#121c33;--fg:#e8edf7;--muted:#9aa8c2;--line:#26324d;--accent:#82afd3;--accent-2:#e06666;--good:#6fcf97;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 var(--body);padding:32px 16px 64px}
+.wrap{max-width:960px;margin:0 auto;display:grid;gap:28px}
+h1{font:400 clamp(30px,5vw,44px)/1.15 var(--brand);color:var(--accent-2);margin:6px 0 10px}
+h2{font:600 22px/1.3 var(--body);color:var(--accent);margin:0 0 10px}
+h3{font:600 16px/1.4 var(--body);margin:0}
+p{margin:0 0 10px;max-width:72ch}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.lead{font-size:18px;color:var(--muted);max-width:68ch}
+section{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:24px}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tile{border:1px solid var(--line);border-radius:8px;padding:14px;display:grid;gap:4px;background:var(--surface)}
+.tile b{font:600 26px/1.1 var(--body);color:var(--accent);font-variant-numeric:tabular-nums}
+.tile span{font-size:13px;color:var(--muted);line-height:1.45}
+ol.steps{margin:0;padding-left:22px;display:grid;gap:8px}
+code,kbd{font:14px var(--mono);background:color-mix(in srgb,var(--accent) 8%,transparent);padding:1px 6px;border-radius:4px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.tbl{overflow-x:auto}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:760px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.card{border:1px solid var(--line);border-radius:8px;padding:14px}
+.card ul{margin:6px 0 0;padding-left:18px}
+.note{border-left:3px solid var(--accent-2);padding-left:12px;color:var(--muted);font-size:14px}
+.ok{color:var(--good);font-weight:600}
+</style>
+<meta name="author" content="John Khan">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Free Canadian home valuation · every address</div>
+  <h1>Benchmark Home Value</h1>
+  <p class="lead">A home value estimator for all 17 million addresses in Canada. It does what paid valuation tools and lender AVMs do, publishes its own accuracy test in full, and costs nothing: no account, no API keys, no paid data.</p>
+</header>
+
+<section aria-labelledby="start">
+  <h2 id="start">Start it</h2>
+  <ol class="steps">
+    <li>Online: open the website link on the GitHub page. On your computer: double-click <b>Start Benchmark Home Value.bat</b> in this folder. Your browser opens the app; keep the small black window open while you use it.</li>
+    <li>Type an address (for example <code>24 Mountain Cir SE, Airdrie</code>) and press Enter, or pick it from the list.</li>
+    <li>Optional, any time: double-click <b>Update live data.bat</b> to pull today's Bank of Canada rates and save the chart library for offline use.</li>
+  </ol>
+  <p class="note" style="margin-top:12px">The launcher needs no install. It uses Python if your PC has it (tested on a Windows PC with Python 3.14), and otherwise PowerShell, which every Windows PC has. With Python it also runs a small relay so the app can reach the City of Toronto and OpenStreetMap data that browsers can't call directly. If Windows shows a blue "Windows protected your PC" box the first time, choose <b>More info → Run anyway</b>; the scripts are plain text you can open in Notepad.</p>
+</section>
+
+<section aria-labelledby="proof">
+  <h2 id="proof">The proof: tested on real homes</h2>
+  <div class="tiles">
+    <div class="tile"><b>17,250,061</b><span>addresses in the National Address Register, every one with an estimate</span></div>
+    <div class="tile"><b>974,500</b><span>homes backtested, 7.37 million predictions from 1.22 million assessment records</span></div>
+    <div class="tile"><b>4.95%</b><span>median error for houses (78% within 10%); 6.3% across all homes</span></div>
+    <div class="tile"><b>0 of 492,328</b><span>streets typed back in landed on the wrong home (1.1% did before the fix)</span></div>
+  </div>
+  <p style="margin-top:14px">Each home was priced from every earlier assessment it had, using only what was known at the time, then checked against what the city assessed later (Calgary, Edmonton, Vancouver, the rest of Alberta and BC). Condos are harder (15.2% median error) and Vancouver and the rest of BC are weaker than Alberta; the app says so, and shows each address's own confidence score from these tests. Every chart and table in the Backtest section can be saved as PNG and CSV, or all at once as a zip.</p>
+</section>
+
+<section aria-labelledby="what">
+  <h2 id="what">What it does, and which paid tool it replaces</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Feature</th><th>Free version of</th></tr></thead>
+    <tbody>
+      <tr><td><b>Instant estimate for any address</b>, from the home's own assessment, its street, its Census block or its postal area</td><td>Zillow, HonestDoor, Teranet AVM, RE/MAX and Royal LePage estimators</td></tr>
+      <tr><td><b>Confidence score out of 100</b> with "within 10% X% of the time" from the backtest</td><td>RPS and Redfin published accuracy</td></tr>
+      <tr><td><b>Every way to value it</b>, side by side, with where the methods agree</td><td>Realtor.com multiple valuations</td></tr>
+      <tr><td><b>Value history</b> since 2016 with the home's own assessments plotted</td><td>Zillow and Redfin value charts</td></tr>
+      <tr><td><b>2-year range</b> (weak, typical, strong) and a <b>next-month nowcast</b></td><td>Gnowise and HouseCanary forecasts</td></tr>
+      <tr><td><b>Rent, yield, cap rate and cash flow</b> from CMHC rents</td><td>RPS market rent AVM, RentCast, Rent Zestimate</td></tr>
+      <tr><td><b>What a lender will finance</b>: lending value, insured and conventional limits, stress-test income</td><td>Lender AVMs (no consumer tool shows this)</td></tr>
+      <tr><td><b>Monthly equity and renewal check</b>, downloadable digest and calendar reminder</td><td>Homebot (a paid broker subscription)</td></tr>
+      <tr><td><b>Saved homes tracked over time</b>, with backup and restore</td><td>Wahi Bestimator, HouseSigma watch lists</td></tr>
+      <tr><td><b>Your building</b>: every condo unit on record and where yours ranks</td><td>Condos.ca building pages</td></tr>
+      <tr><td><b>Price against time to sell</b> and <b>sell now or wait</b></td><td>Nobody offers this to consumers</td></tr>
+      <tr><td><b>Where your money goes further</b> and <b>your home's twin in other cities</b></td><td>New</td></tr>
+      <tr><td><b>Did owning pay?</b> After inflation, against renting and investing</td><td>New</td></tr>
+      <tr><td><b>Heating cost</b> from degree-days, and what a heat pump or insulation saves</td><td>New</td></tr>
+      <tr><td><b>Cottage and waterfront</b> questions; <b>room-by-room measuring</b> for exact size</td><td>New</td></tr>
+      <tr><td><b>Neighbourhood momentum</b>, schools, zoning, "what can I build here", flood and wildfire maps</td><td>Paid neighbourhood reports</td></tr>
+      <tr><td><b>Calculators with no address</b>: what I paid → today; assessment notice → today (MPAC, BC Assessment and others, with valuation dates)</td><td>FHFA calculator, BestRates</td></tr>
+      <tr><td><b>Full report</b> to print or download, with your name and licence on it</td><td>Purview and broker-branded reports</td></tr>
+      <tr><td><b>Crime and safety</b>: Statistics Canada 2025 Crime Severity Index for 41 metro areas and every province; in Toronto, Toronto Police crime rates for the home's own neighbourhood with a 2014–2025 trend; each police service's own crime map</td><td>Paid neighbourhood reports</td></tr>
+      <tr><td><b>What's nearby</b>: groceries, transit, schools, parks, cafés and clinics within walking distance, with a walkability score (OpenStreetMap)</td><td>Walk Score</td></tr>
+      <tr><td><b>Permits at this address</b> (Toronto, live) with one click to add permitted renovations to the estimate</td><td>Renovation detection in US AVMs</td></tr>
+      <tr><td><b>Land transfer tax and closing costs</b> for every province, Toronto and Montréal tiers, first-time buyer rebates, mortgage insurance and its sales tax</td><td>WOWA calculators</td></tr>
+      <tr><td><b>Cash-offer estimate</b> next to the listing route; <b>3-year range</b> next to the 2-year one</td><td>Opendoor; HouseCanary 36-month forecast</td></tr>
+      <tr><td><b>Relocation map</b> of where your cash buys a home outright; <b>share link and embed code</b> for a broker website</td><td>HonestDoor broker widget</td></tr>
+      <tr><td>English and French</td><td></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+
+<section aria-labelledby="asked">
+  <h2 id="asked">Every feature, and where it is</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Feature</th><th>Where</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Backtest every address; save everything as graphics; better graphs; always live</td><td>Backtest section (PNG, CSV, zip); Live tag; Update live data</td><td class="ok">Done</td></tr>
+      <tr><td>Typing an address jumps to a different home</td><td>Address box: 0 wrong in 492,328 streets</td><td class="ok">Fixed</td></tr>
+      <tr><td>Teranet, RE/MAX, Royal LePage, Zoocasa, Zolo, HonestDoor instant values</td><td>Instant estimate, every way to value it</td><td class="ok">Done</td></tr>
+      <tr><td>RPS ±10% accuracy and market rent AVM; ValueProtect and lender AVMs</td><td>Confidence score; rent and yield; what a lender will finance</td><td class="ok">Done</td></tr>
+      <tr><td>Purview equity</td><td>Equity and renewal check</td><td class="ok">Done</td></tr>
+      <tr><td>Purview ownership and title; HouseSigma sold prices</td><td>Need paid land-registry or MLS data</td><td>Not free</td></tr>
+      <tr><td>MPAC AVM and provincial assessment anchors (Ontario still January 1, 2016)</td><td>Assessment → today calculator, with official links</td><td class="ok">Done</td></tr>
+      <tr><td>Repliers flow: history, missing details, range and confidence</td><td>Steps 1–3, assessment history, range, confidence</td><td class="ok">Done</td></tr>
+      <tr><td>Gnowise and HouseCanary forecasts</td><td>2-year and 3-year ranges, next-month nowcast</td><td class="ok">Done</td></tr>
+      <tr><td>Wahi save and track over time</td><td>My saved homes</td><td class="ok">Done</td></tr>
+      <tr><td>Condos.ca building comparables</td><td>Your building (AB, BC, MB records)</td><td class="ok">Done</td></tr>
+      <tr><td>WOWA calculators</td><td>Land transfer tax and closing costs</td><td class="ok">Done</td></tr>
+      <tr><td>BestRates and FHFA purchase price × index</td><td>What's my home worth now (no address)</td><td class="ok">Done</td></tr>
+      <tr><td>Teranet–National Bank HPI and CREA MLS HPI</td><td>Regional index behind every estimate and chart</td><td class="ok">Done</td></tr>
+      <tr><td>Zillow Rent Zestimate, RentCast comparables</td><td>Rent and yield; homes near you on this street</td><td class="ok">Done</td></tr>
+      <tr><td>Redfin published accuracy; Realtor.com several valuations</td><td>Backtest section; every way to value it</td><td class="ok">Done</td></tr>
+      <tr><td>Opendoor cash offer</td><td>Price against time to sell</td><td class="ok">Done</td></tr>
+      <tr><td>Homebot monthly equity digest with Bank of Canada rates</td><td>Equity digest download and monthly reminder</td><td class="ok">Done</td></tr>
+      <tr><td>Homeowner-editable facts</td><td>Step 2, room-by-room measuring, permits</td><td class="ok">Done</td></tr>
+      <tr><td>Flood, wildfire and climate</td><td>Official map links with coordinates</td><td>Partly (links, not layers)</td></tr>
+      <tr><td>Building permits to catch renovations</td><td>Permits at this address</td><td>Toronto live; others linked</td></tr>
+      <tr><td>OpenStreetMap amenities, Walk Score</td><td>What's nearby</td><td class="ok">Done</td></tr>
+      <tr><td>Equity relocation map; twin homes</td><td>Moving section</td><td class="ok">Done</td></tr>
+      <tr><td>Lendable value</td><td>What a lender will finance</td><td class="ok">Done</td></tr>
+      <tr><td>Nowcast before CREA and Teranet</td><td>Next month card</td><td>Partly (index momentum, not search trends)</td></tr>
+      <tr><td>Liquidity curve</td><td>Price against time to sell</td><td class="ok">Done</td></tr>
+      <tr><td>Real return against renting</td><td>Did owning actually pay?</td><td class="ok">Done</td></tr>
+      <tr><td>Cottage and waterfront valuator</td><td>Step 2 (cottages and rural homes)</td><td class="ok">Done</td></tr>
+      <tr><td>Energy cost and green premium</td><td>Heating cost and green upgrades</td><td class="ok">Done</td></tr>
+      <tr><td>Gentrification early warning</td><td>Neighbourhood momentum</td><td>Partly (Census and assessments, not OSM history)</td></tr>
+      <tr><td>Phone-scan the home</td><td>Measure room by room (enter what a scanning app gives)</td><td>Partly</td></tr>
+      <tr><td>Satellite AVM; renovation detection from space</td><td>Need imagery processing</td><td>Not in this version</td></tr>
+      <tr><td>Crime rates from the police</td><td>Crime and safety</td><td class="ok">Done</td></tr>
+      <tr><td>Two to three fail-safes for every data source; keep it free</td><td>See "It keeps working when a source fails"</td><td class="ok">Done</td></tr>
+      <tr><td>Runs on your own computer, or online as a website</td><td>This folder; GitHub Pages</td><td class="ok">Done</td></tr>
+    </tbody>
+  </table></div>
+</section>
+<section aria-labelledby="safe">
+  <h2 id="safe">It keeps working when a source fails</h2>
+  <p>Every input has at least two backups, so a missing file or a blocked website never blanks the page.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>What</th><th>First</th><th>Then</th><th>Then</th></tr></thead>
+    <tbody>
+      <tr><td>The estimate</td><td>This home's assessment</td><td>Its street, then its Census block</td><td>Postal area, then the regional benchmark</td></tr>
+      <tr><td>Data files</td><td>Load</td><td>Retry with a fresh copy</td><td>Retry again, then fall back to the next source</td></tr>
+      <tr><td>Crime</td><td>Toronto Police, live (directly, then through the app's relay)</td><td>Saved copy from "Update live data"</td><td>Statistics Canada metro, then province</td></tr>
+      <tr><td>Nearby places</td><td>The app's own relay, which tries four OpenStreetMap servers</td><td>Those servers directly, then a copy saved on this device</td><td>A link to the map</td></tr>
+      <tr><td>Toronto permits</td><td>City of Toronto open data, directly</td><td>The app's own relay (the city's server refuses direct browser requests)</td><td>A link to the city's permit data</td></tr>
+      <tr><td>Interest rates</td><td>Bank of Canada, live</td><td>Saved rates from "Update live data"</td><td>The page's own rate history</td></tr>
+      <tr><td>Rents</td><td>CMHC, your city</td><td>CMHC, your province</td><td>Built-in provincial averages</td></tr>
+      <tr><td>Charts</td><td>Chart library online</td><td>Local copy in <code>vendor</code></td><td>Built-in drawing, then a table</td></tr>
+      <tr><td>Saving files</td><td>Save dialog</td><td>Browser download link</td><td>Text to copy</td></tr>
+      <tr><td>Saved homes</td><td>This browser</td><td>This visit</td><td>Backup file you keep</td></tr>
+      <tr><td>Running it here</td><td>Python: the app server with its data relay</td><td>Python's plain web server</td><td>PowerShell (always on Windows)</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="sources">
+  <h2 id="sources">Free, public sources</h2>
+  <div class="grid2">
+    <div class="card"><h3>Property and place</h3><ul>
+      <li>Statistics Canada National Address Register (all 17.25 million addresses)</li>
+      <li>Municipal open assessment rolls: Calgary, Edmonton, Vancouver, Winnipeg and other AB and BC municipalities</li>
+      <li>2021 Census block profiles and postal-area home values</li>
+      <li>Open Database of Educational Facilities; Ontario EQAO results</li>
+    </ul></div>
+    <div class="card"><h3>Market and money</h3><ul>
+      <li>Regional price index shaped on public CREA and board benchmark history</li>
+      <li>CMHC Rental Market Survey</li>
+      <li>Bank of Canada Valet API (rates)</li>
+      <li>Statistics Canada Uniform Crime Reporting Survey (Crime Severity Index, July 2026)</li>
+      <li>Toronto Police Service Public Safety Data Portal; City of Toronto building permits</li>
+      <li>OpenStreetMap (everyday places nearby)</li>
+      <li>Statistics Canada population estimates and Labour Force Survey</li>
+      <li>Environment Canada heating degree-day normals</li>
+    </ul></div>
+  </div>
+</section>
+
+
+<section aria-labelledby="tools">
+  <h2 id="tools">Tools used to build it</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Tool</th><th>What it does here</th></tr></thead>
+    <tbody>
+      <tr><td>HTML, CSS and JavaScript</td><td>The whole app is one web page with no framework and no build step, so it runs from any web server or straight from GitHub Pages.</td></tr>
+      <tr><td>Chart.js 4.5.1</td><td>Draws the price, forecast and backtest charts. A local copy and a built-in canvas renderer take over if it can't load.</td></tr>
+      <tr><td>Leaflet 1.9.4 and OpenStreetMap tiles</td><td>The maps of the home, the report and the moving section.</td></tr>
+      <tr><td>JSZip 3.10.1</td><td>Packs every backtest chart and table into one zip download.</td></tr>
+      <tr><td>Google Fonts (DM Sans, Inter, IBM Plex Mono)</td><td>Type. The page falls back to system fonts offline.</td></tr>
+      <tr><td>Python 3 (standard library only)</td><td>The local server and data relay (<code>tools/serve.py</code>), the live-data updater, and the scripts that built the data files from public records.</td></tr>
+      <tr><td>Windows PowerShell and batch files</td><td>One-click start and update on Windows, and the backup server when Python isn't installed.</td></tr>
+      <tr><td>Playwright with Chromium</td><td>Automated browser tests: every one of 492,328 streets typed back in, screenshots in light, dark and phone layouts, and file downloads.</td></tr>
+      <tr><td>Bank of Canada Valet API; Toronto Police ArcGIS service; City of Toronto CKAN open data; Overpass API (OpenStreetMap)</td><td>The live data feeds, each with backups (see "It keeps working when a source fails").</td></tr>
+      <tr><td>GitHub and GitHub Pages</td><td>Code hosting and the free public website.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+<section aria-labelledby="limits">
+  <h2 id="limits">Honest limits</h2>
+  <p>Values come from public assessments, the Census and regional benchmarks, not sold listings, so this is not an appraisal. Accuracy is tested only where cities publish assessment histories (Alberta and BC); elsewhere the confidence score says the estimate rests on Census and benchmark data. Rent, heating, lending and cottage figures use stated typical assumptions shown on each card. Ideas that need large outside data, paid licences or image processing (satellite footprints, renovation detection from space, flood layers drawn on the map, search-trend nowcasting, sold MLS prices, title and ownership, LiDAR scanning inside the app) are not in this version. Neighbourhood-level crime is live for Toronto; other cities use the Statistics Canada metro index plus a link to their police service's own map.</p>
+</section>
+
+<section aria-labelledby="files">
+  <h2 id="files">What's in this folder</h2>
+  <div class="tbl"><table><tbody>
+    <tr><td><code>Start Benchmark Home Value.bat</code></td><td>Opens the app</td></tr>
+    <tr><td><code>Update live data.bat</code></td><td>Refreshes Bank of Canada rates, saves Toronto Police neighbourhood crime data and the chart library</td></tr>
+    <tr><td><code>index.html</code></td><td>The app (one page)</td></tr>
+    <tr><td><code>data\</code></td><td>336 data files: addresses, assessments, Census, rents, schools, backtest results</td></tr>
+    <tr><td><code>vendor\</code></td><td>Local copies of the zip and chart libraries</td></tr>
+    <tr><td><code>tools\</code></td><td>The local server (<code>serve.py</code>, with a relay to a fixed list of public data services, reachable only from this computer), the PowerShell fallback server, and the updater</td></tr>
+    <tr><td><code>source\</code></td><td>The feature modules, data builders and every test script used for the backtest</td></tr>
+  </tbody></table></div>
+</section>
+
+<p class="note">Indicative only; not an appraisal, lending decision or financial advice.</p>
+<p class="note"><b>Created by John Khan.</b> © 2026 John Khan. All rights reserved.</p>
+</div>
+</body>
+</html>

@@ -2,12 +2,16 @@
 
 Qualifying rate = max(contract rate + 2%, 5.25%). Ratio limits use the common insured-lending limits
 (GDS 39%, TDS 44%); individual lenders set their own limits.
+
+For an insured (high-ratio) purchase the default-insurance premium is added to the mortgage, so the
+qualifying payment is computed on loan + premium. (The original MortgageLoanOps version qualified on the
+base loan; the Mortgage OS cross-check against the Canadian Mortgage Suite found the difference.)
 """
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict
 
-from . import insured
+from . import insurance, insured
 from .payments import payment
 
 MIN_QUALIFYING_RATE = 5.25
@@ -30,6 +34,8 @@ class Qualification:
     amort_years: int
     passes: bool
     reasons: list
+    insurance_premium: float = 0.0
+    mortgage_amount: float = 0.0
 
     def to_dict(self):
         return asdict(self)
@@ -53,8 +59,12 @@ def qualify(*, price: float, down_payment: float, annual_income: float, contract
     if price >= insured.PRICE_CAP and ltv > 80:
         reasons.append("price at/above $1.5M requires at least 20% down")
     qr = qualifying_rate(contract_rate)
-    contract_pmt = payment(principal, contract_rate, amort_years)
-    stressed = payment(principal, qr, amort_years)
+    premium = 0.0
+    if ltv > 80 and insured.is_insurable(price, down_payment) and ltv <= 95:
+        premium = insurance.premium(price=price, down_payment=down_payment, amort_years=amort_years).premium
+    mortgage = principal + premium
+    contract_pmt = payment(mortgage, contract_rate, amort_years)
+    stressed = payment(mortgage, qr, amort_years)
     income_m = annual_income / 12
     housing = stressed + property_tax_annual / 12 + heat_annual / 12 + 0.5 * condo_fees_monthly
     gds = housing / income_m * 100
@@ -64,4 +74,4 @@ def qualify(*, price: float, down_payment: float, annual_income: float, contract
     if tds > TDS_LIMIT:
         reasons.append(f"TDS {tds:.1f}% exceeds {TDS_LIMIT:.0f}%")
     return Qualification(qr, round(contract_pmt, 2), round(stressed, 2), round(gds, 2), round(tds, 2),
-                         round(ltv, 2), amort_years, not reasons, reasons)
+                         round(ltv, 2), amort_years, not reasons, reasons, round(premium, 2), round(mortgage, 2))

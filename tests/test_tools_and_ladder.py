@@ -34,8 +34,13 @@ GOOD_ARGS = {
 }
 
 
-def test_every_tool_has_a_working_example():
-    assert set(GOOD_ARGS) == set(T.TOOLS)
+CORE = set(GOOD_ARGS)
+
+
+def test_every_core_tool_has_a_working_example():
+    # module integrations (Mortgage OS) add their own tools, tested in tests/test_mod_*.py
+    core = {n for n, t in T.TOOLS.items() if t.fn.__module__ == "decision_ladder.agent.tools"}
+    assert core == CORE
 
 
 @pytest.mark.parametrize("name", sorted(GOOD_ARGS))

@@ -25,6 +25,8 @@ FIELDS = {
     "condo_fees_monthly": "number", "other_debt_monthly": "number", "first_time_buyer": "boolean",
     "new_build": "boolean", "balance": "number (mortgage balance)", "maturity": "YYYY-MM-DD",
     "term_start": "YYYY-MM-DD", "renewal_rate": "number (percent)", "lender": "string",
+    "savings": "number (dollars saved / liquid assets available for closing)", "city": "string",
+    "property_type": "detached|semi|town|condo", "co_borrower": "boolean",
 }
 
 EXTRACT_SYSTEM = (
@@ -77,6 +79,19 @@ def pattern_extract(text: str) -> dict[str, dict]:
         m = re.search(rx, t, re.I)
         if m:
             put(name, _money(m.group(1)), m.group(0))
+    for rx in (rf"({_M})\s*(?:saved|in savings)", rf"(?:savings of|saved up|have saved|we've saved)\s*({_M})"):
+        m = re.search(rx, t, re.I)
+        if m:
+            put("savings", _money(m.group(1)), m.group(0))
+            break
+    m = re.search(r"\b(semi(?:-detached)?|detached|town ?house|townhome|condo(?:minium)?)\b", t, re.I)
+    if m:
+        w = m.group(1).lower()
+        put("property_type", "semi" if w.startswith("semi") else "town" if w.startswith("town") else
+            "condo" if w.startswith("condo") else "detached", m.group(0))
+    m = re.search(r"\b(combined income|our income|my (?:wife|husband|partner|spouse)|co-?borrower|co-?signer)\b", t, re.I)
+    if m:
+        put("co_borrower", True, m.group(0))
     m = re.search(r"(?:credit score|beacon|score)\s*(?:of|is|:|around|about)?\s*(\d{3})", t, re.I)
     if m:
         put("credit_score", int(m.group(1)), m.group(0))
@@ -99,6 +114,10 @@ def pattern_extract(text: str) -> dict[str, dict]:
             if c in low:
                 put("province", "ON", c)
                 break
+    for c in ON_CITIES:
+        if re.search(rf"\b{c}\b", low):
+            put("city", c.title(), c)
+            break
     if re.search(r"first[- ]time (?:home ?)?buyer", t, re.I):
         put("first_time_buyer", True, re.search(r"first[- ]time (?:home ?)?buyer", t, re.I).group(0))
     if re.search(r"\b(?:new build|pre-?construction|brand new)\b", t, re.I):

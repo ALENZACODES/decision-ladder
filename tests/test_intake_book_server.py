@@ -136,7 +136,7 @@ def test_samples_tools_market_history(base_url):
 def test_ladder_endpoint(base_url):
     _, samples = 0, json.loads(_get(base_url + "/api/samples")[2])
     s, out = _post(base_url + "/api/ladder", {"file": samples["files"]["oakville_stretch"], "research": True})
-    assert s == 200 and out["verdict"] == "RESTRUCTURE" and len(out["rungs"]) == 11 and out["research"]
+    assert s == 200 and out["verdict"] == "RESTRUCTURE" and len(out["rungs"]) == 17 and out["research"]
 
 
 def test_intake_endpoint_runs_ladder(base_url):

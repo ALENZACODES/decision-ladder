@@ -1,0 +1,1 @@
+{"version":"0.0.1","configurations":[{"name":"home-value","runtimeExecutable":".venv/Scripts/uvicorn.exe","runtimeArgs":["server.app:app","--port","8000"],"port":8000}]}

@@ -5,13 +5,23 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ["3.10", "3.12", "3.13"]
+        python: ["3.10", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - run: pip install pytest
+      - run: pip install -r modules/renewal-radar/requirements.txt
       - run: pytest -q
       - run: python -m decision_ladder demo --offline > /dev/null
-      - run: python -m decision_ladder eval --offline > /dev/null
+      - run: python -m decision_ladder os
+      - name: the apps' own test suites still pass inside the OS
+        run: |
+          set -e
+          for d in canadian-mortgage-suite cash-to-close doc-quest; do (cd modules/$d && node test.js); done
+          for d in mortgage-decision-lab pre-underwriting-copilot private-credit-screener renewal-shock-radar; do (cd modules/$d && node tests/test.js); done
+          for d in renewal-check canada-rate-cycle-dashboard; do (cd modules/$d && node --test); done

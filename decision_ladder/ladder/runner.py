@@ -23,16 +23,18 @@ from ..agent.loop import draft_borrower_message
 from ..llm.client import LLMError, NemotronClient
 from . import rungs as R
 
-MEMO_SYSTEM = """You write the decision memo for a licensed Canadian mortgage broker.
-You receive the results of a deterministic "decision ladder" (intake, screening, documents, collateral, insurance,
-B-20 qualification, lender fit, market, exit cost, compliance, decision). Write:
+MEMO_SYSTEM = """You write the credit decision memo for a licensed Canadian mortgage broker.
+You receive the results of a deterministic "decision ladder" that walked one client file through every stage of a
+Canadian mortgage (intake, screening, documents, affordability, pre-underwriting readiness, insurance, B-20 qualification,
+cross-checks between independent engines, lender fit, property value, cash to close, market, exit cost, renewal outlook,
+commercial screen, compliance, decision). Each rung says which of the broker's apps computed it ("computed_by"). Write:
 1. VERDICT - one line, using the verdict from the decision rung exactly.
-2. WHY - 3 to 5 bullets, the rungs that drove the verdict, citing their figures.
+2. WHY - 3 to 5 bullets, the rungs that drove the verdict, citing their figures and naming the app that computed each.
 3. PATH TO YES - if options are listed, the 2 most practical ones with their figures; else "Not needed".
 4. CONDITIONS & RISKS - bullets.
 5. NEXT ACTIONS FOR THE BROKER - numbered, concrete.
 Rules: use ONLY figures that appear in the ladder JSON (you may round to the nearest dollar or 0.1%).
-No new arithmetic. Do not promise approval or quote a rate as an offer. Under 280 words. Plain text, no markdown tables."""
+No new arithmetic. Do not promise approval or quote a rate as an offer. Under 320 words. Plain text, no markdown tables."""
 
 
 @dataclass
@@ -42,6 +44,7 @@ class LadderRun:
     verdict: str
     memo: str = ""
     memo_source: str = "none"
+    memo_model: str | None = None
     memo_verification: dict = field(default_factory=dict)
     message: dict | None = None
     research: list[dict] = field(default_factory=list)
@@ -51,15 +54,24 @@ class LadderRun:
 
     def to_dict(self) -> dict:
         return {"file": self.file, "rungs": self.rungs, "verdict": self.verdict, "memo": self.memo,
-                "memo_source": self.memo_source, "memo_verification": self.memo_verification,
+                "memo_source": self.memo_source, "memo_model": self.memo_model, "memo_verification": self.memo_verification,
                 "message": self.message, "research": self.research, "usage": self.usage,
                 "timings_ms": self.timings_ms, "model": self.model}
+
+
+def _engine_label(key: str) -> dict:
+    from .. import modules as OS
+    OS.load_all()
+    m = OS.MODULES.get(key)
+    if m is None:
+        return {"module": key, "name": {"decision-ladder": "Decision Ladder core"}.get(key, key), "ui_url": None}
+    return {"module": key, "name": m.name, "ui_url": f"/apps/{m.key}/{m.entry}" if m.kind != "data" else None}
 
 
 def climb(file: dict) -> tuple[list[dict], dict]:
     ctx: dict[str, Any] = {"rungs": {}}
     out: list[dict] = []
-    for key, fn in R.LADDER:
+    for key, fn, stage, engines in R.LADDER_STAGED:
         t0 = time.perf_counter()
         try:
             res = fn(file, ctx).to_dict()
@@ -69,6 +81,8 @@ def climb(file: dict) -> tuple[list[dict], dict]:
                                    "This rung needs more data or a person to review."],
                                evidence={"error": traceback.format_exception_only(type(e), e)[-1].strip()}).to_dict()
         res["ms"] = round((time.perf_counter() - t0) * 1000, 2)
+        res["stage"] = stage
+        res["engines"] = [_engine_label(e) for e in engines]
         ctx["rungs"][key] = res
         out.append(res)
     return out, ctx
@@ -80,6 +94,8 @@ def _compact(rungs: list[dict]) -> list[dict]:
     keep = []
     for r in rungs:
         item = {k: r[k] for k in ("key", "title", "status", "summary", "metrics", "findings")}
+        item["stage"] = r.get("stage")
+        item["computed_by"] = [e["name"] for e in r.get("engines") or []]
         if r["key"] == "decision":
             item["options"] = r["evidence"].get("options", [])
         keep.append(item)
@@ -130,6 +146,20 @@ class LadderEngine:
                     run.research.append(self.research.search(q, days=60))
                 except Exception as e:  # research is context, never a blocker
                     run.research.append({"query": q, "error": str(e), "sources": []})
+            if file.get("lender"):
+                from ..engines import ratebook
+                from ..research.tavily import lender_rate_check
+                if ratebook.canonical_bank(str(file["lender"])):
+                    try:
+                        chk = lender_rate_check(self.research, str(file["lender"]))
+                        run.research.append({"query": f"{chk['bank']} posted 5-year rate on its own page (Tavily Extract)",
+                                             "rate_check": chk,
+                                             "sources": [{"title": f"{chk['bank']} mortgage rates page", "url": chk.get("url"),
+                                                          "content": f"status: {chk['status']}; rates beside a 5-year label: "
+                                                                     f"{chk.get('five_year_rates_on_page')}; rate book: "
+                                                                     f"{chk.get('rate_book_5y_posted')}% captured {chk.get('rate_book_captured')}"}]})
+                    except Exception as e:  # noqa: BLE001
+                        run.research.append({"query": "lender rate check", "error": str(e), "sources": []})
             timings["research"] = round((time.perf_counter() - t1) * 1000, 1)
 
         if self.llm is not None and write_memo:
@@ -141,8 +171,18 @@ class LadderEngine:
                                        for r in run.research]
             user = "LADDER RESULTS (JSON):\n" + json.dumps(payload)
             try:
-                res = self.llm.chat([{"role": "system", "content": MEMO_SYSTEM}, {"role": "user", "content": user}],
-                                    max_tokens=900, purpose="memo")
+                memo_model = self.llm.ultra
+                try:   # the brief: "reach for Nemotron 3 Ultra when you need serious reasoning"
+                    res = self.llm.chat([{"role": "system", "content": MEMO_SYSTEM}, {"role": "user", "content": user}],
+                                        model=memo_model, max_tokens=1100, purpose="memo")
+                except LLMError as e:
+                    # only a missing/unsupported model is worth retrying on the reasoner (not auth or rate errors)
+                    if memo_model == self.llm.reasoner or getattr(e, "status", None) not in (400, 404, 422):
+                        raise
+                    memo_model = self.llm.reasoner
+                    res = self.llm.chat([{"role": "system", "content": MEMO_SYSTEM}, {"role": "user", "content": user}],
+                                        model=memo_model, max_tokens=1100, purpose="memo")
+                run.memo_model = memo_model
                 memo = res.content
                 rep = verify.verify(memo, payload, file)
                 if not rep.ok:
@@ -150,7 +190,7 @@ class LadderEngine:
                     fix = self.llm.chat([{"role": "system", "content": MEMO_SYSTEM}, {"role": "user", "content": user},
                                          {"role": "assistant", "content": memo},
                                          {"role": "user", "content": f"These figures are not in the ladder JSON: {bad}. Rewrite without them."}],
-                                        max_tokens=900, purpose="memo-repair")
+                                        model=memo_model, max_tokens=1100, purpose="memo-repair")
                     rep2 = verify.verify(fix.content, payload, file)
                     if fix.content and len(rep2.unsupported) <= len(rep.unsupported):
                         memo, rep = fix.content, rep2
@@ -184,6 +224,7 @@ class LadderEngine:
 
         if self.llm is not None:
             run.usage = self.llm.usage.to_dict()
-            run.model = {"reasoner": self.llm.reasoner, "fast": self.llm.fast, "offline": self.llm.offline}
+            run.model = {"reasoner": self.llm.reasoner, "fast": self.llm.fast, "ultra": self.llm.ultra,
+                         "offline": self.llm.offline}
         timings["total"] = round((time.perf_counter() - t0) * 1000, 1)
         return run

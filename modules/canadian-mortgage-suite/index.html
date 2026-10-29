@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Canadian Mortgage Calculator Suite</title>
+    <meta property="og:title" content="Canadian Mortgage Calculator Suite" />
+    <meta
+      property="og:description"
+      content="Fourteen calculators built on 2026 OSFI, CMHC and land transfer tax rules, with cited sources."
+    />
+    <meta property="og:image" content="https://alenzacodes.github.io/canadian-mortgage-suite/docs/social-preview.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="description"
+      content="Fourteen Canadian mortgage calculators in one place: affordability at the stress-test rate, payments, land transfer tax for every province and territory, CMHC premiums, penalties, renewal, rent vs buy, FHSA and HBP."
+    />
+    <meta name="author" content="John Khan" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23011F5B'/%3E%3Cpath d='M6 17 16 8l10 9v8H6z' fill='%23fff'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Pinyon+Script&display=swap"
+    />
+    <link rel="stylesheet" href="theme/waves.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="w-headings">
+    <a class="skip" href="#main">Skip to calculators</a>
+    <header class="top w-wave">
+      <div class="brand">
+        <span class="logo" aria-hidden="true"></span>
+        <div>
+          <h1>Canadian Mortgage Calculator Suite</h1>
+          <p class="sub">Every major Canadian home-buying calculation, with 2026 rules and cited sources.</p>
+        </div>
+      </div>
+      <div class="tools">
+        <button id="themeBtn" class="ghost" aria-pressed="false">Dark mode</button>
+        <button id="shareBtn" class="ghost">Copy share link</button>
+        <button id="pdfBtn" class="primary">PDF report</button>
+      </div>
+    </header>
+    <nav class="tabs" role="tablist" aria-label="Calculators" id="tabs"></nav>
+    <main id="main" tabindex="-1">
+      <section id="panel" class="panel" role="tabpanel" aria-live="polite"></section>
+    </main>
+    <p id="toast" class="toast" role="status" aria-live="polite"></p>
+    <footer class="foot">
+      <p>Educational only, not financial advice. <span class="w-script">John Khan</span></p>
+      <p class="small">Rules checked as of <span id="asof"></span>. See the Sources tab for every citation.</p>
+    </footer>
+    <script src="rules.js"></script>
+    <script src="calc.js"></script>
+    <script src="sources.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

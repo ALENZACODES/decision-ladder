@@ -40,7 +40,7 @@ Q = {"principal": 500000, "annual_rate": 4.5, "amort_years": 25}
 
 def test_tool_loop_answer_is_verified():
     s = Script(call("mortgage_payment", Q), say("The payment is about $2,767 a month."))
-    res = Copilot(NemotronClient(s)).ask("payment on 500k at 4.5% 25y?")
+    res = Copilot(NemotronClient(s), route=False).ask("payment on 500k at 4.5% 25y?")
     assert res.verification["ok"] and not res.repaired
     tool_msg = s.payloads[1]["messages"][-1]
     assert tool_msg["role"] == "tool" and tool_msg["tool_call_id"] == "c0"
@@ -49,20 +49,20 @@ def test_tool_loop_answer_is_verified():
 
 def test_invented_number_triggers_repair_which_succeeds():
     s = Script(call("mortgage_payment", Q), say("The payment is $2,900."), say("The payment is $2,767."))
-    res = Copilot(NemotronClient(s)).ask("q")
+    res = Copilot(NemotronClient(s), route=False).ask("q")
     assert res.repaired and res.verification["ok"] and "2,767" in res.answer
     assert "do not appear in any tool result" in s.payloads[2]["messages"][-1]["content"]
 
 
 def test_repair_that_fails_annotates_unverified():
     s = Script(call("mortgage_payment", Q), say("The payment is $2,900."), say("Still $2,900."))
-    res = Copilot(NemotronClient(s)).ask("q")
+    res = Copilot(NemotronClient(s), route=False).ask("q")
     assert "[unverified]" in res.answer and not res.verification["ok"]
 
 
 def test_repair_can_call_tools():
     s = Script(say("Payment $2,767."), call("mortgage_payment", Q, 1), say("Payment $2,767."))
-    res = Copilot(NemotronClient(s)).ask("q")
+    res = Copilot(NemotronClient(s), route=False).ask("q")
     assert res.verification["ok"] and any(st.kind == "repair" for st in res.steps)
 
 
@@ -70,20 +70,20 @@ def test_bad_tool_arguments_become_tool_errors_not_crashes():
     bad = {"choices": [{"message": {"role": "assistant", "content": "", "tool_calls": [
         {"id": "x", "type": "function", "function": {"name": "mortgage_payment", "arguments": "not json"}}]}}]}
     s = Script(bad, say("I could not compute that."))
-    res = Copilot(NemotronClient(s)).ask("q")
+    res = Copilot(NemotronClient(s), route=False).ask("q")
     assert res.steps[0].result.get("error")
 
 
 def test_round_limit_forces_final_answer():
     s = Script(*[call("market_snapshot", {}, i) for i in range(2)], say("Done."))
-    res = Copilot(NemotronClient(s), max_rounds=2).ask("q")
+    res = Copilot(NemotronClient(s), max_rounds=2, route=False).ask("q")
     assert res.answer == "Done."
     assert "tools" not in s.payloads[-1]
 
 
 def test_research_tool_is_offered_and_routed():
     s = Script(call("web_research", {"query": "Bank of Canada rate decision"}), say("See the source."))
-    res = Copilot(NemotronClient(s), Research(transport=offline_transport)).ask("latest BoC news?")
+    res = Copilot(NemotronClient(s), Research(transport=offline_transport), route=False).ask("latest BoC news?")
     names = [t["function"]["name"] for t in s.payloads[0]["tools"]]
     assert "web_research" in names
     assert res.steps[0].kind == "research" and res.steps[0].result["sources"]
@@ -91,7 +91,7 @@ def test_research_tool_is_offered_and_routed():
 
 def test_context_is_passed_to_model():
     s = Script(say("ok"))
-    Copilot(NemotronClient(s)).ask("q", context={"price": 1})
+    Copilot(NemotronClient(s), route=False).ask("q", context={"price": 1})
     assert "FILE CONTEXT (JSON)" in s.payloads[0]["messages"][-1]["content"]
 
 
@@ -127,7 +127,8 @@ def test_offline_client_is_labelled():
     assert c.offline
     res = Copilot(c).ask("What is the market doing? Bank of Canada policy rate?")
     assert "offline" in res.answer.lower()
-    assert res.steps[0].name == "market_snapshot"
+    assert res.steps[0].kind == "route" and res.steps[0].result["by"].startswith("offline")
+    assert res.steps[1].name == "market_snapshot"
     assert c.transport.requests[0]["payload"]["model"].startswith("offline/")
     assert OFFLINE_MODEL.startswith("offline/")
 
@@ -138,3 +139,36 @@ def test_offline_full_ladder_runs_end_to_end():
             {k: v for k, v in f.items() if k != "label"}, research_queries=["Bank of Canada"])
         assert run.memo and run.memo_verification["ok"], key
         assert run.research and run.research[0]["sources"]
+
+
+# ---------------------------------------------------------------- Nano router
+def test_router_limits_tools_to_chosen_stages():
+    route_reply = say(json.dumps({"stages": ["closing"], "reason": "closing costs question"}))
+    s = Script(route_reply, call("cash_to_close_ontario", {"price": 700000, "savings": 60000}), say("You need cash."))
+    res = Copilot(NemotronClient(s)).ask("How much cash do I need on closing day for a 700k home?")
+    assert s.payloads[0]["model"] == NemotronClient(Script()).fast          # Nano routes
+    offered = {t["function"]["name"] for t in s.payloads[1]["tools"]}
+    assert "cash_to_close_ontario" in offered and "land_transfer_tax" in offered
+    assert "private_credit_deal_screen" not in offered and "penalty_by_lender" not in offered
+    d = res.to_dict()
+    assert d["routing"]["stages"] == ["closing"] and d["routing"]["by"] == "nemotron-nano"
+    assert "Cash to Close" in d["modules_used"]
+
+
+def test_router_failure_falls_back_to_keywords_then_all():
+    err = LLMError("HTTP 500")
+    err.status = 500
+    from decision_ladder.agent.router import route
+    from decision_ladder.agent import tools as T
+    from decision_ladder import modules as OS
+    OS.load_all()
+    r = route(NemotronClient(Script(err, err, err, err), sleep=lambda s: None), "What is my land transfer tax?", set(T.TOOLS))
+    assert r["by"] == "keywords" and "closing" in r["stages"] and "land_transfer_tax" in r["tools"]
+    r = route(None, "hello there", set(T.TOOLS))
+    assert r["by"] == "all" and len(r["tools"]) == len(T.TOOLS)
+
+
+def test_router_ignores_unknown_stages():
+    s = Script(say(json.dumps({"stages": ["astrology"]})), say("ok"))
+    res = Copilot(NemotronClient(s)).ask("hello")
+    assert res.to_dict()["routing"]["by"] == "all"

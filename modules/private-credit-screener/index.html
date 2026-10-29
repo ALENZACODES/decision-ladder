@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Private Credit Deal Screener | John Khan</title>
+    <meta property="og:title" content="Private Credit Deal Screener" />
+    <meta
+      property="og:description"
+      content="Scores a deal on coverage, leverage and collateral, and drafts a short credit memo."
+    />
+    <meta property="og:image" content="https://alenzacodes.github.io/private-credit-screener/docs/social-preview.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="author" content="John Khan" />
+    <meta
+      name="description"
+      content="Score a fictional private real estate loan on LTV, DSCR, debt yield and exit risk, see what drives the score, and draft an IC memo."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Pinyon+Script&display=swap"
+    />
+    <link rel="stylesheet" href="theme/waves.css" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .grade {
+        font-size: 46px;
+        font-weight: 800;
+      }
+      .bars div {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        margin: 5px 0;
+      }
+      .bars span:first-child {
+        width: 90px;
+        color: var(--mut);
+      }
+      .bars i {
+        display: block;
+        height: 9px;
+        border-radius: 9px;
+        background: linear-gradient(90deg, var(--acc), var(--acc2));
+      }
+      .bars em {
+        flex: 1;
+        background: var(--panel2);
+        border-radius: 9px;
+        font-style: normal;
+      }
+    </style>
+  </head>
+  <body class="w-headings">
+    <header class="top w-wave">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">PC</div>
+        <div>
+          <h1>Private Credit Deal Screener</h1>
+          <small>First-pass credit view on a senior real estate loan</small>
+        </div>
+      </div>
+      <div class="row noprint" style="flex: 0 0 auto">
+        <select id="preset" aria-label="Example deal"></select
+        ><button class="btn ghost" id="share">Copy link</button><button class="btn" id="pdf">Export IC memo</button>
+      </div>
+    </header>
+    <main>
+      <div class="grid">
+        <section class="card controls" aria-label="Deal inputs">
+          <h2>Deal inputs [EXAMPLE]</h2>
+          <div id="inputs"></div>
+        </section>
+        <section class="stack" aria-live="polite">
+          <div class="kpis" id="kpis"></div>
+          <div class="card">
+            <h2>Score breakdown</h2>
+            <div class="bars" id="bars"></div>
+          </div>
+          <div class="card chart">
+            <h2>Sensitivity: what moves the score</h2>
+            <div id="tornado"></div>
+            <div class="legend">
+              <span><i style="background: #b3261e"></i>low case</span
+              ><span><i style="background: #1b6b3a"></i>high case</span><span>dashed line = base score</span>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Investment committee memo</h2>
+            <div class="memo" id="memo"></div>
+          </div>
+        </section>
+      </div>
+      <div class="card" style="margin-top: 18px">
+        <h2>Method</h2>
+        <ul class="src">
+          <li>LTV = loan / appraised value. DSCR = NOI / annual debt service. Debt yield = NOI / loan.</li>
+          <li>
+            Exit value = NOI grown over the term / (going-in cap rate + exit cap shift). Exit LTV = balloon balance /
+            exit value.
+          </li>
+          <li>
+            Score weights: LTV 25%, DSCR 25%, exit LTV 25%, debt yield 15%, sponsor 10%. Thresholds are a personal
+            screening framework, not an industry standard.
+          </li>
+          <li>All deals are fictional examples built to show the method.</li>
+        </ul>
+      </div>
+    </main>
+    <footer class="foot">Educational only, not financial advice. <span class="w-script">John Khan</span></footer>
+    <script src="charts.js"></script>
+    <script src="calc.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

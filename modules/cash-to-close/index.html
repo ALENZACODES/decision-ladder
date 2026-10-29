@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cash to Close: what a first home in Ontario really costs on closing day</title>
+<meta name="description" content="Your down payment isn't the number. See every dollar a first-time buyer in Ontario needs, and when each one is due.">
+<meta name="author" content="John Khan">
+<meta property="og:title" content="Cash to Close">
+<meta property="og:description" content="Your down payment isn't the number. See every dollar you need on closing day, and when it's due.">
+<meta property="og:image" content="https://alenzacodes.github.io/cash-to-close/assets/social.png">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the planner</a>
+<header class="top">
+  <div class="wrap top-in">
+    <span class="brand" aria-label="Cash to Close"><svg aria-hidden="true" viewBox="0 0 32 32" width="28" height="28"><rect x="3" y="14" width="26" height="15" rx="2" fill="#011F5B"/><path d="M2 15 16 4l14 11" fill="none" stroke="#990000" stroke-width="3" stroke-linejoin="round"/><rect x="13" y="19" width="6" height="10" fill="#C9A227"/></svg> Cash to Close</span>
+    <span class="top-tag">Ontario first-time buyers</span>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <section class="hero" aria-labelledby="h1">
+    <h1 id="h1">Your down payment isn't the number.</h1>
+    <p class="lede">Most first-time buyers save for the down payment and stop there. On closing day you also pay land transfer tax, sales tax on mortgage insurance, your lawyer and more. Enter two numbers and see the real total.</p>
+
+    <form class="inputs" id="inputs" onsubmit="return false">
+      <div class="field">
+        <label for="price">Home price</label>
+        <div class="money"><span aria-hidden="true">$</span><input id="price" inputmode="numeric" autocomplete="off" value="700,000" aria-describedby="price-help"></div>
+        <small id="price-help">The price in your offer</small>
+      </div>
+      <div class="field">
+        <label for="savings">Cash you'll have saved</label>
+        <div class="money"><span aria-hidden="true">$</span><input id="savings" inputmode="numeric" autocomplete="off" value="60,000" aria-describedby="savings-help"></div>
+        <small id="savings-help">Savings, FHSA, RRSP withdrawals, gifts</small>
+      </div>
+    </form>
+  </section>
+
+  <section class="reveal" aria-labelledby="reveal-h">
+    <h2 id="reveal-h" class="sr-only">How your cash stacks up</h2>
+    <div class="verdict" id="verdict"><p class="big">You need <strong>$64,971</strong> on closing, not $45,000.</p><p class="small">You're <strong>$4,971 short</strong> of that with $60,000 saved.</p></div>
+    <p class="sr-only" id="announce" aria-live="polite" aria-atomic="true"></p>
+
+    <div class="bar-wrap">
+      <div class="bar" id="bar" role="img" aria-label=""></div>
+      <div class="savings-line" id="savingsLine"><span id="savingsLabel"></span></div>
+    </div>
+    <ul class="legend" aria-hidden="true">
+      <li><i class="sw sw-down"></i>Down payment</li>
+      <li><i class="sw sw-extra"></i>Everything else due in cash</li>
+      <li><i class="sw sw-save"></i>Your savings</li>
+    </ul>
+
+    <div class="meter" id="meter"></div>
+  </section>
+
+  <section class="gap" id="gapSec" aria-labelledby="gap-h">
+    <h2 id="gap-h">Close the gap</h2>
+    <div class="gap-grid">
+      <div class="gap-card">
+        <h3>Change the price</h3>
+        <p id="maxPrice" class="gap-big"></p>
+        <p class="gap-note" id="maxPriceNote"></p>
+        <button type="button" class="btn btn-ghost" id="useMax">Try that price</button>
+      </div>
+      <div class="gap-card">
+        <h3>Add money you haven't counted</h3>
+        <label class="lever" for="hbp">RRSP Home Buyers' Plan <small>up to $60,000 each, tax-free, repaid over 15 years</small>
+          <span class="money sm"><span aria-hidden="true">$</span><input id="hbp" inputmode="numeric" value="0"></span></label>
+        <label class="lever" for="gift">Gift from family <small>lenders want a signed gift letter</small>
+          <span class="money sm"><span aria-hidden="true">$</span><input id="gift" inputmode="numeric" value="0"></span></label>
+        <p id="leverResult" class="gap-result"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="toggles" aria-labelledby="tog-h">
+    <h2 id="tog-h">Change the story</h2>
+    <div class="tog-grid">
+      <fieldset>
+        <legend>Where is the home?</legend>
+        <div class="seg">
+          <input type="radio" name="city" id="city-to" value="to" checked><label for="city-to">City of Toronto</label>
+          <input type="radio" name="city" id="city-on" value="on"><label for="city-on">Elsewhere in Ontario</label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Have you ever owned a home, anywhere?</legend>
+        <div class="seg">
+          <input type="radio" name="ftb" id="ftb-y" value="y" checked><label for="ftb-y">Never</label>
+          <input type="radio" name="ftb" id="ftb-n" value="n"><label for="ftb-n">Yes, before</label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Down payment</legend>
+        <div class="seg seg-4">
+          <input type="radio" name="dp" id="dp-min" value="min" checked><label for="dp-min">Minimum</label>
+          <input type="radio" name="dp" id="dp-10" value="10"><label for="dp-10">10%</label>
+          <input type="radio" name="dp" id="dp-15" value="15"><label for="dp-15">15%</label>
+          <input type="radio" name="dp" id="dp-20" value="20"><label for="dp-20">20%</label>
+        </div>
+      </fieldset>
+      <fieldset id="amort-fs">
+        <legend>Amortization</legend>
+        <div class="seg">
+          <input type="radio" name="am" id="am-25" value="25" checked><label for="am-25">25 years</label>
+          <input type="radio" name="am" id="am-30" value="30"><label for="am-30">30 years</label>
+        </div>
+        <small id="amort-note"></small>
+      </fieldset>
+    </div>
+  </section>
+
+  <section class="timeline-sec" aria-labelledby="tl-h">
+    <h2 id="tl-h">When the money leaves your account</h2>
+    <p class="sub">Your savings, drawn down from the day your offer is accepted to the day you get the keys. Use the arrow keys to move between stages.</p>
+    <div class="stages" id="stages" role="tablist" aria-label="Stages from offer to keys"></div>
+    <div class="stage-panel" id="stagePanel" role="tabpanel" tabindex="0"></div>
+  </section>
+
+  <section class="items-sec" aria-labelledby="it-h">
+    <h2 id="it-h">Every line, and why it's there</h2>
+    <p class="sub">Open any line for a plain explanation. Amounts marked approx. are typical, not rules. You can change them.</p>
+    <ul class="items" id="items"></ul>
+    <div class="actions">
+      <button type="button" id="copyLink" class="btn">Copy a link to this plan</button>
+      <button type="button" id="print" class="btn btn-ghost">Print a closing checklist</button>
+      <span id="copied" class="copied" role="status"></span>
+    </div>
+  </section>
+
+  <section class="method" aria-labelledby="m-h">
+    <h2 id="m-h">How it's worked out</h2>
+    <div class="cols">
+      <div>
+        <h3>Rules</h3>
+        <ul class="src" id="sources"></ul>
+      </div>
+      <div>
+        <h3>What it leaves out</h3>
+        <ul>
+          <li>New builds (HST, Tarion, development charges) and condo status certificates.</li>
+          <li>Homes outside Ontario, and multi-unit or non-resident purchases.</li>
+          <li>Lender fees, appraisal fees and your first mortgage payment.</li>
+          <li>Partial rebates when only one buyer is a first-time buyer.</li>
+          <li>The land transfer tax refunds need you to have never owned a home. The 30-year insured amortization uses a looser test (no home you owned and lived in during the last four years), so some repeat buyers qualify for it too. The toggle uses the stricter one.</li>
+        </ul>
+        <p class="fine">This is a planning tool, not advice. Your lawyer's statement of adjustments is the final word.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">Built by John Khan. Rules checked <span id="checked">October 18, 2026</span>. Nothing you type leaves your browser. <a href="https://github.com/ALENZACODES/cash-to-close">Source on GitHub</a></div>
+</footer>
+
+<noscript><p class="wrap">This planner needs JavaScript to do the maths. The rules it uses are listed in the source on GitHub.</p></noscript>
+<script src="rates.js"></script>
+<script src="calc.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+body{margin:0;background:#fff;font-family:"Times New Roman",Georgia,serif;color:#111}
+#post{width:1080px;height:1350px;overflow:hidden;background:#fbfaf7}
+#hero{height:470px;position:relative}
+#hero svg{display:block}
+#body{padding:30px 58px 0;font-size:25px;line-height:1.35}
+h2{color:#8b1414;font-size:40px;margin:6px 0 8px}
+.c{text-align:center;margin:12px 0}
+.row{display:flex;justify-content:space-around;margin:12px 0}
+.box{border:3px solid #1f5f3f;border-radius:10px;background:#eef6f0;text-align:center;font-size:38px;font-style:italic;font-weight:bold;padding:16px;margin-top:20px}
+.tag{position:absolute;top:22px;left:0;right:0;text-align:center;color:#fff;font:700 34px Georgia;letter-spacing:1px;text-shadow:0 2px 10px rgba(0,0,0,.6)}
+.tag small{display:block;font:italic 400 26px Georgia;margin-top:8px;color:#ffe2b0}
+.brand{position:absolute;bottom:16px;right:24px;color:#fff;font:600 22px Georgia;opacity:.9;letter-spacing:1px}
+</style></head><body>
+<div id="post">
+<div id="hero">
+<svg width="1080" height="470" viewBox="0 0 1080 470">
+ <defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+   <stop offset="0" stop-color="#1c2a4a"/><stop offset=".45" stop-color="#6b4a7a"/>
+   <stop offset=".75" stop-color="#e98a5a"/><stop offset="1" stop-color="#f7c873"/></linearGradient>
+  <linearGradient id="lake" x1="0" y1="0" x2="0" y2="1">
+   <stop offset="0" stop-color="#d98a5e"/><stop offset="1" stop-color="#2a2f4a"/></linearGradient>
+ </defs>
+ <rect width="1080" height="470" fill="url(#sky)"/>
+ <circle cx="820" cy="330" r="46" fill="#ffd98a" opacity=".85"/>
+ <rect y="380" width="1080" height="90" fill="url(#lake)"/>
+ <g fill="#1a1726">
+  <rect x="0" y="300" width="60" height="82"/><rect x="55" y="250" width="50" height="132"/>
+  <rect x="110" y="210" width="48" height="172"/><rect x="160" y="270" width="70" height="112"/>
+  <rect x="235" y="180" width="44" height="202"/><rect x="282" y="230" width="60" height="152"/>
+  <rect x="345" y="160" width="52" height="222"/><rect x="400" y="260" width="66" height="122"/>
+  <!-- CN Tower -->
+  <polygon points="520,382 548,382 538,150 530,150"/>
+  <ellipse cx="534" cy="150" rx="30" ry="12"/><rect x="510" y="140" width="48" height="12" rx="5"/>
+  <polygon points="529,140 539,140 537,85 531,85"/>
+  <ellipse cx="534" cy="88" rx="9" ry="5"/><rect x="532.5" y="20" width="3" height="68"/>
+  <!-- Rogers Centre dome -->
+  <path d="M560 382 Q620 320 690 382Z"/>
+  <rect x="690" y="220" width="50" height="162"/><rect x="742" y="190" width="40" height="192"/>
+  <rect x="785" y="250" width="70" height="132"/><rect x="858" y="205" width="46" height="177"/>
+  <rect x="906" y="280" width="64" height="102"/><rect x="972" y="240" width="50" height="142"/>
+  <rect x="1024" y="300" width="56" height="82"/>
+ </g>
+ <g fill="#ffd98a" opacity=".55">
+  <rect x="120" y="230" width="4" height="6"/><rect x="134" y="260" width="4" height="6"/>
+  <rect x="250" y="210" width="4" height="6"/><rect x="360" y="190" width="4" height="6"/>
+  <rect x="372" y="240" width="4" height="6"/><rect x="752" y="220" width="4" height="6"/>
+  <rect x="870" y="230" width="4" height="6"/><rect x="700" y="260" width="4" height="6"/>
+ </g>
+ <ellipse cx="534" cy="150" rx="30" ry="3" fill="#ff5a5a" opacity=".7"/>
+ <rect y="440" width="1080" height="30" fill="#000" opacity=".15"/>
+</svg>
+<div class="tag">QUANT MATH CAN BE USED IN EVEN A SMALL THING AS INVESTING<small>Funny thing: this was MY scenario. Aug 2021 → Aug 2026. Exactly 5 years.</small></div>
+<div class="brand">YORKVILLE · TORONTO</div>
+</div>
+<div id="body">
+<h2>Problem:</h2>
+A $1,880,000 Yorkville condo is bought with 25% down ($470,000) and a $1,410,000 interest-only mortgage. Suppose its market value follows geometric Brownian motion
+<div class="c">$$dP_t=\mu P_t\,dt+\sigma P_t\,dW_t.$$</div>
+Let \(\tau=\inf\{t\ge0:P_t\le 1{,}410{,}000\}\) be the first time the condo is in negative equity. Find \(P(\tau\le5)\).
+<h2>Solution:</h2>
+<div class="c">\(X_t=\ln\!\big(\tfrac{P_t}{P_0}\big)=mt+\sigma W_t,\quad m=\mu-\tfrac12\sigma^2,\qquad b=\ln\!\big(\tfrac{1.41\text{M}}{1.88\text{M}}\big)=\ln(0.75)\)</div>
+First passage of Brownian motion with drift:
+<div class="c">$$P(\tau\le T)=\Phi\!\Big(\tfrac{b-mT}{\sigma\sqrt T}\Big)+e^{2mb/\sigma^2}\,\Phi\!\Big(\tfrac{b+mT}{\sigma\sqrt T}\Big)$$</div>
+With \(\mu=3\%,\ \sigma=12\%,\ T=5\): \(m=0.0228,\ b=-0.2877,\ \sigma\sqrt T=0.2683\)
+<div class="row"><span>\(\tfrac{b-mT}{\sigma\sqrt T}=-1.4970\)</span><span>\(\tfrac{b+mT}{\sigma\sqrt T}=-0.6473\)</span></div>
+<div class="c">\(P(\tau\le5)=\Phi(-1.4970)+e^{-0.9110}\,\Phi(-0.6473)\approx0.0672+0.1040\approx0.171\)</div>
+<div class="box">P(Yorkville condo underwater within 5 years) ≈ 17.1%</div>
+</div></div>
+<script>renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\(",right:"\\)",display:false}]});</script>
+</body></html>

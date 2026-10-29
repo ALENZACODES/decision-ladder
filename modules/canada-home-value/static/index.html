@@ -1,0 +1,1509 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Benchmark Home Value</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: estimator console on the left, live market panel on the right; stacks on phones. */
+:root{
+  --bg:#f3f5f9; --surface:#ffffff; --fg:#0b1a33; --muted:#56627a; --line:#d6dce8;
+  --accent:#011f5b; --accent-2:#990000; --good:#2e7d4f; --bad:#b4442f;
+  --s1:#011f5b; --s2:#990000; --s3:#4f7cac; --s4:#b38f2e;
+  --display:"Inter",Arial,sans-serif; --brand:Georgia,"Times New Roman",serif; --body:"DM Sans",system-ui,-apple-system,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b1324; --surface:#121c33; --fg:#e8edf7; --muted:#9aa8c2; --line:#26324d;
+  --accent:#82afd3; --accent-2:#e06666; --good:#6fcf97; --bad:#ef8a73;
+  --s1:#82afd3; --s2:#e06666; --s3:#b7cdea; --s4:#d9b45c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1324; --surface:#121c33; --fg:#e8edf7; --muted:#9aa8c2; --line:#26324d;
+  --accent:#82afd3; --accent-2:#e06666; --good:#6fcf97; --bad:#ef8a73;
+  --s1:#82afd3; --s2:#e06666; --s3:#b7cdea; --s4:#d9b45c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:24px}
+header h1{font-family:var(--brand);font-weight:400;color:var(--accent-2);font-size:clamp(28px,4vw,40px);margin:0;text-wrap:balance;letter-spacing:-.01em}
+header p{margin:6px 0 0;color:var(--muted);max-width:68ch}
+header{position:relative}
+.lang{position:absolute;top:0;right:0;padding:6px 12px;font-size:13px}
+@media (max-width:600px){.lang{position:static;margin-top:10px}}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:14px;min-width:0}
+label{font-size:13px;font-weight:600;display:grid;gap:5px}
+input,select{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);width:100%}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:500 13px var(--body);padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.cta{font:600 15px var(--body);padding:11px;border:0;border-radius:6px;background:var(--accent);color:var(--surface);cursor:pointer}
+.steps{list-style:none;display:flex;gap:6px;padding:0;margin:0;font:500 12px var(--mono);color:var(--muted)}
+.steps li{flex:1;border-top:3px solid var(--line);padding-top:6px}
+.steps li.on{border-color:var(--accent);color:var(--fg)}
+fieldset{border:0;padding:0;margin:0;display:grid;gap:14px;min-width:0}
+.q{font-family:var(--display);font-size:22px;font-weight:500;color:var(--accent);padding:0;margin-bottom:4px;text-wrap:balance}
+.ghost{font:600 15px var(--body);padding:11px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--fg);cursor:pointer}
+.hint{font-size:12px;color:var(--muted)}
+.result{border-top:1px solid var(--line);padding-top:14px;display:grid;gap:4px}
+.big{font-family:var(--display);font-size:38px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1.1}
+.range{font:500 14px var(--mono);color:var(--muted)}
+.pill{display:inline-block;font:500 12px var(--mono);padding:2px 8px;border-radius:999px;border:1px solid currentColor}
+.up{color:var(--good)} .down{color:var(--bad)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:600px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{display:grid;gap:2px}
+.stat b{font:600 20px var(--mono);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+.charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:760px){.charts{grid-template-columns:minmax(0,1fr)}}
+.chart{display:grid;gap:8px;min-width:0}
+.chart h3{margin:0;font:600 14px var(--body)}
+.chart .box{position:relative;height:240px}
+.chart canvas{width:100%!important;height:100%!important}
+.mode{font:400 11px var(--mono);color:var(--muted)}
+.tbl{overflow-x:auto;max-height:260px;overflow-y:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:600;color:var(--muted);position:sticky;top:0;background:var(--surface);cursor:pointer}
+tr.sel td{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.notice{font-size:12px;color:var(--muted);border-left:3px solid var(--accent-2);padding-left:10px}
+.ss{font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+[hidden]{display:none!important}
+.big-search input{font-size:18px;padding:14px 44px 14px 14px;border-width:2px;border-color:var(--accent)}
+.addr-label{font-size:14px}
+.card{background:color-mix(in srgb,var(--accent) 6%,var(--surface));border:1px solid var(--line);border-radius:10px;padding:14px}
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.links a{display:inline-flex;align-items:center;gap:6px;font:600 13px var(--body);padding:8px 12px;border:1px solid var(--line);border-radius:999px;color:var(--accent);text-decoration:none;background:var(--surface)}
+.links a:hover,.links a:focus-visible{border-color:var(--accent)}
+.legal{font:400 12px var(--mono);color:var(--muted)}
+.rbar{position:relative;height:8px;border-radius:99px;background:var(--line);margin:8px 0 2px;overflow:hidden}
+.rbar-fill{position:absolute;inset:0 20%;background:color-mix(in srgb,var(--accent) 35%,transparent);border-radius:99px}
+.rbar-dot{position:absolute;top:-3px;left:calc(50% - 7px);width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid var(--surface)}
+#manual summary{font-weight:500}
+
+.sub{border:1px solid var(--line);border-radius:8px;padding:12px;display:grid;gap:10px}
+.subhead{font:600 13px var(--body);color:var(--accent);cursor:pointer}
+details.sub>summary{list-style:none} details.sub>summary::before{content:"+ ";font-family:var(--mono)} details.sub[open]>summary::before{content:"− "}
+.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px;font-size:13px}
+@media (max-width:480px){.checks{grid-template-columns:minmax(0,1fr)}}
+.checks label{display:flex;gap:8px;align-items:flex-start;font-weight:400}
+.checks input{width:auto;margin-top:3px}
+.adj{font:400 13px var(--mono);display:grid;gap:2px;margin-top:6px}
+.adj div{display:flex;justify-content:space-between;gap:12px}
+.x{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--muted);font-size:20px;cursor:pointer;padding:2px 8px}
+.ac input{padding-right:34px}
+#map{height:180px;border-radius:8px;border:1px solid var(--line);z-index:0}
+.ac li.msg{color:var(--muted);cursor:default}
+.ac li small{color:var(--muted)}
+.ac{position:relative}
+.ac ul{position:absolute;z-index:5;left:0;right:0;top:100%;margin:4px 0 0;padding:4px;list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:6px;max-height:320px;overflow:auto;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.ac li{padding:8px 10px;border-radius:4px;cursor:pointer;font-size:14px}
+.ac li[aria-selected="true"],.ac li:hover{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px;font-size:13px}
+.facts span{color:var(--muted)}
+
+/* Append inside the first <style>, after the existing rules. All palette values
+   live here at the top of index.source.html; injected module CSS uses these tokens. */
+:root {
+  color-scheme: light;
+  --on-primary: #ffffff;
+  --print-bg: #ffffff; --print-fg: #0b1a33; --print-muted: #56627a;
+  --print-line: #d6dce8; --print-primary: #011f5b; --print-accent: #990000;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --on-primary: #0b1324; }
+}
+:root[data-theme="dark"] { --on-primary: #0b1324; }
+html { scroll-padding-block: 24px; }
+body { margin: 0; }
+.wrap { max-width: 1360px; gap: 32px; }
+header { padding-right: 112px; }
+header h1 { line-height: 1.15; margin-top: 8px; }
+header p { margin-top: 12px; }
+.grid { grid-template-columns: minmax(0,400px) minmax(0,1fr); gap: 24px; }
+.panel { padding: 24px; gap: 20px; grid-template-columns: minmax(0,1fr); }
+.panel>*,.market-panel>div:first-child>div { min-width: 0; }
+fieldset { gap: 16px; }
+h2,h3,h4,.chart h3,.ins h4,.subhead {
+  font-family: var(--display); font-weight: 600; color: var(--accent);
+}
+.chart h3 { font-size: 14px; line-height: 1.5; }
+.market-panel>div>h3 { font-family: var(--display) !important; }
+label,.addr-label,.stat span,.seg button,.facts span,.prof .hint,th {
+  font-family: var(--mono); font-weight: 400; font-variant-numeric: tabular-nums;
+}
+label,.addr-label { font-size: 12px; line-height: 1.5; }
+input,select { font-family: var(--body); font-size: 15px; min-width: 0; min-height: 44px; border-color: var(--muted); }
+input[type="number"],input[type="month"],#rate,#amort,#pcost,#cfee { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+input[type="checkbox"] { min-height: auto; accent-color: var(--accent); }
+input::placeholder { color: var(--muted); opacity: 1; }
+.row { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+.row>* { min-width: 0; }
+.cta,.ghost,.seg button,.links a,.lang { min-height: 44px; }
+.cta,.seg button[aria-pressed="true"] { color: var(--on-primary); }
+.ghost { color: var(--accent); border-color: var(--accent); }
+.lang { border-color: var(--line); }
+:where(a,button,input,select,textarea,summary,[tabindex]):focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 3px;
+}
+.big-search input { font-size: 16px; padding: 14px 48px 14px 12px; border-width: 1px; }
+.x { display: grid; place-items: center; width: 44px; min-height: 44px; right: 2px; padding: 0; }
+.ac ul { border-radius: 8px; }
+.ac li { min-height: 44px; }
+.steps { gap: 8px; line-height: 1.5; }
+.steps li { min-width: 0; overflow-wrap: normal; }
+.q { line-height: 1.4; text-wrap: initial; }
+.card,#insights .build { border-radius: 8px; padding: 16px; background: var(--surface); }
+.result { gap: 8px; padding-top: 20px; }
+#instant { background: var(--bg); padding-top: 16px; }
+#instant .big { font-size: 38px !important; }
+.big,.range,#pAdd,#insights .num { font-variant-numeric: tabular-nums; }
+.range { line-height: 1.6; }
+.hint,.ss,.notice { line-height: 1.6; }
+.hint { font-size: 13px; }
+.rbar { overflow: visible; margin-block: 10px; }
+.rbar-fill { background: var(--muted); }
+.rbar-dot { top: -3px; }
+.adj { gap: 8px; line-height: 1.5; }
+.adj>div { display: grid; grid-template-columns: minmax(0,1fr) max-content; align-items: baseline; gap: 8px 12px; }
+.adj>div>span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.adj>div>span:last-child { white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+#borrow>div { grid-template-columns: minmax(0,1fr); gap: 4px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+#borrow>div>span:last-child { text-align: left; }
+.facts b,.prof b,td:not(:first-child),#report .rp-grid>div { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.stats { padding-bottom: 20px; border-bottom: 1px solid var(--line); gap: 20px 12px; }
+.stat span { font-size: 12px; }
+.charts { gap: 28px 24px; }
+.chart .box { height: 280px; }
+.chart .mode { margin-top: 0; }
+.market-panel { container-type: inline-size; }
+@container (max-width: 620px) { .charts { grid-template-columns: minmax(0,1fr); } }
+th,td { padding: 10px 8px; }
+td:not(:first-child) { white-space: nowrap; }
+.tbl { scrollbar-gutter: stable; }
+#insights { gap: 24px; }
+#insights .build { background: var(--surface); }
+#insights .num { color: var(--accent); font-family: var(--display); font-size: 24px; line-height: 1.4; margin-top: 8px; }
+#insights .prof { gap: 16px; }
+#insights #gmap { border: 1px solid var(--line); }
+#insights .badge { font-family: var(--mono); background: var(--surface); border: 1px solid var(--accent-2); }
+#insights .adj>div { grid-template-columns: minmax(0,1fr); gap: 4px; }
+#insights .adj>div>span:last-child { text-align: left; }
+.links { gap: 8px; }
+.links a { font-family: var(--mono); font-size: 12px; align-items: center; }
+.icon-line { width: 16px; height: 16px; flex: 0 0 16px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.links img { flex-basis: 100%; width: 100%; height: auto; object-fit: cover; }
+#insights img,.links img,#report .rp-photo { border-radius: 8px; }
+/* Filter tiles only: preserve red pin, attribution, controls and text. */
+#map .leaflet-tile-pane,#rpMap .leaflet-tile-pane { filter: grayscale(1); }
+.hve-pin { stroke: var(--accent-2); fill: var(--accent-2); }
+.leaflet-container { font-family: var(--body); background: var(--bg); }
+.leaflet-bar { box-shadow: none !important; border: 1px solid var(--line) !important; border-radius: 6px; }
+.leaflet-bar a { background: var(--surface); color: var(--accent); border-color: var(--line); min-width: 44px; min-height: 44px; line-height: 44px; }
+.leaflet-container .leaflet-control-attribution { color: var(--print-muted); background: var(--print-bg); }
+.leaflet-control-attribution a { color: var(--print-primary); }
+/* Report preview is deliberately light, even when the site is dark. */
+#report {
+  --bg: var(--print-bg); --surface: var(--print-bg); --fg: var(--print-fg);
+  --muted: var(--print-muted); --line: var(--print-line);
+  --accent: var(--print-primary); --accent-2: var(--print-accent);
+  color-scheme: light; color: var(--fg); background: var(--surface);
+  overflow-wrap: anywhere;
+}
+#report h2 { font-family: var(--brand); font-weight: 400; font-size: 28px; line-height: 1.25; }
+.wrap #report .rp-big { font-size: 38px; line-height: 1.15; }
+#report .rp-sec>b { font-family: var(--display); font-weight: 600; color: var(--accent); }
+#report table { width: 100%; }
+#report td { white-space: normal; }
+#report td:last-child { white-space: nowrap; }
+.wrap #report .rp-photo,.wrap #report .rp-map { border: 1px solid var(--line); border-radius: 8px; }
+@media (max-width: 1100px) and (min-width: 901px) {
+  .grid { grid-template-columns: minmax(0,360px) minmax(0,1fr); }
+  .stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 900px) {
+  .grid { grid-template-columns: minmax(0,1fr); }
+}
+@media (max-width: 600px) {
+  body { padding-block: 24px 32px; }
+  .wrap { gap: 24px; }
+  header { padding-right: 0; }
+  .lang { position: static; margin-top: 16px; }
+  .panel { padding: 20px; }
+  .chart .box { height: 260px; }
+  .wrap #report .rp-grid { grid-template-columns: minmax(0,1fr); }
+}
+@media (max-width: 480px) {
+  .row { grid-template-columns: minmax(0,1fr); }
+  .adj>div { grid-template-columns: minmax(0,1fr); gap: 4px; }
+  .adj>div>span:last-child { text-align: left; }
+  .links a { flex: 1 1 auto; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *,*::before,*::after { animation: none !important; transition: none !important; }
+}
+@media print {
+  body { background: var(--print-bg) !important; color: var(--print-fg); margin: 0; padding: 0 !important; }
+  .wrap #report { border: 0; border-radius: 0; padding: 0; color: var(--print-fg) !important; background: var(--print-bg) !important; font: 400 12px/1.5 var(--body); }
+  #report h2 { color: var(--print-accent) !important; }
+  #report .rp-big,#report .rp-sec>b { color: var(--print-primary); }
+  .wrap #report .rp-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  #report .rp-photo { border-color: var(--print-line) !important; }
+  #report .rp-sec { break-inside: avoid; }
+  #report tr { break-inside: avoid; }
+  #report th { position: static; }
+  #report .hint,#report .range,#report .notice { color: var(--print-muted); }
+  #report .leaflet-control-zoom { display: none; }
+  @page { margin: 14mm; }
+}
+
+.view-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.view-frame{display:block;width:100%;height:320px;border:0;border-radius:8px;background:var(--line,#d6dce8)}@media(max-width:600px){.view-frame{height:240px}}
+.ask-cp{margin:10px 0 4px;display:grid;gap:6px}.ask-cp .subhead{margin:4px 0 0}
+.live{display:inline-flex;align-items:center;gap:6px;margin-left:6px}.live::before{content:"";width:8px;height:8px;border-radius:50%;background:#1f9d55;box-shadow:0 0 0 3px rgba(31,157,85,.2)}@media(prefers-reduced-motion:no-preference){.live::before{animation:livePulse 2s ease-in-out infinite}}@keyframes livePulse{50%{opacity:.4}}
+.schools{display:grid;gap:10px}.sch{padding:8px 0;border-top:1px solid var(--line)}.sch:first-child{border-top:0}.rank-trend{display:flex;align-items:flex-end;gap:6px;height:48px;margin-top:4px}.rank-trend span{display:flex;flex-direction:column;align-items:center;gap:2px}.rank-trend i{display:block;width:16px;background:var(--accent);border-radius:3px 3px 0 0}.rank-trend small{font:500 10px var(--mono);color:var(--muted)}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">All provinces &amp; territories · 2016 – Sep 2026 <span id="liveTag" class="live" hidden></span></div>
+  <h1>Benchmark Home Value</h1>
+  <p>Answer a few questions to see what your home may be worth today, your estimated equity, and how a renovation could add value.</p>
+</header>
+
+<div class="grid">
+  <form class="panel" id="f" autocomplete="off">
+    <ol class="steps" id="steps"><li data-s="1">Address</li><li data-s="2">Your home</li><li data-s="3">Your estimate</li></ol>
+    <fieldset data-step="1">
+      <legend class="q">Find out what your home may be worth today.</legend>
+      <label for="addr" class="addr-label">Your home address
+        <span class="ac big-search"><input id="addr" role="combobox" aria-autocomplete="list" aria-controls="acList" aria-expanded="false" placeholder="Start typing, e.g. 15 Deermeade"><button type="button" id="addrClear" class="x" aria-label="Clear address" hidden><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><ul id="acList" role="listbox" hidden></ul></span>
+      </label>
+      <div class="hint" id="addrHint" aria-live="polite">Type a few words of your address and pick it from the list.</div>
+      <div class="result card" id="instant" hidden aria-live="polite"></div>
+      <div id="photoLinks" class="links" hidden></div>
+      <div id="map" hidden></div>
+      <div class="facts" id="facts" hidden></div>
+      <div class="adj" id="nearby" hidden></div>
+      <details id="manual">
+        <summary class="subhead">Can't find it? Choose your province and municipality</summary>
+        <div class="row" style="margin-top:10px">
+          <label for="prov">Province
+            <select id="prov"></select>
+          </label>
+          <label for="muni">Municipality <select id="muni"></select></label>
+        </div>
+      </details>
+      <div class="row"><button class="cta" type="button" data-go="2">Refine my estimate</button><button class="ghost" type="button" id="skipTo3">Show my estimate</button></div>
+    </fieldset>
+    <fieldset data-step="2" hidden>
+      <legend class="q">Tell us about your home</legend>
+      <div>
+        <label for="ptype" style="margin-bottom:6px">Property type</label>
+        <select id="ptype" aria-label="Property type">
+          <optgroup label="Houses">
+            <option value="detached">Detached house</option><option value="link">Link (detached above grade)</option>
+            <option value="semi">Semi-detached</option><option value="town">Freehold townhouse</option>
+            <option value="duplex">Duplex (2 units)</option><option value="multiplex">Triplex / fourplex</option>
+            <option value="rural">Rural home / acreage</option><option value="cottage">Cottage / recreational</option>
+            <option value="mobile">Mobile / manufactured home</option>
+          </optgroup>
+          <optgroup label="Condos">
+            <option value="condo">Condo apartment</option><option value="loft">Condo loft</option>
+            <option value="condotown">Condo townhouse</option><option value="stacked">Stacked townhouse</option>
+            <option value="penthouse">Penthouse</option>
+          </optgroup>
+        </select>
+        <div class="seg" id="type" hidden>
+          <button type="button" data-v="detached" aria-pressed="true">Detached</button>
+          <button type="button" data-v="semi" aria-pressed="false">Semi</button>
+          <button type="button" data-v="town" aria-pressed="false">Townhouse</button>
+          <button type="button" data-v="condo" aria-pressed="false">Condo apt</button>
+        </div>
+        <label for="cfee" id="cfeeWrap" hidden style="margin-top:10px">Monthly condo fee ($) <input id="cfee" type="number" min="0" step="1" value="650"></label>
+      </div>
+      <div id="condoBox" class="sub" hidden>
+        <div class="subhead">Condo details</div>
+        <div class="row">
+          <label for="floor">Floor <input id="floor" type="number" min="1" max="99" value="5"></label>
+          <label for="view">Main view <select id="view"><option value="0">No notable view</option><option value="0.03">City</option><option value="0.03">Park / green space</option><option value="0.08">Water / lake</option><option value="0.06">Mountain</option></select></label>
+        </div>
+        <div class="row">
+          <label for="locker">Locker <select id="locker"><option value="0">No</option><option value="0.01" selected>Yes</option></select></label>
+          <label for="amen">Building amenities <select id="amen"><option value="-0.01">None</option><option value="0" selected>Basic (gym, party room)</option><option value="0.02">Full (pool, concierge)</option></select></label>
+        </div>
+        <div class="row">
+          <label for="sa">Special assessment owing ($) <input id="sa" type="number" min="0" step="1" value="0"></label>
+          <label for="reserve">Reserve fund <select id="reserve"><option value="0">Healthy</option><option value="-0.03">Low / underfunded</option><option value="0">Not sure</option></select></label>
+        </div>
+      </div>
+      <details id="repairs" class="sub">
+        <summary class="subhead">Repairs needed <span class="hint" id="repSum"></span></summary>
+        <div class="checks" id="repList"></div>
+      </details>
+      <div class="row">
+        <label for="pp">What you paid ($) <input id="pp" type="number" min="10000" step="1" placeholder="e.g. 850000"></label>
+        <label for="pd">When you bought <input id="pd" type="month" min="1990-01" max="2026-09"></label>
+      </div>
+      <label for="reno">Renovations since purchase ($) <input id="reno" type="number" min="0" step="1" value="0"></label>
+      <div class="row">
+        <label for="beds">Bedrooms <select id="beds"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label>
+        <label for="baths">Bathrooms <select id="baths"><option>1</option><option>1.5</option><option>2</option><option selected>2.5</option><option>3</option><option>3.5</option><option>4</option></select></label>
+      </div>
+      <div class="row">
+        <label for="sqft">Living area (sq ft) <input id="sqft" type="number" min="200" max="20000" step="1" value="1800"></label>
+        <label for="cond">Condition
+          <select id="cond"><option value="0.93">Needs work</option><option value="1" selected>Average</option><option value="1.05">Updated</option><option value="1.1">Fully renovated</option></select>
+        </label>
+      </div>
+      <div class="row">
+        <label for="park">Parking <select id="park"><option value="0">None</option><option value="1">1 space</option><option value="2" selected>2 spaces</option><option value="3">3+</option></select></label>
+        <label for="lot">Lot <select id="lot"><option value="0.96">Small</option><option value="1" selected>Typical</option><option value="1.06">Large</option><option value="1.12">Oversized / ravine</option></select></label>
+      </div>
+      <label for="bal">Mortgage balance owing ($) <input id="bal" type="number" min="0" step="1" placeholder="optional, for your equity"></label>
+      <div class="row"><button class="ghost" type="button" data-go="1">Back</button><button class="cta" type="submit">See my estimate</button></div>
+    </fieldset>
+    <fieldset data-step="3" hidden>
+      <div class="result" aria-live="polite">
+        <div class="eyebrow" id="rLabel">Estimated value today</div>
+        <div class="big" id="rVal">—</div>
+        <div class="range" id="rRange"></div>
+        <div class="rbar" id="rbar" aria-hidden="true"><span class="rbar-fill"></span><span class="rbar-dot"></span></div>
+        <div id="rMeta" class="hint"></div>
+        <div id="aiBox" class="hint" hidden></div>
+        <div id="adjBox" class="adj" hidden></div>
+      </div>
+      <div class="result">
+        <div class="eyebrow">Estimated home equity</div>
+        <div class="big" id="eqVal" style="font-size:28px">—</div>
+        <div class="hint" id="eqMeta"></div>
+        <div class="adj" id="borrow" hidden></div>
+        <div class="row" style="margin-top:8px">
+          <label for="rate">Rate for payments (%) <input id="rate" type="number" min="0" max="20" step="0.01" value="4.20"></label>
+          <label for="amort">Amortization <select id="amort"><option value="25" selected>25 years</option><option value="30">30 years</option><option value="20">20 years</option></select></label>
+        </div>
+      </div>
+      <div class="result">
+        <div class="eyebrow">Could a renovation add value?</div>
+        <div class="row">
+          <label for="proj">Project <select id="proj">
+            <option value="kitchen">Kitchen remodel</option><option value="bath">Bathroom remodel</option><option value="basement">Finish basement</option>
+            <option value="paint">Interior paint</option><option value="floors">New flooring</option><option value="windows">Windows &amp; doors</option>
+            <option value="addition">Addition</option><option value="deck">Deck or patio</option></select></label>
+          <label for="pcost">Budget ($) <input id="pcost" type="number" min="0" step="1" value="40000"></label>
+        </div>
+        <div><b id="pAdd" style="font:600 20px var(--mono)">—</b> <span class="hint" id="pMeta"></span></div>
+      </div>
+      <div class="row"><button class="ghost" type="button" data-go="2">Edit my answers</button><button class="ghost" type="button" id="copySum">Copy summary</button></div>
+      <div class="hint" id="copyMsg" aria-live="polite"></div>
+    </fieldset>
+    <p class="notice">Indicative only. Values come from public municipal assessment records, the 2021 Census and published regional benchmarks, not from sold listings. Not an appraisal and not suitable for lending decisions.</p>
+  </form>
+
+  <section class="panel market-panel" aria-label="Market trends">
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline">
+      <div><div class="eyebrow" id="mRegion"></div><h2 id="mName" style="margin:2px 0 0;font-family:var(--display);font-size:26px"></h2></div>
+      <div class="seg" id="span">
+        <button type="button" data-v="12" aria-pressed="false">1Y</button>
+        <button type="button" data-v="36" aria-pressed="false">3Y</button>
+        <button type="button" data-v="60" aria-pressed="false">5Y</button>
+        <button type="button" data-v="999" aria-pressed="true">10Y</button>
+      </div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="charts">
+      <div class="chart"><h3>Benchmark price by type</h3><div class="box" id="c1"></div><div class="mode" id="m1"></div></div>
+      <div class="chart"><h3>Year-over-year change</h3><div class="box" id="c2"></div><div class="mode" id="m2"></div></div>
+      <div class="chart"><h3>vs. province and region</h3><div class="box" id="c3"></div><div class="mode" id="m3"></div></div>
+      <div class="chart"><h3>Monthly carrying cost, 20% down</h3><div class="box" id="c4"></div><div class="mode" id="m4"></div></div>
+    </div>
+    <div>
+      <h3 style="margin:8px 0;font:600 14px var(--body)">All municipalities <span class="ss">— click a row, click headers to sort</span></h3>
+      <div class="tbl"><table id="rank"><thead></thead><tbody></tbody></table></div>
+    </div>
+    <p class="ss" id="health"></p>
+  </section>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
+<script>
+"use strict";
+/* ---------- Regional index anchors (Jan 2016 = 100). Shapes follow public CREA/board HPI history. ---------- */
+const ANCH={
+ GTA:[[2016,0,100],[2017,3,136],[2018,0,118],[2019,0,121],[2020,0,131],[2021,0,150],[2022,1,191],[2023,0,156],[2024,0,159],[2025,0,151],[2026,8,146]],
+ OTT:[[2016,0,100],[2017,0,107],[2018,0,113],[2019,0,124],[2020,0,140],[2021,0,165],[2022,2,178],[2023,0,158],[2024,0,160],[2025,0,162],[2026,8,163]],
+ SWO:[[2016,0,100],[2017,3,124],[2018,0,128],[2019,0,140],[2020,0,158],[2021,0,190],[2022,1,222],[2023,0,172],[2024,0,171],[2025,0,165],[2026,8,161]],
+ EON:[[2016,0,100],[2017,0,108],[2018,0,118],[2019,0,128],[2020,0,145],[2021,0,178],[2022,2,205],[2023,0,175],[2024,0,176],[2025,0,174],[2026,8,173]],
+ NON:[[2016,0,100],[2017,0,102],[2018,0,105],[2019,0,110],[2020,0,122],[2021,0,140],[2022,3,158],[2023,0,150],[2024,0,154],[2025,0,158],[2026,8,160]],
+ CGY:[[2016,0,100],[2017,0,97],[2018,0,96],[2019,0,93],[2020,0,92],[2021,0,99],[2022,5,116],[2023,0,118],[2024,0,134],[2025,0,141],[2026,8,138]],
+ EDM:[[2016,0,100],[2017,0,99],[2018,0,97],[2019,0,94],[2020,0,92],[2021,0,96],[2022,4,101],[2023,0,100],[2024,0,106],[2025,0,116],[2026,8,122]],
+ VAN:[[2016,0,100],[2016,6,118],[2017,0,115],[2018,3,128],[2019,3,115],[2020,0,117],[2021,0,123],[2022,2,150],[2023,0,128],[2024,0,134],[2025,0,128],[2026,8,122]],
+ BCO:[[2016,0,100],[2017,0,112],[2018,0,125],[2019,0,124],[2020,0,128],[2021,0,150],[2022,2,190],[2023,0,160],[2024,0,163],[2025,0,158],[2026,8,155]],
+ PRA:[[2016,0,100],[2017,0,99],[2018,0,99],[2019,0,98],[2020,0,100],[2021,0,108],[2022,4,115],[2023,0,113],[2024,0,118],[2025,0,124],[2026,8,128]],
+ MTL:[[2016,0,100],[2017,0,105],[2018,0,111],[2019,0,120],[2020,0,135],[2021,0,160],[2022,4,180],[2023,0,178],[2024,0,182],[2025,0,192],[2026,8,200]],
+ QCO:[[2016,0,100],[2017,0,103],[2018,0,107],[2019,0,113],[2020,0,125],[2021,0,145],[2022,4,165],[2023,0,168],[2024,0,176],[2025,0,190],[2026,8,203]],
+ ATL:[[2016,0,100],[2017,0,102],[2018,0,104],[2019,0,108],[2020,0,120],[2021,0,148],[2022,4,170],[2023,0,168],[2024,0,178],[2025,0,188],[2026,8,193]],
+ TER:[[2016,0,100],[2017,0,101],[2018,0,103],[2019,0,106],[2020,0,110],[2021,0,118],[2022,4,126],[2023,0,128],[2024,0,132],[2025,0,136],[2026,8,138]],
+ ABO:[[2016,0,100],[2017,0,98],[2018,0,96],[2019,0,93],[2020,0,91],[2021,0,97],[2022,4,106],[2023,0,107],[2024,0,116],[2025,0,124],[2026,8,127]]
+};
+const REGION_NAME={GTA:"Greater Toronto & Hamilton",OTT:"Ottawa region",SWO:"Southwestern Ontario",EON:"Central & Eastern Ontario",NON:"Northern Ontario",CGY:"Calgary region",EDM:"Edmonton region",ABO:"Rest of Alberta",VAN:"Metro Vancouver",BCO:"Rest of British Columbia",PRA:"Saskatchewan & Manitoba",MTL:"Greater Montréal",QCO:"Rest of Québec",ATL:"Atlantic Canada",TER:"Northern territories"};
+const PROV={BC:"British Columbia",AB:"Alberta",SK:"Saskatchewan",MB:"Manitoba",ON:"Ontario",QC:"Québec",NB:"New Brunswick",NS:"Nova Scotia",PE:"Prince Edward Island",NL:"Newfoundland and Labrador",YT:"Yukon",NT:"Northwest Territories",NU:"Nunavut"};
+const FSA1={A:"St. John's",B:"Halifax",C:"Charlottetown",E:"Moncton",G:"Québec City",H:"Montréal",J:"Gatineau",K:"Ottawa",L:"Mississauga",M:"Toronto",N:"London",P:"Greater Sudbury",R:"Winnipeg",S:"Saskatoon",T:"Calgary",V:"Vancouver",X:"Yellowknife",Y:"Whitehorse"};
+/* Type multipliers vs composite and typical size per region */
+const TYPE={
+ GTA:{detached:1.42,semi:1.05,town:0.8,condo:0.58}, OTT:{detached:1.2,semi:0.98,town:0.82,condo:0.56},
+ SWO:{detached:1.15,semi:0.92,town:0.84,condo:0.6}, EON:{detached:1.12,semi:0.9,town:0.82,condo:0.62},
+ NON:{detached:1.08,semi:0.85,town:0.78,condo:0.65}, CGY:{detached:1.3,semi:1.2,town:0.73,condo:0.51},
+ EDM:{detached:1.2,semi:0.92,town:0.68,condo:0.46}, ABO:{detached:1.15,semi:0.9,town:0.7,condo:0.5},
+ VAN:{detached:1.66,semi:1.15,town:0.95,condo:0.63}, BCO:{detached:1.25,semi:1.0,town:0.82,condo:0.58},
+ PRA:{detached:1.15,semi:0.9,town:0.75,condo:0.6}, MTL:{detached:1.25,semi:1.0,town:0.9,condo:0.75},
+ QCO:{detached:1.12,semi:0.92,town:0.85,condo:0.75}, ATL:{detached:1.1,semi:0.9,town:0.82,condo:0.8},
+ TER:{detached:1.15,semi:0.95,town:0.85,condo:0.7}
+};
+const SQFT={detached:2000,semi:1500,town:1450,condo:800};
+/* [name, province, region, composite benchmark Sep 2026 (CAD), FSA prefixes] — indicative levels */
+const M=[
+["Toronto","ON","GTA",908200,"M"],["Mississauga","ON","GTA",867500,"L4T L4W L4X L4Y L4Z L5A L5B L5C L5E L5G L5H L5J L5K L5L L5M L5N L5R L5S L5T L5V L5W"],
+["Brampton","ON","GTA",829200,"L6P L6R L6S L6T L6V L6W L6X L6Y L6Z L7A"],["Oakville","ON","GTA",1128800,"L6H L6J L6K L6L L6M"],
+["Burlington","ON","GTA",840600,"L7L L7M L7N L7P L7R L7S L7T"],["Milton","ON","GTA",861600,"L9T L9E"],["Halton Hills","ON","GTA",935000,"L7G L7J"],
+["Vaughan","ON","GTA",1119400,"L4H L4J L4K L4L L6A"],["Markham","ON","GTA",1052500,"L3P L3R L3S L3T L6B L6C L6E L6G"],
+["Richmond Hill","ON","GTA",1157700,"L4B L4C L4E L4S"],["Aurora","ON","GTA",1106800,"L4G"],["Newmarket","ON","GTA",959500,"L3X L3Y"],
+["King","ON","GTA",1587000,"L7B"],["Whitchurch-Stouffville","ON","GTA",1115000,"L4A"],["East Gwillimbury","ON","GTA",1012000,"L9N"],
+["Georgina","ON","GTA",703000,"L4P L0E"],["Pickering","ON","GTA",866800,"L1V L1W L1X L1Y"],["Ajax","ON","GTA",846900,"L1S L1T L1Z"],
+["Whitby","ON","GTA",897200,"L1M L1N L1P L1R"],["Oshawa","ON","GTA",699700,"L1G L1H L1J L1K L1L"],["Clarington","ON","GTA",738900,"L1B L1C L1E"],
+["Caledon","ON","GTA",1059900,"L7C L7E L7K"],["Hamilton","ON","GTA",686000,"L8E L8G L8H L8J L8K L8L L8M L8N L8P L8R L8S L8T L8V L8W L9A L9B L9C L9G L9H L9K"],
+["Grimsby","ON","GTA",712000,"L3M"],
+["Ottawa","ON","OTT",623500,"K0A K1A K1B K1C K1E K1G K1H K1J K1K K1L K1M K1N K1P K1R K1S K1T K1V K1W K1X K1Y K1Z K2A K2B K2C K2E K2G K2H K2J K2K K2L K2M K2P K2R K2S K2T K2V K2W K4A K4B K4C K4M K4P"],
+["Russell","ON","OTT",595000,"K4R"],["Clarence-Rockland","ON","OTT",537000,"K4K"],["Arnprior","ON","OTT",566000,"K7S"],
+["Kitchener","ON","SWO",730000,"N2A N2B N2C N2E N2G N2H N2K N2M N2N N2P N2R"],["Waterloo","ON","SWO",800000,"N2J N2L N2T N2V"],
+["Cambridge","ON","SWO",740000,"N1R N1S N1T N3C N3E N3H"],["Guelph","ON","SWO",800000,"N1E N1G N1H N1K N1L"],
+["London","ON","SWO",610000,"N5V N5W N5X N5Y N5Z N6A N6B N6C N6E N6G N6H N6J N6K N6L N6M N6N N6P"],["St. Thomas","ON","SWO",560000,"N5P N5R"],
+["Woodstock","ON","SWO",590000,"N4S N4T N4V"],["Brantford","ON","SWO",650000,"N3P N3R N3S N3T N3V"],["Stratford","ON","SWO",620000,"N4Z N5A"],
+["Windsor","ON","SWO",540000,"N8N N8P N8R N8S N8T N8W N8X N8Y N9A N9B N9C N9E N9G N9J N9K"],["Sarnia","ON","SWO",510000,"N7S N7T N7V N7W N7X"],
+["Chatham-Kent","ON","SWO",430000,"N7L N7M"],["St. Catharines","ON","SWO",640000,"L2M L2N L2P L2R L2S L2T L2V L2W"],["Niagara Falls","ON","SWO",640000,"L2E L2G L2H L2J"],
+["Welland","ON","SWO",570000,"L3B L3C"],["Niagara-on-the-Lake","ON","SWO",1100000,"L0S"],["Fort Erie","ON","SWO",590000,"L2A"],["Welland Canal Region","ON","SWO",560000,""],
+["Barrie","ON","EON",740000,"L4M L4N L9J L9S"],["Innisfil","ON","EON",820000,"L9S"],["Orillia","ON","EON",620000,"L3V"],["Collingwood","ON","EON",820000,"L9Y"],
+["Wasaga Beach","ON","EON",700000,"L9Z"],["Bradford West Gwillimbury","ON","EON",1000000,"L3Z"],["Orangeville","ON","EON",780000,"L9W"],
+["Peterborough","ON","EON",630000,"K9H K9J K9K K9L"],["Kawartha Lakes","ON","EON",640000,"K9V"],["Cobourg","ON","EON",680000,"K9A"],
+["Belleville","ON","EON",530000,"K8N K8P K8R"],["Quinte West","ON","EON",540000,"K8V"],["Prince Edward County","ON","EON",660000,"K0K"],
+["Kingston","ON","EON",590000,"K7K K7L K7M K7N K7P"],["Brockville","ON","EON",460000,"K6V"],["Cornwall","ON","EON",420000,"K6H K6J K6K"],
+["Owen Sound","ON","EON",530000,"N4K"],["Huntsville","ON","EON",720000,"P1H"],["Bracebridge","ON","EON",700000,"P1L"],["Gravenhurst","ON","EON",690000,"P1P"],
+["Greater Sudbury","ON","NON",460000,"P3A P3B P3C P3E P3G P3L P3N P3P P3Y"],["Thunder Bay","ON","NON",360000,"P7A P7B P7C P7E P7G P7J P7K"],
+["Sault Ste. Marie","ON","NON",330000,"P6A P6B P6C"],["North Bay","ON","NON",450000,"P1A P1B P1C"],["Timmins","ON","NON",300000,"P4N P4P P4R"],
+["Kenora","ON","NON",390000,"P9N"],["Elliot Lake","ON","NON",260000,"P5A"],["Temiskaming Shores","ON","NON",280000,"P0J"],
+["Calgary","AB","CGY",566700,"T1Y T2A T2B T2C T2E T2G T2H T2J T2K T2L T2M T2N T2P T2R T2S T2T T2V T2W T2X T2Y T2Z T3A T3B T3C T3E T3G T3H T3J T3K T3L T3M T3N T3P T3R T3S T3Z"],
+["Airdrie","AB","CGY",505800,"T4A T4B"],["Cochrane","AB","CGY",591000,"T4C"],["Okotoks","AB","CGY",606800,"T1S"],["Chestermere","AB","CGY",690200,"T1X"],
+["Canmore","AB","CGY",1114000,"T1W"],["High River","AB","CGY",465000,"T1V"],["Strathmore","AB","CGY",436000,"T1P"],
+["Edmonton","AB","EDM",430000,"T5A T5B T5C T5E T5G T5H T5J T5K T5L T5M T5N T5P T5R T5S T5T T5V T5W T5X T5Y T5Z T6A T6B T6C T6E T6G T6H T6J T6K T6L T6M T6N T6P T6R T6S T6T T6V T6W T6X"],
+["St. Albert","AB","EDM",520000,"T8N"],["Sherwood Park","AB","EDM",510000,"T8A T8B T8H"],["Spruce Grove","AB","EDM",440000,"T7X"],
+["Leduc","AB","EDM",420000,"T9E"],["Fort Saskatchewan","AB","EDM",440000,"T8L"],["Beaumont","AB","EDM",500000,"T4X"],["Stony Plain","AB","EDM",410000,"T7Z"],
+["Red Deer","AB","ABO",390000,"T4N T4P T4R"],["Lethbridge","AB","ABO",410000,"T1H T1J T1K"],["Medicine Hat","AB","ABO",350000,"T1A T1B T1C"],
+["Grande Prairie","AB","ABO",370000,"T8V T8W T8X"],["Fort McMurray","AB","ABO",380000,"T9H T9J T9K"],["Lloydminster","AB","ABO",320000,"T9V"],
+["Camrose","AB","ABO",360000,"T4V"],["Brooks","AB","ABO",310000,"T1R"],["Sylvan Lake","AB","ABO",460000,"T4S"],["Cold Lake","AB","ABO",340000,"T9M"],
+["Vancouver","BC","VAN",1075900,"V5K V5L V5M V5N V5P V5R V5S V5T V5V V5W V5X V5Y V5Z V6A V6B V6C V6E V6G V6H V6J V6K V6L V6M V6N V6P V6R V6S V6Z"],
+["Burnaby","BC","VAN",982000,"V5A V5B V5C V5E V5G V5H V5J"],["Richmond","BC","VAN",1010000,"V6V V6W V6X V6Y V7A V7B V7C V7E"],
+["Surrey","BC","VAN",898000,"V3R V3S V3T V3V V3W V3X V3Z V4A V4N V4P"],["Coquitlam","BC","VAN",954000,"V3B V3C V3E V3J V3K"],
+["North Vancouver","BC","VAN",1169000,"V7G V7H V7J V7K V7L V7M V7N V7P V7R"],["West Vancouver","BC","VAN",2339000,"V7S V7T V7V V7W"],
+["New Westminster","BC","VAN",767000,"V3L V3M"],["Langley","BC","VAN",936000,"V1M V2Y V2Z V3A"],["Maple Ridge","BC","VAN",861000,"V2W V2X V4R"],
+["Abbotsford","BC","BCO",830000,"V2S V2T V3G V4X"],["Chilliwack","BC","BCO",700000,"V2P V2R V4Z"],["Victoria","BC","BCO",860000,"V8R V8S V8T V8V V8W V9A"],
+["Saanich","BC","BCO",980000,"V8N V8P V8X V8Y V8Z"],["Langford","BC","BCO",800000,"V9B V9C"],["Nanaimo","BC","BCO",740000,"V9R V9S V9T V9V V9X"],
+["Courtenay","BC","BCO",650000,"V9N"],["Kelowna","BC","BCO",790000,"V1V V1W V1X V1Y V1Z V4T V4V"],["Vernon","BC","BCO",650000,"V1B V1H V1T"],
+["Penticton","BC","BCO",640000,"V2A"],["Kamloops","BC","BCO",620000,"V1S V2B V2C V2E V2H"],["Prince George","BC","BCO",450000,"V2K V2L V2M V2N"],
+["Squamish","BC","BCO",1050000,"V8B"],["Whistler","BC","BCO",1800000,"V8E"],["Fort St. John","BC","BCO",380000,"V1J"],
+["Saskatoon","SK","PRA",420000,"S7H S7J S7K S7L S7M S7N S7P S7R S7S S7T S7V S7W"],["Regina","SK","PRA",340000,"S4N S4P S4R S4S S4T S4V S4W S4X S4Y S4Z"],
+["Prince Albert","SK","PRA",270000,"S6V S6W S6X"],["Moose Jaw","SK","PRA",270000,"S6H S6J S6K"],["Swift Current","SK","PRA",290000,"S9H"],
+["Winnipeg","MB","PRA",380000,"R2C R2E R2G R2H R2J R2K R2L R2M R2N R2P R2R R2V R2W R2X R2Y R3A R3B R3C R3E R3G R3H R3J R3K R3L R3M R3N R3P R3R R3T R3V R3W R3X R3Y"],
+["Brandon","MB","PRA",300000,"R7A R7B R7C"],["Steinbach","MB","PRA",360000,"R5G"],["Winkler","MB","PRA",340000,"R6W"],
+["Montréal","QC","MTL",600000,"H1A H1B H1C H1E H1G H1H H1J H1K H1L H1M H1N H1P H1R H1S H1T H1V H1W H1X H1Y H1Z H2A H2B H2C H2E H2G H2H H2J H2K H2L H2M H2N H2P H2R H2S H2T H2V H2W H2X H2Y H2Z H3A H3B H3C H3E H3G H3H H3J H3K H3L H3M H3N H3P H3R H3S H3T H3V H3W H3X H3Y H3Z H4A H4B H4C H4E H4G H4H H4J H4K H4L H4M H4N H4P H4R H4S H4T H4V H4W H4X H4Y H4Z H8N H8P H8R H8S H8T H8Y H8Z H9A H9B H9C H9E H9G H9H H9J H9K H9P H9R H9S H9W H9X"],
+["Laval","QC","MTL",580000,"H7A H7B H7C H7E H7G H7H H7J H7K H7L H7M H7N H7P H7R H7S H7T H7V H7W H7X H7Y"],
+["Longueuil","QC","MTL",540000,"J4G J4H J4J J4K J4L J4M J4N"],["Terrebonne","QC","MTL",520000,"J6V J6W J6X J6Y"],["Repentigny","QC","MTL",480000,"J5Y J5Z J6A"],
+["Blainville","QC","MTL",560000,"J7B J7C"],["Brossard","QC","MTL",620000,"J4W J4X J4Y J4Z"],["Vaudreuil-Dorion","QC","MTL",550000,"J7V"],
+["Gatineau","QC","QCO",470000,"J8L J8M J8P J8R J8T J8V J8X J8Y J8Z J9A J9H J9J"],["Québec City","QC","QCO",400000,"G1B G1C G1E G1G G1H G1J G1K G1L G1M G1N G1P G1R G1S G1T G1V G1W G1X G1Y G2A G2B G2C G2E G2G G2J G2K G2L G2M G2N G3A G3E G3G G3H G3J G3K"],
+["Lévis","QC","QCO",390000,"G6V G6W G6X G6Y G6Z G7A"],["Sherbrooke","QC","QCO",400000,"J1E J1G J1H J1J J1K J1L J1M J1N"],["Trois-Rivières","QC","QCO",330000,"G8T G8V G8W G8Y G8Z G9A G9B G9C"],
+["Saguenay","QC","QCO",290000,"G7B G7G G7H G7J G7K G7N G7P G7S G7T G7X G7Y G7Z"],["Drummondville","QC","QCO",350000,"J2A J2B J2C J2E"],["Granby","QC","QCO",380000,"J2G J2H J2J"],
+["Rimouski","QC","QCO",300000,"G5L G5M G5N"],["Saint-Jérôme","QC","QCO",440000,"J5L J7Y J7Z"],
+["Halifax","NS","ATL",560000,"B3A B3B B3E B3G B3H B3J B3K B3L B3M B3N B3P B3R B3S B3T B3V B3Z B4A B4B B4C B4E B4G"],["Truro","NS","ATL",340000,"B2N"],
+["Cape Breton (Sydney)","NS","ATL",300000,"B1A B1B B1C B1E B1G B1H B1J B1K B1L B1M B1N B1P B1R B1S B1T B1V B1W B1X B1Y"],["New Glasgow","NS","ATL",290000,"B2H"],["Kentville","NS","ATL",380000,"B4N"],
+["Moncton","NB","ATL",360000,"E1A E1B E1C E1E E1G"],["Dieppe","NB","ATL",380000,"E1A"],["Saint John","NB","ATL",300000,"E2H E2J E2K E2L E2M E2N"],["Fredericton","NB","ATL",360000,"E3A E3B E3C E3E E3G"],
+["Charlottetown","PE","ATL",430000,"C1A C1B C1C C1E"],["Summerside","PE","ATL",330000,"C1N"],["Stratford PE","PE","ATL",470000,"C1B"],
+["St. John's","NL","ATL",360000,"A1A A1B A1C A1E A1G A1H"],["Mount Pearl","NL","ATL",330000,"A1N"],["Corner Brook","NL","ATL",270000,"A2H"],["Gander","NL","ATL",270000,"A1V"],
+["Whitehorse","YT","TER",600000,"Y1A"],["Yellowknife","NT","TER",470000,"X1A"],["Iqaluit","NU","TER",600000,"X0A"]
+].filter(m=>m[4]!=="" || m[0]!=="Welland Canal Region").map(([name,prov,reg,bench,fsa])=>({name,prov,reg,bench,fsa:fsa.split(" ").filter(Boolean)}));
+
+/* ---------- Five-year fixed rate history (approx. posted-discounted average) for carrying cost ---------- */
+const RATE=[[2016,0,2.6],[2018,6,3.4],[2019,6,2.9],[2020,6,2.1],[2021,6,2.0],[2022,6,4.4],[2023,6,5.5],[2024,6,5.0],[2025,6,4.3],[2026,8,4.2]];
+
+/* ---------- Series builder with fail-safe #1: data validation ---------- */
+const START=new Date(2016,0,1), END=new Date(2026,8,1);
+const MONTHS=[];for(let d=new Date(START);d<=END;d.setMonth(d.getMonth()+1))MONTHS.push(new Date(d));
+const mi=(y,m)=>(y-2016)*12+m;
+function interp(anchors){
+  const out=new Array(MONTHS.length).fill(NaN);
+  for(let k=0;k<anchors.length-1;k++){const[a,b]=[anchors[k],anchors[k+1]];const i0=mi(a[0],a[1]),i1=mi(b[0],b[1]);
+    for(let i=i0;i<=i1&&i<out.length;i++){const t=(i-i0)/(i1-i0);const s=(1-Math.cos(Math.PI*t))/2;out[i]=a[2]+(b[2]-a[2])*s;}}
+  return out;
+}
+function seasonal(arr){return arr.map((v,i)=>v*(1+0.012*Math.sin((MONTHS[i].getMonth()-1)/12*2*Math.PI)));}
+const health={fixed:0,clamped:0,renderer:{}};
+function sanitize(arr,lo,hi){ // fill gaps by linear interpolation, clamp outliers, never return NaN
+  const a=arr.slice();let last=-1;
+  for(let i=0;i<a.length;i++){if(!Number.isFinite(a[i])){continue;}
+    if(a[i]<lo||a[i]>hi){a[i]=Math.min(hi,Math.max(lo,a[i]));health.clamped++;}
+    if(last>=0&&i-last>1){for(let j=last+1;j<i;j++){a[j]=a[last]+(a[i]-a[last])*(j-last)/(i-last);health.fixed++;}}
+    else if(last<0&&i>0){for(let j=0;j<i;j++){a[j]=a[i];health.fixed++;}}
+    last=i;}
+  if(last<0)return a.map(()=>lo);
+  for(let j=last+1;j<a.length;j++){a[j]=a[last];health.fixed++;}
+  return a;
+}
+const IDX={};for(const r in ANCH)IDX[r]=sanitize(seasonal(interp(ANCH[r])),20,500);
+const RATES=sanitize(interp(RATE),0.5,15);
+function seriesFor(m,type){const idx=IDX[m.reg],now=idx[idx.length-1],mult=TYPE[m.reg][type];
+  return sanitize(idx.map(v=>Math.round(m.bench*mult*v/now/1000)*1000),20000,20000000);}
+function provSeries(prov,type){const ms=M.filter(x=>x.prov===prov);const s=new Array(MONTHS.length).fill(0);
+  ms.forEach(m=>seriesFor(m,type).forEach((v,i)=>s[i]+=v/ms.length));return s.map(Math.round);}
+function regSeries(reg,type){const ms=M.filter(x=>x.reg===reg);const s=new Array(MONTHS.length).fill(0);
+  ms.forEach(m=>seriesFor(m,type).forEach((v,i)=>s[i]+=v/ms.length));return s.map(Math.round);}
+function payment(price,rate){const P=price*0.8,r=rate/100/12,n=300;return P*r/(1-Math.pow(1+r,-n));}
+
+/* ---------- Chart rendering with fail-safes #2 (canvas fallback) and #3 (table fallback) ---------- */
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmt$=v=>v>=1e6?"$"+(v/1e6).toFixed(2)+"M":"$"+Math.round(v/1000)+"K";
+const charts={};
+function render(id,spec){
+  const box=document.getElementById(id),mode=document.getElementById("m"+id.slice(1));
+  if(charts[id]){try{charts[id].destroy()}catch(e){}charts[id]=null;}
+  box.innerHTML="";
+  try{ if(!window.Chart)throw new Error("Chart.js not loaded");
+    const c=document.createElement("canvas");box.appendChild(c);charts[id]=chartjs(c,spec);
+    mode.textContent="Rendered with Chart.js";health.renderer[id]="chartjs";return;
+  }catch(e){box.innerHTML="";}
+  try{ const c=document.createElement("canvas");box.appendChild(c);drawCanvas(c,spec);
+    mode.textContent="Rendered with built-in canvas fallback";health.renderer[id]="canvas";return;
+  }catch(e){box.innerHTML="";}
+  box.style.height="auto";box.appendChild(tableOf(spec));mode.textContent="Shown as a table (chart renderers unavailable)";health.renderer[id]="table";
+}
+function chartjs(c,spec){
+  const fg=css("--muted"),grid=css("--line");
+  return new Chart(c,{type:spec.kind,data:{labels:spec.labels,datasets:spec.sets.map(s=>({label:s.label,data:s.data,borderColor:s.color,
+    backgroundColor:spec.kind==="bar"?s.data.map(v=>v>=0?css("--good"):css("--bad")):s.fill?s.color+"22":s.color,fill:!!s.fill,
+    borderDash:spec.sets.length>1?(spec.sets.indexOf(s)===2?[6,3]:spec.sets.indexOf(s)===3?[2,3]:[]):[],
+    borderWidth:spec.kind==="bar"?0:2,pointRadius:0,pointHoverRadius:4,tension:.25}))},
+    options:{responsive:true,maintainAspectRatio:false,animation:matchMedia("(prefers-reduced-motion: reduce)").matches?false:{duration:400},
+      interaction:{mode:"index",intersect:false},
+      plugins:{legend:{display:spec.sets.length>1,labels:{color:fg,boxWidth:10,font:{family:css("--mono"),size:12}}},
+        tooltip:{titleFont:{family:css("--mono")},bodyFont:{family:css("--mono")},callbacks:{label:t=>t.dataset.label+": "+spec.fmt(t.parsed.y)}}},
+      scales:{x:{ticks:{color:fg,maxTicksLimit:6,maxRotation:0,font:{family:css("--mono"),size:12}},grid:{display:false}},
+        y:{ticks:{color:fg,callback:spec.fmt,font:{family:css("--mono"),size:12}},grid:{color:grid}}}}});
+}
+function drawCanvas(c,spec){
+  const dpr=window.devicePixelRatio||1,W=c.parentElement.clientWidth||400,H=c.parentElement.clientHeight||240;
+  c.width=W*dpr;c.height=H*dpr;const g=c.getContext("2d");if(!g)throw new Error("no 2d");g.scale(dpr,dpr);
+  const L=68,R=8,T=14+(spec.sets.length>1?spec.sets.length*22:0),B=28,all=spec.sets.flatMap(s=>s.data).filter(Number.isFinite);
+  let lo=Math.min(...all),hi=Math.max(...all);if(spec.kind==="bar"){lo=Math.min(0,lo);hi=Math.max(0,hi);}if(hi===lo)hi=lo+1;
+  const n=spec.labels.length,x=i=>L+(W-L-R)*(n<2?0:i/(n-1)),y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  g.font="12px "+css("--mono");g.fillStyle=css("--muted");g.strokeStyle=css("--line");g.lineWidth=1;
+  for(let k=0;k<=4;k++){const v=lo+(hi-lo)*k/4,yy=y(v);g.beginPath();g.moveTo(L,yy);g.lineTo(W-R,yy);g.stroke();g.fillText(spec.fmt(v),2,yy+3);}
+  [0,Math.floor(n/2),n-1].forEach(i=>g.fillText(spec.labels[i],Math.min(x(i),W-50),H-6));
+  if(spec.sets.length>1){spec.sets.forEach((s,i)=>{
+    const xx=8,yy=16+i*22;
+    g.fillStyle=css("--muted");g.fillText(s.label,xx+22,yy,W-38);
+    g.strokeStyle=s.color;g.lineWidth=2;g.setLineDash(i===2?[6,3]:i===3?[2,3]:[]);
+    g.beginPath();g.moveTo(xx,yy-4);g.lineTo(xx+16,yy-4);g.stroke();
+    g.setLineDash([]);
+  });}
+  spec.sets.forEach((s,i)=>{
+    if(spec.kind==="bar"){const bw=Math.max(1,(W-L-R)/n-1);s.data.forEach((v,i)=>{g.fillStyle=v>=0?css("--good"):css("--bad");const y0=y(0),y1=y(v);g.fillRect(x(i)-bw/2,Math.min(y0,y1),bw,Math.abs(y1-y0));});}
+    else{g.strokeStyle=s.color;g.lineWidth=2;g.setLineDash(spec.sets.length>1?(i===2?[6,3]:i===3?[2,3]:[]):[]);g.beginPath();s.data.forEach((v,i)=>i?g.lineTo(x(i),y(v)):g.moveTo(x(i),y(v)));g.stroke();g.setLineDash([]);}
+  });
+}
+function tableOf(spec){
+  const wrap=document.createElement("div");wrap.className="tbl";const t=document.createElement("table");
+  t.innerHTML="<thead><tr><th>Month</th>"+spec.sets.map(s=>"<th>"+s.label+"</th>").join("")+"</tr></thead>";
+  const tb=document.createElement("tbody");
+  for(let i=spec.labels.length-1;i>=0;i-=Math.max(1,Math.floor(spec.labels.length/24)))
+    tb.insertAdjacentHTML("beforeend","<tr><td>"+spec.labels[i]+"</td>"+spec.sets.map(s=>"<td>"+spec.fmt(s.data[i])+"</td>").join("")+"</tr>");
+  t.appendChild(tb);wrap.appendChild(t);return wrap;
+}
+
+/* ---------- State ---------- */
+const $=id=>document.getElementById(id);
+const st={prov:"ON",muni:"Mississauga",type:"detached",span:999,sort:{k:"yoy",d:-1}};
+try{const s=JSON.parse(localStorage.getItem("hve")||"{}");Object.assign(st,s);}catch(e){}
+function save(){try{localStorage.setItem("hve",JSON.stringify({prov:st.prov,muni:st.muni,type:st.type,sub:st.sub,span:st.span}))}catch(e){}}
+const cur=()=>M.find(m=>m.name===st.muni)||M[0];
+const label=d=>d.toLocaleString("en-CA",{month:"short",year:"2-digit"});
+
+function fillMuni(){$("muni").innerHTML=M.filter(m=>m.prov===st.prov).sort((a,b)=>a.name.localeCompare(b.name)).map(m=>`<option${m.name===st.muni?" selected":""}>${m.name}</option>`).join("");
+  if(!M.some(m=>m.name===st.muni&&m.prov===st.prov)){st.muni=$("muni").value;}}
+function setSeg(id,v){[...$(id).children].forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v==String(v))));}
+
+function matchAddress(txt){
+  const t=txt.toUpperCase();const pc=t.match(/\b([ABCEGHJKLMNPRSTVXY]\d[A-Z])\s?\d[A-Z]\d\b/)||t.match(/\b([ABCEGHJKLMNPRSTVXY]\d[A-Z])\b/);
+  if(pc){const f=pc[1];const hit=M.find(m=>m.fsa.includes(f))||M.find(m=>m.name===FSA1[f[0]]);if(hit)return{m:hit,how:"postal area "+f};}
+  const byName=[...M].sort((a,b)=>b.name.length-a.name.length).find(m=>t.includes(m.name.toUpperCase()));
+  if(byName)return{m:byName,how:"city name"};
+  return null;
+}
+
+let lastV=0;
+function estimate(){
+  const m=cur(),type=st.type,s=seriesFor(m,type),base=s[s.length-1];
+  const sq=+$("sqft").value||SQFT[type],sizeAdj=Math.pow(Math.min(4,Math.max(.3,sq/SQFT[type])),.62);
+  const beds=+$("beds").value,baths=+$("baths").value,typB={detached:3.5,semi:3,town:3,condo:2}[type],typBa={detached:2.5,semi:2,town:2,condo:1.5}[type];
+  const roomAdj=1+0.025*(beds-typB)+0.03*(baths-typBa);
+  // a condo parking space is worth more where condos cost more (about $15k in smaller markets, $55–70k in Toronto/Vancouver)
+  const condoPark=Math.min(.09,Math.max(.03,.03+(base-300000)/400000*.05));
+  const parkAdj=1+(type==="condo"?condoPark:0.015)*(+$("park").value-(type==="condo"?1:2));
+  const lotAdj=type==="condo"?1:+$("lot").value;
+  const model=base*sizeAdj*roomAdj*parkAdj*lotAdj*(+$("cond").value);
+  let v=model,spread=0.06+Math.min(.06,Math.abs(Math.log(sq/SQFT[type]))*0.08)+(["NON","ABO","TER","ATL","PRA"].includes(m.reg)?0.02:0),how="area benchmark model";
+  const pp=+$("pp").value,pd=$("pd").value;
+  if(pp>10000&&/^\d{4}-\d{2}$/.test(pd)){
+    // Repeat-sale method: index the owner's purchase forward with the area's price index, add renovation value, blend with the model.
+    const [py,pm]=pd.split("-").map(Number),idx=IDX[m.reg],now=idx[idx.length-1],i=mi(py,pm-1);
+    const g={ON:0.06,BC:0.07,QC:0.045}[m.prov]||0.035; // pre-2016 annual growth used to extend the index backwards
+    const then=i>=0?idx[Math.min(i,idx.length-1)]:idx[0]/Math.pow(1+g,-i/12);
+    const yrs=Math.max(0,(idx.length-1-i)/12);
+    const indexed=pp*now/then+(+$("reno").value||0)*0.6*Math.pow(0.97,yrs/2);
+    const w=Math.max(.5,.85-yrs*.015);
+    v=indexed*w+model*(1-w);
+    spread=Math.min(.14,0.04+yrs*0.005);
+    how=`your ${pd} purchase indexed to today (${Math.round(w*100)}% weight) + area model`;
+  }
+  const r5=x=>Math.round(x/5000)*5000;
+  lastV=r5(v);
+  $("rVal").textContent="$"+r5(v).toLocaleString("en-CA");
+  $("rRange").textContent="Range $"+r5(v*(1-spread)).toLocaleString("en-CA")+" – $"+r5(v*(1+spread)).toLocaleString("en-CA");
+  const conf=spread<.08?"High":spread<.1?"Medium":"Low";
+  const yoy=(s[s.length-1]/s[s.length-13]-1)*100;
+  $("rMeta").innerHTML=`${m.name}, ${m.prov} · ${$("type").querySelector('[aria-pressed="true"]').textContent} · confidence <b>${conf}</b> · area benchmark <span class="${yoy>=0?"up":"down"}">${yoy>=0?"+":""}${yoy.toFixed(1)}% YoY</span><br>Based on ${how}.`;
+}
+
+function market(){
+  const m=cur(),n=Math.min(st.span,MONTHS.length),sl=a=>a.slice(-n),labels=sl(MONTHS.map(label));
+  $("mName").textContent=m.name;$("mRegion").textContent=REGION_NAME[m.reg]+" · "+PROV[m.prov];
+  const types=["detached","semi","town","condo"],names={detached:"Detached",semi:"Semi",town:"Town",condo:"Condo"},cols=[css("--s1"),css("--s2"),css("--s3"),css("--s4")];
+  const byType=types.map(t=>seriesFor(m,t)),sel=seriesFor(m,st.type);
+  const last=sel[sel.length-1],y1=sel[sel.length-13],y5=sel[sel.length-61],pk=Math.max(...sel),pkI=sel.indexOf(pk);
+  const pmt=payment(last,RATES[RATES.length-1]);
+  const st1=(v,l,c)=>`<div class="stat"><b class="${c||""}">${v}</b><span>${l}</span></div>`;
+  const pc=(a,b)=>{const p=(a/b-1)*100;return[(p>=0?"+":"")+p.toFixed(1)+"%",p>=0?"up":"down"]};
+  const [a1,c1]=pc(last,y1),[a5,c5]=pc(last,y5),[ap,cp]=pc(last,pk);
+  $("stats").innerHTML=st1(fmt$(last),names[st.type]+" benchmark")+st1(a1,"1-year change",c1)+st1(a5,"5-year change",c5)+st1(ap,"vs peak ("+label(MONTHS[pkI])+")",cp);
+  render("c1",{kind:"line",labels,fmt:fmt$,sets:types.map((t,i)=>({label:names[t],data:sl(byType[i]),color:cols[i]}))});
+  const yoy=sel.map((v,i)=>i>=12?+((v/sel[i-12]-1)*100).toFixed(1):NaN);
+  const yoyS=sanitize(yoy,-60,80);
+  render("c2",{kind:"bar",labels,fmt:v=>(+v).toFixed(0)+"%",sets:[{label:names[st.type]+" YoY",data:sl(yoyS)}]});
+  render("c3",{kind:"line",labels,fmt:fmt$,sets:[{label:m.name,data:sl(sel),color:css("--s1")},{label:REGION_NAME[m.reg],data:sl(regSeries(m.reg,st.type)),color:css("--s2")},{label:PROV[m.prov]+" avg",data:sl(provSeries(m.prov,st.type)),color:css("--s3")}]});
+  render("c4",{kind:"line",labels,fmt:v=>"$"+Math.round(v).toLocaleString("en-CA"),sets:[{label:"Mortgage payment / mo",data:sl(sel.map((v,i)=>payment(v,RATES[i]))),color:css("--s1"),fill:true}]});
+  rank();
+  const r=Object.values(health.renderer);
+  $("health").textContent=`Data checks: ${health.fixed} gap months filled, ${health.clamped} outliers clamped. Renderers: ${r.filter(x=>x==="chartjs").length} Chart.js, ${r.filter(x=>x==="canvas").length} canvas fallback, ${r.filter(x=>x==="table").length} table fallback. Current payment at ${RATES[RATES.length-1].toFixed(2)}% 5-yr fixed, 25-yr amortization: $${Math.round(pmt).toLocaleString("en-CA")}/mo.`;
+}
+
+function rank(){
+  const rows=M.filter(m=>m.prov===st.prov).map(m=>{const s=seriesFor(m,st.type),l=s[s.length-1];return{m,price:l,yoy:(l/s[s.length-13]-1)*100,y5:(l/s[s.length-61]-1)*100,pk:(l/Math.max(...s)-1)*100};});
+  const k=st.sort.k,d=st.sort.d;rows.sort((a,b)=>k==="name"?d*a.m.name.localeCompare(b.m.name):d*(a[k]-b[k]));
+  const H=[["name","Municipality"],["price","Benchmark"],["yoy","1Y"],["y5","5Y"],["pk","vs peak"]];
+  $("rank").tHead.innerHTML="<tr>"+H.map(([k2,l])=>`<th data-k="${k2}">${l}${st.sort.k===k2?(d>0?" ▲":" ▼"):""}</th>`).join("")+"</tr>";
+  const p=v=>`<span class="${v>=0?"up":"down"}">${v>=0?"+":""}${v.toFixed(1)}%</span>`;
+  $("rank").tBodies[0].innerHTML=rows.map(r=>`<tr data-n="${r.m.name}" class="${r.m.name===st.muni?"sel":""}" style="cursor:pointer"><td>${r.m.name}</td><td>${fmt$(r.price)}</td><td>${p(r.yoy)}</td><td>${p(r.y5)}</td><td>${p(r.pk)}</td></tr>`).join("");
+}
+
+function refresh(){save();estimate();extras();market();}
+$("prov").innerHTML=Object.entries(PROV).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");$("prov").value=st.prov;fillMuni();setSeg("type",st.type);setSeg("span",st.span);
+$("prov").onchange=e=>{st.prov=e.target.value;fillMuni();st.muni=$("muni").value;refresh();};
+$("muni").onchange=e=>{st.muni=e.target.value;refresh();};
+$("type").onclick=e=>{const b=e.target.closest("button");if(!b)return;st.type=b.dataset.v;setSeg("type",st.type);$("sqft").value=SQFT[st.type];refresh();};
+$("span").onclick=e=>{const b=e.target.closest("button");if(!b)return;st.span=+b.dataset.v;setSeg("span",st.span);market();save();};
+$("rank").onclick=e=>{const th=e.target.closest("th");if(th){const k=th.dataset.k;st.sort={k,d:st.sort.k===k?-st.sort.d:-1};rank();return;}
+  const tr=e.target.closest("tr[data-n]");if(tr){st.muni=tr.dataset.n;fillMuni();refresh();}};
+["beds","baths","sqft","cond","park","lot","pp","pd","reno"].forEach(id=>$(id).addEventListener("change",()=>{estimate();extras();}));
+$("addr").addEventListener("x-legacy",()=>{const r=matchAddress($("addr").value);
+  if(r){if(r.m.prov!==st.prov){st.prov=r.m.prov;$("prov").value=st.prov;}st.muni=r.m.name;fillMuni();$("addrHint").textContent=`Matched ${r.m.name}, ${r.m.prov} by ${r.how}.`;}
+  else $("addrHint").textContent="Add the city or postal code so we can place the address.";});
+$("f").addEventListener("submit",e=>{e.preventDefault();refresh();go(3);});
+const ROI={kitchen:[.72,"kitchens typically recover 65-80% of cost"],bath:[.7,"bathrooms typically recover 60-80%"],basement:[.6,"finished basements recover 50-70%"],paint:[1.0,"paint often recovers its full cost"],floors:[.7,"flooring recovers 60-80%"],windows:[.55,"windows recover 45-65%"],addition:[.55,"additions recover 45-65%"],deck:[.6,"decks recover 50-70%"]};
+function borrowing(){ // what the equity can do: home-equity line (65%) and refinance (80%), with payments
+  const bal=+$("bal").value||0,box=$("borrow");if(!lastV){box.hidden=true;return;}
+  const r=(+$("rate").value||4.2)/100/12,n=(+$("amort").value||25)*12,pmt=P=>P>0?P*r/(1-Math.pow(1+r,-n)):0,m=v=>"$"+Math.round(v).toLocaleString("en-CA");
+  const heloc=Math.max(0,Math.min(lastV*.65,lastV*.8-bal)),refi=Math.max(0,lastV*.8-bal);
+  box.hidden=false;box.innerHTML=[["Home-equity line available (65% limit)",m(heloc)],["Interest-only payment on full line / mo",m(heloc*(+$("rate").value||4.2)/100/12)],
+    ["Refinance cash-out available (80%)",m(refi)],["New mortgage at 80% / mo",m(pmt(lastV*.8))],["Current balance payment / mo",m(pmt(bal))]]
+    .map(([k,v])=>`<div><span>${k}</span><span>${v}</span></div>`).join("");}
+function extras(){
+  borrowing();
+  const bal=+$("bal").value;
+  if(lastV&&$("bal").value!==""){const eq=lastV-bal;$("eqVal").textContent=(eq<0?"-$":"$")+Math.abs(Math.round(eq/1000)*1000).toLocaleString("en-CA");
+    $("eqMeta").textContent=Math.round(eq/lastV*100)+"% of the estimated value. Borrowing room up to 80% of value: $"+Math.max(0,Math.round((lastV*.8-bal)/1000)*1000).toLocaleString("en-CA")+".";}
+  else{$("eqVal").textContent="—";$("eqMeta").textContent="Add your mortgage balance on the previous step to see your equity.";}
+  const r=ROI[$("proj").value],c=+$("pcost").value||0;
+  $("pAdd").textContent="+$"+(Math.round(c*r[0]/1000)*1000).toLocaleString("en-CA");$("pMeta").textContent="estimated value added; "+r[1]+".";
+}
+function go(n){document.querySelectorAll("fieldset[data-step]").forEach(f=>f.hidden=f.dataset.step!=String(n));
+  document.querySelectorAll("#steps li").forEach(li=>li.classList.toggle("on",+li.dataset.s<=n));
+  if(go.ready){const s=$("steps").getBoundingClientRect();if(s.top<0)$("steps").scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});}go.ready=true;}
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(+b.dataset.go)));
+$("skipTo3").addEventListener("click",()=>{refresh();go(3);});
+["bal","proj","pcost","rate","amort"].forEach(id=>$(id).addEventListener("input",extras));
+$("copySum").addEventListener("click",async()=>{
+  const lines=[`Home value estimate: ${$("rVal").textContent} (${$("rRange").textContent})`,$("addr").value?`Address: ${$("addr").value}`:"",
+    `Equity: ${$("eqVal").textContent}`,...[...$("borrow").querySelectorAll("div")].map(d=>[...d.children].map(c=>c.textContent).join(": ")),
+    ($("aiBox").innerText||"").replace(/\s+/g," "),"Indicative only — not an appraisal."].filter(Boolean);
+  const txt=lines.join(String.fromCharCode(10));
+  try{await navigator.clipboard.writeText(txt);$("copyMsg").textContent="Summary copied.";}
+  catch(e){const ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();$("copyMsg").textContent="Select-all is ready: press Ctrl+C to copy.";setTimeout(()=>ta.remove(),8000);}});
+go(1);
+
+/* Detailed residential types: each maps to a benchmark base type, a value factor and a typical size. */
+const SUB={detached:["detached",1,2000],link:["detached",.9,1900],semi:["semi",1,1500],town:["town",1,1450],
+  duplex:["detached",1.08,2400],multiplex:["detached",1.22,3200],rural:["detached",.92,2000],cottage:["detached",.82,1300],
+  mobile:["detached",.32,1100],condo:["condo",1,800],loft:["condo",1.08,950],condotown:["town",.9,1300],
+  stacked:["condo",1.15,1050],penthouse:["condo",1.6,1500]};
+const SUBNAME={link:"Link",duplex:"Duplex",multiplex:"Triplex / fourplex",rural:"Rural / acreage",cottage:"Cottage",mobile:"Mobile home",
+  loft:"Condo loft",condotown:"Condo townhouse",stacked:"Stacked townhouse",penthouse:"Penthouse"};
+const isCondo=s=>["condo","loft","condotown","stacked","penthouse"].includes(s);
+st.sub=st.sub&&SUB[st.sub]?st.sub:st.type;
+function applySub(resetSize){const [base,,sq]=SUB[st.sub];st.type=base;setSeg("type",base);$("ptype").value=st.sub;
+  $("cfeeWrap").hidden=!isCondo(st.sub);$("lot").disabled=isCondo(st.sub);if(resetSize)$("sqft").value=sq;}
+$("ptype").addEventListener("change",()=>{st.sub=$("ptype").value;applySub(true);refresh();});
+$("cfee").addEventListener("input",()=>{estimate();extras();});
+const _estBase=estimate;
+estimate=function(){
+  const [base,f,sq0]=SUB[st.sub]||SUB.detached,sqIn=+$("sqft").value||sq0;
+  // run the base-type model at the base type's typical-size scale, then apply the sub-type factor
+  const keep=$("sqft").value;$("sqft").value=Math.round(sqIn*SQFT[base]/sq0);_estBase();$("sqft").value=keep;
+  let k=f;
+  if(isCondo(st.sub)){const fee=+$("cfee").value||0,per=fee/Math.max(300,sqIn);k*=Math.min(1.06,Math.max(.85,1-(per-.65)*.18));}
+  if(st.sub==="mobile"||st.sub==="cottage"||st.sub==="rural"){/* wider uncertainty */const r=$("rRange").textContent.match(/\$[\d,]+/g);}
+  if(k!==1){lastV=Math.round(lastV*k/5000)*5000;$("rVal").textContent="$"+lastV.toLocaleString("en-CA");
+    $("rRange").textContent=$("rRange").textContent.replace(/\$([\d,]+)/g,(m,n)=>"$"+(Math.round(+n.replace(/,/g,"")*k/5000)*5000).toLocaleString("en-CA"));}
+  if(SUBNAME[st.sub])$("rMeta").innerHTML=$("rMeta").innerHTML.replace(/ · (Detached|Semi|Townhouse|Condo apt) · /," · "+SUBNAME[st.sub]+" · ");
+};
+applySub(false);
+
+let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(market,200);});
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",market);
+new MutationObserver(market).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+refresh();
+/* ---- No-server mode: every lookup comes from pre-computed real data files in data/ ----
+   munis.json   all 3,515 Canadian municipalities (StatCan National Address Register)
+   fsa.json     every postal area: 2021 Census median moved to today + record medians by property type
+   streets/XXX.json  street-level medians by type from municipal assessment records (Sep-2026 $)            */
+let DB={munis:null,fsa:null,acc:null,streets:{}}, aiProp=null, acItems=[], acSel=-1, acT=null;
+const acList=$("acList"), money=v=>"$"+(Math.round(v/1000)*1000).toLocaleString("en-CA"), r5k=v=>Math.round(v/5000)*5000;
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const TYPEWORDS=new Set("ST STREET AVE AV AVENUE RD ROAD DR DRIVE CRES CR CRESCENT BLVD BOUL BOULEVARD BV PL PLACE CRT CT CO COURT TRAIL TR WAY WY CLOSE CL GATE GA LANE LN HTS HEIGHTS HT GREEN GR PARK PA PK TERR TERRACE TC CIR CIRCLE CI MANOR MR POINT PT RISE RI SQ SQUARE VIEW VW BAY BA RUE CH CHEMIN MONTEE MTEE RANG ALLEE COMMON CM LINK LI MEWS ME HILL HL PKY PARKWAY HWY HIGHWAY GDNS GARDENS GD ROW WALK WK LANDING LD CV COVE GROVE GV ESTATES ESTS BEND BN HEATH ISLAND VILLAGE RU BO RT RTE ROUTE MO RG CA CARRE CROIS CROISSANT IMP IMPASSE PROM PROMENADE TSSE TERRASSE AL CHE AU AUT AUTOROUTE SENTIER SENT COTE QUAI PARC CERCLE CE".split(" "));
+const DIRS={N:"N",S:"S",E:"E",W:"W",NE:"NE",NW:"NW",SE:"SE",SW:"SW",NORTH:"N",SOUTH:"S",EAST:"E",WEST:"W",EST:"E",OUEST:"W",NORD:"N",SUD:"S",O:"W"};
+const PART=new Set(["DE","LA","LE","DU","DES","L","D","THE"]);
+const plain=s=>String(s||"").normalize("NFKD").replace(/\p{M}/gu,"").toUpperCase().replace(/\(.*?\)/g," ").replace(/[^A-Z0-9 ]/g," ");
+function streetKey(street){const toks=plain(street).split(/\s+/).filter(Boolean);
+  const allt=toks.filter(t=>!(t in DIRS)&&!PART.has(t));
+  let core0=allt.filter(t=>!TYPEWORDS.has(t));if(!core0.length)core0=allt.slice(0,1);   // "VIEW ST" keeps VIEW
+  const core=core0.map(t=>t.replace(/^(\d+)(ST|ND|RD|TH)$/,"$1"))
+    .map(t=>["ST","STE","SAINTE"].includes(t)?"SAINT":({TWP:"TOWNSHIP",RGE:"RANGE",RR:"RANGE",MT:"MOUNT"}[t]||t));
+  return core.join(" ")+"|"+toks.filter(t=>t in DIRS).map(t=>DIRS[t]).join("");}
+const title=s=>String(s).toLowerCase().replace(/(^|[\s\-'])(\p{L})/gu,(m,a,b)=>a+b.toUpperCase());
+function niceStreet(k){const [core,dir]=k.split("|");return title(core)+(dir?" "+dir:"");}
+
+const DAV={};let CSDT=null;
+async function blockValue(code){if(!code)return null;const pr=code.slice(0,2);
+  if(!DAV[pr])DAV[pr]=getJSON("data/da_"+pr+".json").catch(()=>({}));
+  if(!CSDT)CSDT=getJSON("data/csd_types.json").catch(()=>({}));
+  const v=(await DAV[pr])[code];return v?{da:code,v:v[0],mkey:v[1],types:(await CSDT)[v[1]]||null}:null;}
+/* legal description + assessment history where cities publish them: data/detail/<prefix>.json (see build_details.py) */
+const normNum=x=>{x=plain(x).replace(/[^0-9A-Z]/g,"");return x.replace(/^0+/,"")||(x?"0":"");};
+let DETIDX=null;const DET={};
+const STYPE={"ST":"ST","STREET":"ST","AVE":"AVE","AV":"AVE","AVENUE":"AVE","RD":"RD","ROAD":"RD","DR":"DR","DRIVE":"DR","CRES":"CRES","CR":"CRES","CRESCENT":"CRES","CROIS":"CRES","CROISSANT":"CRES","PL":"PL","PLACE":"PL","CT":"CT","CRT":"CT","CO":"CT","COURT":"CT","BAY":"BAY","BA":"BAY","CL":"CL","CLOSE":"CL","WAY":"WAY","WY":"WAY","GATE":"GATE","GA":"GATE","LANE":"LANE","LN":"LANE","TERR":"TERR","TERRACE":"TERR","TC":"TERR","CIR":"CIR","CIRCLE":"CIR","CI":"CIR","HTS":"HTS","HEIGHTS":"HTS","HT":"HTS","GREEN":"GR","GR":"GR","PARK":"PARK","PA":"PARK","PK":"PARK","MEWS":"MEWS","ME":"MEWS","BLVD":"BLVD","BOUL":"BLVD","BV":"BLVD","BOULEVARD":"BLVD","BO":"BLVD","GROVE":"GV","GV":"GV","RISE":"RISE","RI":"RISE","VIEW":"VIEW","VW":"VIEW","MANOR":"MR","MR":"MR","POINT":"PT","PT":"PT","SQ":"SQ","SQUARE":"SQ","COMMON":"CM","CM":"CM","LINK":"LINK","LI":"LINK","HILL":"HL","HL":"HL","LANDING":"LD","LD":"LD","COVE":"CV","CV":"CV","TRAIL":"TR","TR":"TR","HWY":"HWY","HIGHWAY":"HWY","RUE":"RUE","RU":"RUE","CH":"CH","CHEMIN":"CH","RTE":"RTE","RT":"RTE","ROUTE":"RTE","PKY":"PKY","PKWY":"PKY","PARKWAY":"PKY","ROW":"ROW","WALK":"WALK","WK":"WALK","ALLEE":"ALLEE","AL":"ALLEE"};
+function stype(street){const toks=plain(street).split(/\s+/).filter(x=>x&&!(x in DIRS));let h="";for(const x of toks)if(STYPE[x])h=STYPE[x];return h;}
+async function detailFor(it){if(!it||!it.fsa||!it.civic)return null;
+  if(!DETIDX)DETIDX=getJSON("data/detail/index.json").catch(()=>({}));const idx=await DETIDX;
+  const file=Object.keys(idx).find(k=>idx[k].includes(it.fsa));if(!file)return null;
+  if(!DET[file])DET[file]=getJSON("data/detail/"+file+".json").catch(()=>({}));
+  const d=((await DET[file])[it.fsa])||{},ty=stype(it.sname||""),k=`${normNum(it.unit||"")}|${normNum(it.civic||"")}|${it.street}|${ty}`;
+  return d[k]||(it.unit?null:d[`|${normNum(it.civic||"")}|${it.street}|${ty}`])||null;}
+async function nearbyFor(it){if(!it||!it.fsa||!it.street)return [];
+  if(!DETIDX)return [];const idx=await DETIDX;const file=Object.keys(idx).find(k=>idx[k].includes(it.fsa));if(!file)return [];
+  const d=((await DET[file])||{})[it.fsa]||{},me=parseInt(it.civic,10)||0,out=[],ty=stype(it.sname||"");
+  for(const [k,v] of Object.entries(d)){const [u,c,core,dir,kt]=k.split("|");if(`${core}|${dir}`!==it.street||u||(kt||"")!==ty)continue;
+    const n=parseInt(c,10);if(!n||n===me)continue;const h=decodeHistory(v[1]);if(!h.length)continue;
+    const last=h[h.length-1],first=h[0];out.push({civic:c,dist:Math.abs(n-me),val:last[1],year:last[0],chg:first[0]<last[0]?Math.round((last[1]/first[1]-1)*100):null,since:first[0]});}
+  // drop office towers and other whole-building records: far above or below the street's typical value
+  const vs=out.map(o=>o.val).sort((a,b)=>a-b),med=vs[Math.floor(vs.length/2)]||0;
+  const ok=vs.length>=3?out.filter(o=>o.val<=med*3&&o.val>=med/3):out.filter(o=>o.val<5e6);
+  return ok.sort((a,b)=>a.dist-b.dist).slice(0,6).sort((a,b)=>(parseInt(a.civic)||0)-(parseInt(b.civic)||0));}
+function decodeHistory(s){if(!s)return [];const [head,vals]=s.split(":"),[yy,step]=head.split("/").map(Number);
+  return vals.split(",").map((v,i)=>v?[2000+yy+i*step,parseInt(v,36)*1000]:null).filter(Boolean);}
+/* Map and satellite on the page (OpenStreetMap + Esri World Imagery: free, no key; nothing opens another site) */
+let mapLayer="map";
+const TOWN_MUNI=getJSON("data/town_muni.json").catch(()=>({})),DA_MUNI=getJSON("data/da_muni.json").catch(()=>({}));
+function photoLinks(it){const box=$("photoLinks");if(!it){box.hidden=true;return;}
+  const [la,lo]=(it.ll||"").split(",");if(!la){box.hidden=true;return;}
+  box.innerHTML=`<div class="seg view-tabs" role="group" aria-label="View">${[["map","Map"],["sat","Satellite"]].map(([k,n])=>`<button type="button" data-v="${k}" aria-pressed="${mapLayer===k}">${n}</button>`).join("")}</div>`;
+  box.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{mapLayer=b.dataset.v;box.querySelectorAll("[data-v]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));setLayer();});
+  box.hidden=false;tryMap(+la,+lo);}
+let mapReady=null,lmap=null,lpin=null;
+let baseOSM=null,baseSat=null,satLabels=null;
+function setLayer(){if(!lmap)return;const sat=mapLayer==="sat";
+  [baseOSM,baseSat,satLabels].forEach(l=>l&&lmap.hasLayer(l)&&lmap.removeLayer(l));
+  if(sat){baseSat.addTo(lmap);satLabels.addTo(lmap);lmap.setZoom(Math.max(lmap.getZoom(),18));}else baseOSM.addTo(lmap);}
+function tryMap(la,lo){ // probe one tile first; where the host refuses outside images the map stays hidden and a note explains
+  if(mapReady===false){mapBlocked();return;}
+  const show=()=>{$("map").hidden=false;if(!lmap){lmap=L.map("map",{scrollWheelZoom:false});
+      baseOSM=L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"});
+      baseSat=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Imagery © Esri, Maxar, Earthstar Geographics"});
+      satLabels=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",{maxZoom:19});}
+    setLayer();lmap.setView([la,lo],mapLayer==="sat"?18:17);if(lpin)lpin.setLatLng([la,lo]);else lpin=L.circleMarker([la,lo],{radius:9,color:css("--accent-2"),fillOpacity:1,className:"hve-pin"}).addTo(lmap);setTimeout(()=>lmap.invalidateSize(),60);};
+  if(mapReady===true){show();return;}
+  const img=new Image();img.onload=()=>{const css=document.createElement("link");css.rel="stylesheet";css.href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";document.head.appendChild(css);
+    const sc=document.createElement("script");sc.src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";sc.onload=()=>{mapReady=true;show();};sc.onerror=()=>{mapReady=false;mapBlocked();};document.head.appendChild(sc);};
+  img.onerror=()=>{mapReady=false;mapBlocked();};img.src="https://tile.openstreetmap.org/0/0/0.png";}
+function mapBlocked(){const box=$("photoLinks");if(!box||box.querySelector(".map-note"))return;
+  box.querySelector(".view-tabs")?.remove();
+  box.insertAdjacentHTML("beforeend",`<p class="hint map-note">The map and satellite view load when this page runs on its own website. This preview host blocks outside map images.</p>`);}
+async function getJSON(u){const r=await fetch(u);if(!r.ok)throw new Error(u+" "+r.status);return r.json();}
+async function loadData(){try{[DB.munis,DB.fsa,DB.acc]=await Promise.all([getJSON("data/munis.json"),getJSON("data/fsa.json"),getJSON("data/accuracy.json")]);DB.dacc=await getJSON("data/da_accuracy.json").catch(()=>null);
+  fillMuni();$("addrHint").textContent="Type your street address, or a postal code. Pick your municipality first if you don't know the postal code.";}
+  catch(e){$("addrHint").textContent="The local data didn't load. Estimates will use the regional benchmarks only.";}}
+async function streetsFor(f){if(f in DB.streets)return DB.streets[f];
+  if(!DB.fsa||!DB.fsa[f]||!DB.fsa[f].s){DB.streets[f]={};return DB.streets[f];}   // no records in this postal area
+  const L=f[0];DB.letter=DB.letter||{};
+  if(!DB.letter[L])DB.letter[L]=getJSON("data/streets_"+L+".json").catch(()=>({}));   // one bundle per postal-code letter
+  DB.streets[f]=(await DB.letter[L])[f]||{};return DB.streets[f];}
+
+/* every municipality in the province, not just the built-in list */
+const _fillMuni=fillMuni;
+fillMuni=function(){if(!DB.munis){_fillMuni();return;}
+  const list=DB.munis.filter(m=>m.prov===st.prov);
+  if(!list.some(m=>m.name===st.muni))st.muni=(list[0]||{}).name;
+  $("muni").innerHTML=list.map(m=>`<option${m.name===st.muni?" selected":""}>${esc(m.name)}</option>`).join("");
+  ensureBench(st.muni,st.prov);};
+function ensureBench(name,prov){ // give the chart model a benchmark for any municipality
+  if(M.some(x=>x.name===name&&x.prov===prov))return;const mm=(DB.munis||[]).find(x=>x.name===name&&x.prov===prov);if(!mm)return;
+  const f=mm.fsa.map(c=>DB.fsa[c]).find(Boolean);if(!f||!f.c)return;M.push({name,prov,reg:f.r,bench:f.c,fsa:mm.fsa});}
+
+function parseAddr(text){
+  const raw=String(text).toUpperCase();
+  const pc=raw.match(/\b([ABCEGHJKLMNPRSTVXY]\d[A-Z])\s?(\d[A-Z]\d)?\b/);
+  let rest=raw.replace(/\b[ABCEGHJKLMNPRSTVXY]\d[A-Z]\s?(\d[A-Z]\d)?\b/,"");
+  // a city is only read after a comma: "12 Main St, Gatineau"
+  let city=null,place=null;const parts=rest.split(",");
+  const pv=(raw.match(/\b(AB|BC|SK|MB|ON|QC|NB|NS|PE|NL|YT|NT|NU)\b\.?\s*(?:[ABCEGHJKLMNPRSTVXY]\d[A-Z]\s?\d[A-Z]\d)?\s*$/)||[])[1]||null;
+  if(parts.length>1){const tail=plain(parts.slice(1).join(" ")).replace(/\b(AB|BC|SK|MB|ON|QC|NB|NS|PE|NL|YT|NT|NU)\b/g,"").trim();
+    if(tail)city=(DB.munis||[]).filter(x=>(!pv||x.prov===pv)&&(plain(x.name)===tail||tail.startsWith(plain(x.name)))).sort((a,b)=>b.n-a.n)[0]||null;if(tail&&!city)place=tail.replace(/\s+/g," ");rest=parts[0];}
+  else{   // no comma: "100 Queen St W Toronto ON" — a trailing municipality name after a street type or direction
+    const w=rest.replace(/\b(AB|BC|SK|MB|ON|QC|NB|NS|PE|NL|YT|NT|NU)\.?\s*$/,"").trim().split(/\s+/),sq=s=>plain(s).trim().replace(/\s+/g," ");
+    for(let n=Math.min(3,w.length-3);n>=1&&!city;n--){const name=sq(w.slice(-n).join(" ")),before=sq(w[w.length-n-1]);
+      if(!(TYPEWORDS.has(before)||/^(N|S|E|W|NE|NW|SE|SW|EST|OUEST)$/.test(before)))continue;
+      const mm=(DB.munis||[]).filter(x=>(!pv||x.prov===pv)&&sq(x.name)===name).sort((a,b)=>b.n-a.n)[0];
+      if(mm){city=mm;rest=w.slice(0,-n).join(" ");}}}
+  rest=rest.replace(/\b(APT|UNIT|SUITE)\b\.?\s*(\w+)/,(m,w,u)=>" #"+u+" ");
+  let unit="";const hash=rest.match(/#\s*(\w+)/);if(hash){unit=hash[1];rest=rest.replace(hash[0]," ");}
+  const m=rest.trim().match(/^(?:(\w+)\s*-\s*)?(\d+[A-Z]?)\s+(.*)$/);
+  if(m&&m[1])unit=m[1];
+  let street=(m?m[3]:rest).trim();
+  // "12141 Jasper Ave 1607": a trailing number after a street type is the unit (not "Township Road 510")
+  const tail=street.match(/^(.*\b(ST|STREET|AVE|AV|AVENUE|DR|DRIVE|BLVD|BOUL|CRES|CRT|CT|PL|PLACE|WAY|LANE|LN|TERR|SQ|GATE|CLOSE|RUE|CIR)\b\.?(?:\s+(?:N|S|E|W|NE|NW|SE|SW|EST|OUEST))?)\s+#?(\d+[A-Z]?)$/);
+  if(tail&&!unit){street=tail[1];unit=tail[3];}
+  return {unit,civic:m?m[2]:"",street,fsa:pc?pc[1]:null,ldu:pc&&pc[2]||null,city,place,pv};}
+
+function acShow(items,msg){acItems=items;acSel=-1;
+  acList.innerHTML=msg?`<li class="msg" role="option" aria-disabled="true">${esc(msg)}</li>`:items.map((it,i)=>`<li role="option" id="ac${i}" data-i="${i}">${esc(it.label)}<br><small>${esc(it.sub)}</small></li>`).join("");
+  acList.hidden=!(items.length||msg);$("addr").setAttribute("aria-expanded",String(!acList.hidden));}
+
+async function suggest(){const q=$("addr").value.trim();$("addrClear").hidden=!q;if(q.length<3||!DB.fsa){acShow([]);return;}
+  const a=parseAddr(q);if(a.city){st.prov=a.city.prov;$("prov").value=a.city.prov;st.muni=a.city.name;fillMuni();}
+  const mun=DB.munis.find(x=>x.name===st.muni&&x.prov===st.prov);
+  const fsas=a.fsa?[a.fsa]:(mun?mun.fsa:[]);
+  let full=null;
+  if(a.place&&a.street){   // "10 Sunrise Dr, Eskasoni": a community that is not a municipality; search Canada for the street in that place
+    const r=await addressSearch(a,null,"all"),hit=(r||[]).filter(o=>plain(o.city).trim().replace(/\s+/g," ")===a.place);if(hit.length)full=hit;}
+  if(!(full&&full.length))full=await addressSearch(a,mun);          // full address list when the address files are available
+  if(a.city&&a.street){const want=plain(a.city.name).trim().replace(/\s+/g," "),inTown=o=>plain(o.city).trim().replace(/\s+/g," ")===want;
+    if(!(full&&full.some(inTown))){const r=await addressSearch({...a,city:null,place:want},null,"all"),hit=(r||[]).filter(inTown);if(hit.length)full=hit;}}
+  if(a.street&&!a.city){   // "9291 Morning Glory Rd Pefferlaw ON": drop a trailing town/hamlet name and search all of Canada
+    const sq=s=>plain(s).trim().replace(/\s+/g," "),w=a.street.replace(/\b(AB|BC|SK|MB|ON|QC|NB|NS|PE|NL|YT|NT|NU)\.?$/,"").trim().split(/\s+/);
+    const found=full&&full.length;
+    // a result already in the town typed at the end: keep it
+    if(!(found&&w.length>2&&sq(w.slice(-3).join(" ")).includes(sq(full[0].city))))
+    for(let n=1;n<=Math.min(4,w.length-1);n++){const place=sq(w.slice(-n).join(" ")),before=sq(w[w.length-n-1]);
+      if(found&&!(TYPEWORDS.has(before)||/^(N|S|E|W|NE|NW|SE|SW|EST|OUEST)$/.test(before)))continue;   // only a word after the street type can be a town
+      const r=await addressSearch({...a,street:w.slice(0,-n).join(" "),place},null,"all");
+      if(r&&r.length){const hit=r.filter(o=>sq(o.city)===place);if(hit.length){full=hit;break;}if(!found){full=r;break;}}}}
+  if(full&&full.length){acShow(full);return;}
+  if(!a.street||a.street.length<2){
+    const own=a.fsa&&((mun&&mun.fsa.includes(a.fsa))?mun:(DB.munis||[]).filter(x=>x.prov===provOf(a.fsa)&&x.fsa.includes(a.fsa)).sort((p,q)=>q.n-p.n)[0]);
+    if(a.fsa&&DB.fsa[a.fsa])acShow([{fsa:a.fsa,label:`Postal area ${a.fsa}`,sub:`${own?own.name+", ":""}value from the postal area`,street:null}]);else acShow([]);return;}
+  const [want,wantDir]=streetKey(a.street).split("|");const items=[];
+  const files=await Promise.all(fsas.map(f=>streetsFor(f).then(s=>[f,s])));
+  for(const [f,s] of files){if(!s)continue;
+    for(const k of Object.keys(s)){const [core,dir]=k.split("|");
+      if(!(core.startsWith(want)||core.includes(" "+want)))continue;
+      const rg=s[k]._r,cv=parseInt(a.civic,10);
+      const score=(core===want?0:2)+(wantDir&&dir!==wantDir?1:0)+(rg&&cv?(cv>=rg[0]&&cv<=rg[1]?0:4):0);
+      items.push({score,fsa:f,street:k,civic:a.civic,unit:a.unit,
+        label:`${a.unit?a.unit+"-":""}${a.civic?a.civic+" ":""}${core===want?title(a.street):niceStreet(k)}`,
+        sub:`${mun?mun.name:""} ${f} · ${Object.entries(s[k]).filter(([t])=>t!=="_r").reduce((n,[,x])=>n+x[1],0)} homes on record`});}}
+  items.sort((x,y)=>x.score-y.score);items.splice(8);
+  if(!items.length&&(a.fsa||(mun&&a.city))){/* never fall back to a postal area left over from an earlier search */const f=a.fsa||fsas[0];items.push({fsa:f,street:null,civic:a.civic,unit:a.unit,label:q,sub:`No records for this street. We'll use postal area ${f||""}.`});}
+  acShow(items,items.length?null:"Pick your municipality below or add the postal code, then type the street again.");}
+$("addr").addEventListener("input",()=>{clearTimeout(acT);acT=setTimeout(suggest,90);});
+$("addr").addEventListener("keydown",e=>{if(acList.hidden||!acItems.length)return;
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();acSel=(acSel+(e.key==="ArrowDown"?1:-1)+acItems.length)%acItems.length;
+    [...acList.children].forEach((li,i)=>li.setAttribute("aria-selected",String(i===acSel)));}
+  else if(e.key==="Enter"){e.preventDefault();pick(acItems[Math.max(0,acSel)]);} else if(e.key==="Escape")acShow([]);});
+acList.addEventListener("mousedown",e=>{const li=e.target.closest("li[data-i]");if(li){e.preventDefault();pick(acItems[+li.dataset.i]);}});
+$("addr").addEventListener("blur",()=>setTimeout(()=>acShow([]),120));
+$("addrClear").addEventListener("click",()=>{$("instant").hidden=true;$("photoLinks").hidden=true;$("map").hidden=true;$("addr").value="";$("addrClear").hidden=true;aiProp=null;$("facts").hidden=true;acShow([]);refresh();$("addr").focus();});
+$("muni").addEventListener("change",()=>ensureBench(st.muni,st.prov));
+
+async function pick(it){if(!it)return;acShow([]);sqftKnown=false;parkSet=false;
+  if(it.postal){$("addr").value=`${it.label}, ${it.sub}`;
+    // the municipality: from this address's Census block (exact), else its postal code / mailing town in the register
+    const TM=(await TOWN_MUNI)||{},DM=(await DA_MUNI)||{},tm=(it.da&&DM.d&&DM.d[it.da]!=null&&DM.n[DM.d[it.da]])||(TM.p||{})[String(it.postal||"").replace(/\s/g,"")]||(TM.t||TM)[`${it.fsa}|${String(it.city||"").toUpperCase()}`];
+    const mm=(tm&&(DB.munis||[]).find(x=>x.name===tm&&x.prov===provOf(it.fsa)))
+      ||(DB.munis||[]).filter(x=>x.prov===(provOf(it.fsa)||st.prov)&&x.fsa.includes(it.fsa)&&plain(x.name)===plain(it.city))[0]
+      ||(DB.munis||[]).filter(x=>x.prov===(provOf(it.fsa)||st.prov)&&x.fsa.includes(it.fsa)).sort((a,b)=>b.n-a.n)[0];
+    if(mm){st.prov=mm.prov;$("prov").value=mm.prov;st.muni=mm.name;fillMuni();}}
+  if(!it.postal&&it.fsa){   // postal-area pick: move to the municipality that owns this postal area, not the last one used
+    const cur=(DB.munis||[]).find(x=>x.name===st.muni&&x.prov===st.prov);
+    if(!cur||!cur.fsa.includes(it.fsa)){const mm=(DB.munis||[]).filter(x=>x.prov===provOf(it.fsa)&&x.fsa.includes(it.fsa)).sort((a,b)=>b.n-a.n)[0];
+      if(mm){st.prov=mm.prov;$("prov").value=mm.prov;st.muni=mm.name;fillMuni();}}}
+  if(it.postal);else if(it.street)$("addr").value=`${it.label}, ${st.muni} ${it.fsa}`;
+  const f=DB.fsa[it.fsa]||null, s=it.street?((await streetsFor(it.fsa))||{})[it.street]:null;
+  ensureBench(st.muni,st.prov);
+  photoLinks(it);
+  const det=await detailFor(it),near=await nearbyFor(it),legal=det&&det[0]?det[0].replace(/(^|[ ,])Pl /g,"$1Plan ").replace(/ Blk /g," Block "):null;
+  aiProp={detail:det,near,pick:it,history:det?decodeHistory(det[1]):[],legal,fsa:it.fsa,f,street:s,streetName:it.street?niceStreet(it.street):null,unit:it.unit,block:await blockValue(it.da)};
+  if(it.unit&&!isCondo(st.sub)){st.sub="condo";applySub(true);}
+  else if(!it.unit&&!s&&isCondo(st.sub)){st.sub="detached";applySub(true);}   // no unit: drop a leftover condo choice
+  else if(s&&!it.unit){const top=Object.entries(s).filter(([t])=>t!=="_r").sort((a,b)=>b[1][1]-a[1][1])[0];if(top&&SUB[top[0]]&&top[0]!==st.sub){st.sub=top[0];applySub(true);}}
+  $("condoBox").hidden=!isCondo(st.sub);drawRepairs();
+  if(it.unit){const n=parseInt(it.unit,10);if(n>=100)$("floor").value=Math.floor(n/100);}
+  const rows=[["Municipality",st.muni],["Postal area",it.fsa||"—"]];
+  if(legal)rows.push(["Legal description",legal]);
+  const hist=aiProp&&aiProp.history||[];
+  if(hist.length>=2){const a=hist[0],b=hist[hist.length-1],ch=Math.round((b[1]/a[1]-1)*100);
+    rows.push([`Assessed ${a[0]} → ${b[0]}`,`${money(a[1])} → ${money(b[1])} (${ch>=0?"+":""}${ch}%)`]);}
+  if(s){for(const [t,v] of Object.entries(s).filter(([t])=>t!=="_r").sort((a,b)=>b[1][1]-a[1][1]).slice(0,3))
+    rows.push([`${SUBNAME[t]||({detached:"Detached",semi:"Semi",town:"Townhouse",condo:"Condo"})[t]||t} on this street`,`${money(v[0])} typical · ${v[1]} on record`]);
+    const any=Object.entries(s).filter(([t])=>t!=="_r").map(e=>e[1])[0];if(any&&any[3])rows.push(["Typical year built",any[3]]);}
+  if(aiProp.block)rows.push(["Neighbourhood median (block "+aiProp.block.da+", today)",money(aiProp.block.v)]);
+  if(f&&f.c)rows.push(["Postal area median (Census, today)",money(f.c)]);
+  const nb=$("nearby");if(nb){nb.hidden=!near.length;nb.innerHTML=near.length?`<div class="subhead">Homes near you on this street</div>`+near.map(n=>`<div><span>${esc(n.civic)} ${esc(title(it.sname||niceStreet(it.street)))}</span><span>${money(n.val)} <small class="hint">(${n.year}${n.chg!=null?`, ${n.chg>=0?"+":""}${n.chg}% since ${n.since}`:""})</small></span></div>`).join(""):"";}
+  $("facts").innerHTML=rows.map(([k,v])=>`<div><span>${esc(k)}</span><br><b>${esc(v)}</b></div>`).join("");$("facts").hidden=false;
+  $("addrHint").textContent=s?"Found records for this street. Answer a few questions to sharpen the estimate.":"Answer a few questions to sharpen the estimate.";
+  refresh();
+  // instant estimate right after the address, before any questions
+  renderInstant();}
+/* condos in pricier markets: ask about parking and a locker right in the instant estimate, and fold the answer straight in */
+let parkSet=false,sqftKnown=false;$("sqft").addEventListener("input",e=>{if(e.isTrusted)sqftKnown=true;});$("sqft").addEventListener("change",e=>{if(e.isTrusted)sqftKnown=true;});
+$("park").addEventListener("change",e=>{if(e.isTrusted)parkSet=true;});
+const PRICEY=new Set(["Toronto","Vancouver","Burnaby","Richmond","North Vancouver","West Vancouver","Coquitlam","Surrey","Victoria","Mississauga","Oakville","Markham","Richmond Hill","Vaughan","Brampton","Burlington","Ottawa","Montréal","Calgary"]);
+function renderInstant(){if(!aiProp)return;const v=+($("rVal").textContent.replace(/[^\d]/g,""))||0;
+  const ask=isCondo(st.sub)&&(v>=450000||PRICEY.has(st.muni));
+  const seg=(id,opts)=>`<div class="seg" role="group" data-f="${id}">${opts.map(([val,t])=>`<button type="button" data-val="${val}" aria-pressed="${$(id).value===val}">${t}</button>`).join("")}</div>`;
+  $("instant").hidden=false;
+  $("instant").innerHTML=`<div class="eyebrow">Instant estimate</div><div class="big" style="font-size:30px">${$("rVal").textContent}</div><div class="range">${$("rRange").textContent}</div>`
+    +(ask?`<div class="ask-cp"><div class="subhead">Does it come with parking?</div>${seg("park",[["0","None"],["1","1 space"],["2","2 spaces"]])}<div class="subhead">A storage locker?</div>${seg("locker",[["0","No"],["0.01","Yes"]])}</div>`:"")
+    +`<div class="hint">${({street:"From real assessments on your street.",block:"From your neighbourhood's Census values and local assessment ratios.",postal:"From assessments in your postal area."})[(aiProp.street?"street":aiProp.block?"block":"postal")]} Tell us about your home to sharpen it.</div>`;
+  $("instant").querySelectorAll(".ask-cp [data-val]").forEach(btn=>btn.onclick=()=>{const el=$(btn.parentNode.dataset.f);el.value=btn.dataset.val;if(el.id==="park")parkSet=true;
+    el.dispatchEvent(new Event("change",{bubbles:true}));el.dispatchEvent(new Event("input",{bubbles:true}));refresh();renderInstant();});}
+
+/* Repairs a buyer would price in (2026 CAD typical cost) */
+const REPAIRS=[["roof","Roof replacement",16000,"house"],["hvac","Furnace or A/C",9000,"house"],["windows","Windows",25000,"house"],
+  ["foundation","Foundation or water leaks",30000,"house"],["electrical","Old wiring or panel",15000,"all"],["plumbing","Old plumbing",12000,"all"],
+  ["mould","Water damage or mould",20000,"all"],["kitchen","Dated kitchen",30000,"all"],["bath","Dated bathroom(s)",15000,"all"],
+  ["flooring","Worn flooring",10000,"all"],["paint","Needs painting",6000,"all"],["exterior","Siding, deck or driveway",14000,"house"]];
+function drawRepairs(){const condo=isCondo(st.sub);const was=new Set([...document.querySelectorAll("#repList input:checked")].map(x=>x.value));
+  $("repList").innerHTML=REPAIRS.filter(r=>r[3]==="all"||!condo).map(([k,l,c])=>`<label><input type="checkbox" id="rep_${k}" value="${k}"${was.has(k)?" checked":""}> ${l} <span class="hint">~${money(c)}</span></label>`).join("");}
+drawRepairs();
+$("repList").addEventListener("change",()=>{estimate();extras();});
+["floor","view","locker","amen","sa","reserve"].forEach(id=>$(id).addEventListener("input",()=>{estimate();extras();}));
+$("ptype").addEventListener("change",()=>{$("condoBox").hidden=!isCondo(st.sub);drawRepairs();});
+$("condoBox").hidden=!isCondo(st.sub);
+
+const _estimate=estimate;
+estimate=function(){_estimate();
+  const adj=[],condo=isCondo(st.sub),sq=sqftKnown?(+$("sqft").value||0):0;let v=lastV,band=null,note="";   // the form default is not this home's size
+  const p=aiProp, t=st.sub in {detached:1,semi:1,town:1,condo:1,condotown:1,duplex:1,multiplex:1,mobile:1}?st.sub:SUB[st.sub][0];
+  const acc=DB.acc||{by_level:{street:.1,postal:.23}};
+  const DEF={detached:1.15,semi:.92,town:.8,condotown:.8,condo:.65,duplex:1.4,multiplex:1.4,mobile:.4};
+  const bt=t==="condotown"?"town":t==="duplex"?"multiplex":t;
+  // homes without records: geometric mean of the neighbourhood block and postal-area values, split by local type ratio (tested 18-21% median error)
+  const base0=p&&p.block?(p.f&&p.f.c?Math.sqrt(p.block.v*p.f.c):p.block.v):null;
+  const B={detached:[.8,1.8],semi:[.6,1.4],town:[.5,1.3],condo:[.3,1.2],mobile:[.15,.9],multiplex:[.8,3]}[bt]||[.3,3];
+  const rt=Math.min(B[1],Math.max(B[0],(p&&p.block&&p.block.types&&p.block.types[bt])||DEF[t]||1));
+  const blk=base0?{v:base0*rt,n:null,sf:null,lvl:"block"}:null;
+  const rural=p&&p.fsa&&p.fsa[1]==="0";
+  const local=p&&p.street&&p.street[t]&&!rural?{v:p.street[t][0],n:p.street[t][1],sf:p.street[t][2],lvl:"street"}
+             :blk?blk
+             :p&&p.f&&p.f.t&&p.f.t[t]?{v:p.f.t[t][0],n:p.f.t[t][1],sf:p.f.t[t][2],lvl:"postal"}:null;
+  // this home's own assessment (2025-26 roll) is the strongest anchor where cities publish it
+  const hh=p&&p.history||[];let own=hh.length&&hh[hh.length-1][0]>=2025?hh[hh.length-1]:null;
+  // a whole building's record (e.g. commercial or rental block at the same address) is not a single home: don't anchor on it
+  if(own&&local&&(own[1]>local.v*3||own[1]<local.v*.35))own=null;
+  if(own&&local){const sq0=(SUB[st.sub]||SUB.detached)[2];
+    const r=local.sf&&sq?Math.min(3,Math.max(.4,sq/local.sf))**.5:1;
+    v=.75*own[1]+.25*local.v*r;const pp=+$("pp").value&&$("pd").value;if(pp)v=(v*2+lastV)/3;
+    const c=+$("cond").value;if(c!==1){adj.push(["Condition",v*(c-1)]);v*=c;}band=.09;
+    note=`<b>From this home's own assessment:</b> assessed at ${money(own[1])} on the ${own[0]} roll, combined with ${local.lvl==="street"?"the street's":"the neighbourhood's"} typical value of ${money(local.v)}${pp?" and your purchase price indexed to today":""}. Assessments usually land within 5–10% of market value.`;}
+  else if(local){const sq0=(SUB[st.sub]||SUB.detached)[2];
+    const r=local.sf&&sq?Math.min(3,Math.max(.4,sq/local.sf))**.5:(local.lvl==="block"&&sq?Math.min(3,Math.max(.4,sq/sq0))**.4:1);v=local.v*r;
+    const pp=+$("pp").value&&$("pd").value;if(pp)v=(v+lastV)/2;
+    const c=+$("cond").value;if(c!==1){adj.push(["Condition",v*(c-1)]);v*=c;}
+    const lvlErr=local.lvl==="block"?((DB.dacc&&(sq?DB.dacc.with_size_median_abs_pct_err:DB.dacc.median_abs_pct_err))||.2):acc.by_level[local.lvl];
+    band=Math.min(.3,lvlErr*1.5);
+    note=`<b>${local.lvl==="block"?"From public Census and assessment data":"From real assessment records"}:</b> typical ${({detached:"detached house",semi:"semi",town:"townhouse",condo:"condo",condotown:"condo townhouse",duplex:"duplex",multiplex:"plex",mobile:"mobile home"})[t]||t} ${local.lvl==="street"?"on "+esc(p.streetName):local.lvl==="block"?"in this neighbourhood (Census block "+esc(p.block.da)+")":"in postal area "+esc(p.fsa)} is ${money(local.v)} today${local.lvl==="block"?" (2021 Census values for your block and postal area, moved to today and split by property type using local assessment ratios)":" ("+local.n+" assessments"+(local.sf?", typical "+local.sf.toLocaleString("en-CA")+" sq ft":"")+")"}${r!==1?`, adjusted for your ${sq.toLocaleString("en-CA")} sq ft`:""}${pp?", averaged with your purchase price indexed to today":""}. Typical error at this level: ${(lvlErr*100).toFixed(0)}%.`;}
+  else if(p&&p.f&&p.f.c){const m=cur(),ratio=Math.min(2.5,Math.max(.4,p.f.c/m.bench));v=lastV*ratio;band=.25;
+    note=`<b>Postal area ${esc(p.fsa)}:</b> 2021 Census median home value ${money(p.f.c21)}, moved to today with the regional price index (×${p.f.x}) = ${money(p.f.c)}. Your home's details are applied on top.`;}
+  if(condo){const fl=Math.max(1,+$("floor").value||1),fp=st.sub==="penthouse"?0:Math.min(.12,Math.max(-.03,(fl-4)*.006));
+    let k=0;for(const [x,label] of [[fp,"Floor "+fl],[+$("view").value,"View"],[+$("locker").value,"Locker"],[+$("amen").value,"Amenities"],[+$("reserve").value,"Reserve fund"]])if(x){adj.push([label,v*x]);k+=x;}
+    if(parkSet){const pk=(+$("park").value-1)*Math.min(.09,Math.max(.03,.03+(v-300000)/400000*.05));   // vs a typical one-space unit; worth more in pricier markets
+      if(pk){adj.push([+$("park").value?"Parking ("+$("park").value+")":"No parking",v*pk]);k+=pk;}}
+    v*=1+k;const sa=+$("sa").value||0;if(sa){adj.push(["Special assessment",-sa]);v-=sa;}}
+  let rep=0;document.querySelectorAll("#repList input:checked").forEach(x=>{rep+=REPAIRS.find(r=>r[0]===x.value)[2];});
+  if(rep){adj.push(["Repairs needed",-rep]);v-=rep;}
+  $("repSum").textContent=rep?`(${money(rep)} deducted)`:"";
+  v=Math.max(10000,v);lastV=r5k(v);
+  $("rVal").textContent="$"+lastV.toLocaleString("en-CA");
+  const rb=document.querySelector("#rbar .rbar-fill");if(rb&&band){const w=Math.min(90,band*2*100*1.6);rb.style.left=(50-w/2)+"%";rb.style.right=(50-w/2)+"%";}
+  if(band)$("rRange").textContent=`Range $${r5k(lastV*(1-band)).toLocaleString("en-CA")} – $${r5k(lastV*(1+band)).toLocaleString("en-CA")}`;
+  $("aiBox").hidden=!note;$("aiBox").innerHTML=note;
+  $("adjBox").hidden=!adj.length;$("adjBox").innerHTML=adj.map(([k,d])=>`<div><span>${esc(k)}</span><span class="${d>=0?"up":"down"}">${d>=0?"+":"−"}${money(Math.abs(d))}</span></div>`).join("");};
+loadData().then(refresh);
+refresh();
+
+/* "Live" tag: today's date, plus the date the daily updater last checked every source (data/updated.json) */
+let LIVE=null;
+function renderLive(){const el=$("liveTag");if(!el||!LIVE)return;const fr=(document.documentElement.lang||"").startsWith("fr");
+  const f=d=>new Date(d+"T12:00:00").toLocaleDateString(fr?"fr-CA":"en-CA",{year:"numeric",month:"short",day:"numeric"});
+  const today=new Date().toISOString().slice(0,10);
+  el.textContent=(fr?"En direct · ":"Live · ")+f(today)+(LIVE.date!==today?(fr?" · données vérifiées le ":" · data checked ")+f(LIVE.date):"");el.hidden=false;}
+getJSON("data/updated.json?"+Date.now()).then(d=>{LIVE=d;renderLive();}).catch(()=>{});
+document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#langBtn"))setTimeout(renderLive,50);});
+
+/* ---- Full-address autocomplete from the packed National Address Register (data/addr/) ----
+   packs.json: FSA -> pack id · idx_<L>.json: "CORE|DIR" -> [street, [FSA...]] · p<id>.json: FSA -> [[street, cityIdx, "LDU:civ u/civ;..."]] */
+const ADDR={packs:null,idx:{},pack:{}};
+async function addrPacks(){if(!ADDR.packs)ADDR.packs=getJSON("data/addr/packs.json").catch(()=>({}));return ADDR.packs;}
+function addrIdx(L){if(!ADDR.idx[L])ADDR.idx[L]=getJSON("data/addr/idx_"+L+".json").catch(()=>({}));return ADDR.idx[L];}
+function addrPack(id){if(!(id in ADDR.pack))ADDR.pack[id]=getJSON("data/addr/p"+id+".json").catch(()=>({}));return ADDR.pack[id];}
+const provOf=f=>/^X0[ABC]/.test(f)?"NU":PROV_OF[f[0]];
+const PROV_OF={A:"NL",B:"NS",C:"PE",E:"NB",G:"QC",H:"QC",J:"QC",K:"ON",L:"ON",M:"ON",N:"ON",P:"ON",R:"MB",S:"SK",T:"AB",V:"BC",X:"NT",Y:"YT"};
+
+let TOWNF=null;
+async function townFsas(town,pv){   // "PEFFERLAW" -> Set of postal areas where the register has that mailing town
+  if(!TOWNF){TOWNF={};const TM=(typeof TOWN_MUNI!=="undefined"&&await TOWN_MUNI)||{};
+    for(const k of Object.keys(TM.t||{})){const [f,t]=k.split("|"),n=plain(t).trim().replace(/\s+/g," ");(TOWNF[n]=TOWNF[n]||[]).push(f);}}
+  return new Set((TOWNF[town]||[]).filter(f=>!pv||provOf(f)===pv));}
+async function addressSearch(a,mun,scope){   // scope: undefined = municipality, 'prov', 'all'
+  if((!a.street||a.street.length<2)&&a.fsa&&a.ldu){   // a full postal code alone: list the addresses at that code
+    const packs=await addrPacks(),pid=packs&&packs[a.fsa];if(pid==null)return null;const pk=await addrPack(pid),out=[];
+    for(const [street,ci,data] of pk[a.fsa]||[]){const city=(pk._c||[])[ci]||"";
+      for(const seg of data.split(";")){const [lduTag,civs]=seg.split(":");const [ldu,da,ll]=lduTag.split("@");if(ldu!==a.ldu)continue;
+        for(const t of civs.split(" ")){const [u,n]=t.includes("/")?t.split("/"):["",t];if(a.civic&&n!==a.civic)continue;
+          out.push({sname:street,da:da||null,ll:ll||null,score:u?1:0,fsa:a.fsa,street:streetKey(street),civic:n,unit:u,postal:`${a.fsa} ${ldu}`,city,
+            label:`${u?u+"-":""}${n} ${title(street)}`,sub:`${title(city)} ${provOf(a.fsa)||""} ${a.fsa} ${ldu}`});}}}
+    return out.sort((x,y)=>x.score-y.score||(parseInt(x.civic)||0)-(parseInt(y.civic)||0)).slice(0,8);}
+  if(!a.street||a.street.length<2)return null;
+  const packs=await addrPacks();if(!packs||!Object.keys(packs).length)return null;   // address files not published: fall back
+  const [want,wantDir]=streetKey(a.street).split("|");
+  const munFsa=new Set(mun?mun.fsa:[]);
+  const PL={NL:"A",NS:"B",PE:"C",NB:"E",QC:"GHJ",ON:"KLMNP",MB:"R",SK:"S",AB:"T",BC:"V",NT:"X",NU:"X",YT:"Y"};
+  // a town was typed: search every postal area that town has (from the address register), in the typed province if one was given
+  const wc0=a._anyTown?null:(a.place||(a.city?plain(a.city.name).trim().replace(/\s+/g," "):null)),TF=wc0?await townFsas(wc0,a.pv):null;
+  let letters=a.fsa?[a.fsa[0]]:TF&&TF.size&&scope==="all"?[...new Set([...TF].map(f=>f[0]))]:scope==="all"?"ABCEGHJKLMNPRSTVXY".split(""):scope==="prov"?(PL[a.pv||st.prov]||"").split(""):[...new Set((mun?mun.fsa:[]).map(f=>f[0]))];
+  if(a.pv&&!a.fsa&&scope)letters=letters.filter(L=>(PL[a.pv]||"").includes(L));
+  if(scope)mun=null;
+  if(!letters.length)return null;
+  // 1. which postal areas have a street with this name
+  const cands=[];
+  for(const L of letters){const idx=await addrIdx(L);
+    for(const [k,[disp,fs]] of Object.entries(idx)){const [core,dir]=k.split("|");
+      if(!(core===want||core.startsWith(want)))continue;
+      const score=(core===want?0:2)+(wantDir&&dir!==wantDir?1:0);
+      for(const f of fs){if(a.fsa?f!==a.fsa:TF&&TF.size&&scope==="all"?!TF.has(f):(munFsa.size&&!munFsa.has(f)))continue;cands.push({score,k,f,rank:mun?mun.fsa.indexOf(f):0});}}}
+  cands.sort((x,y)=>x.score-y.score||x.rank-y.rank);   // the municipality's main postal areas first
+  // 2. load only the packs those postal areas live in; exact house numbers are collected across every candidate first
+  const typed=plain(a.street).split(/\s+/);
+  const wc=a._anyTown?null:(a.place||(a.city?plain(a.city.name).trim().replace(/\s+/g," "):null));
+  const exact=[],near=[],cv=(a.civic||"").toUpperCase(),un=(a.unit||"").toUpperCase(),seen=new Set();
+  for(const c of cands.slice(0,120)){const pid=packs[c.f];if(pid==null)continue;const pk=await addrPack(pid);const list=pk[c.f]||[];
+    for(const [street,ci,data] of list){if(streetKey(street)!==c.k)continue;
+      const city=(pk._c||[])[ci]||"";if(wc&&plain(city).trim().replace(/\s+/g," ")!==wc)continue;   // a town was typed: only that town
+      for(const seg of data.split(";")){const [lduTag,civs]=seg.split(":");const [ldu,da,ll]=lduTag.split("@");
+        for(const t of civs.split(" ")){const [u,n]=t.includes("/")?t.split("/"):["",t];
+          if(cv&&!n.startsWith(cv))continue;if(un&&!(u&&u.startsWith(un)))continue;
+          const isExact=!cv||n===cv;const bucket=isExact?exact:near;
+          if(bucket.length>=(isExact?80:40))continue;
+          const id=`${u}/${n}|${street}|${c.f}`;if(seen.has(id))continue;seen.add(id);
+          bucket.push({sname:street,da:da||null,ll:ll||null,score:c.score+(u&&!un?0.5:0)+(typed.some(w=>TYPEWORDS.has(w))&&plain(street).split(/\s+/).some(w=>TYPEWORDS.has(w)&&!typed.includes(w))?0.3:0)+(mun&&plain(city)!==plain(mun.name)?1.5:0)-(a.place&&plain(city).trim().replace(/\s+/g," ")===a.place?2:0),fsa:c.f,street:c.k,civic:n,unit:u,postal:`${c.f} ${ldu}`,city,
+            label:`${u?u+"-":""}${n} ${title(street)}`,sub:`${title(city)} ${provOf(c.f)||""} ${c.f} ${ldu}`});}}}
+    if(exact.length>=40)break;}
+  const out=exact.length?exact.concat(near):near;
+  if(wc&&!out.length)return addressSearch({...a,place:null,city:null,_anyTown:1},mun,scope);   // nothing in that town: any town
+  if(!cands.length&&!a.fsa&&scope!=="all")return addressSearch(a,mun,scope==="prov"?"all":"prov");   // not in this municipality: widen to province, then Canada
+  // the name or house number only half-matches here: look wider and prefer an exact match elsewhere
+  const exactHere=out.some(o=>o.street===`${want}|${wantDir||o.street.split("|")[1]}`&&(!cv||o.civic===cv)&&(!wantDir||o.street.endsWith("|"+wantDir)));
+  const streetHere=cands.some(c=>c.score===0);              // the municipality has this exact street (name + direction)
+  if(!exactHere&&!streetHere&&!a.fsa&&scope!=="all"){
+    const wider=await addressSearch(a,mun,scope==="prov"?"all":"prov");
+    if(wider&&wider.length&&wider[0].street.split("|")[0]===want&&(!cv||wider[0].civic===cv))return wider;}
+  if(!out.length&&cv&&cands.length)return addressSearch({...a,civic:"",unit:""},mun,scope);   // number not on this street: list the street
+  const ex=out.filter(o=>!cv||o.civic===cv).sort((x,y)=>x.score-y.score),rest=out.filter(o=>cv&&o.civic!==cv).sort((x,y)=>x.score-y.score||(parseInt(x.civic)||0)-(parseInt(y.civic)||0));
+  return ex.concat(rest).slice(0,8);}
+
+/* Speed: warm the address files before the first keystroke. On load (when the browser is idle) fetch the pack map and
+   the street index for the province's postal letters; once typing starts, fetch the municipality's main packs too. */
+const PROV_LETTERS={NL:"A",NS:"B",PE:"C",NB:"E",QC:"GHJ",ON:"KLMNP",MB:"R",SK:"S",AB:"T",BC:"V",NT:"X",NU:"X",YT:"Y"};
+function idle(f){(window.requestIdleCallback||(c=>setTimeout(c,300)))(f);}
+function warmProvince(){idle(async()=>{const packs=await addrPacks();
+  const mun=(DB.munis||[]).find(x=>x.name===st.muni&&x.prov===st.prov);
+  const letters=mun?[...new Set(mun.fsa.slice(0,3).map(f=>f[0]))]:(PROV_LETTERS[st.prov]||"").split("");
+  for(const L of letters.slice(0,2))addrIdx(L);});}
+let warmedMuni="";
+function warmMunicipality(){const mun=(DB.munis||[]).find(x=>x.name===st.muni&&x.prov===st.prov);if(!mun||warmedMuni===mun.name)return;
+  warmedMuni=mun.name;idle(async()=>{const packs=await addrPacks();const ids=[...new Set(mun.fsa.slice(0,6).map(f=>packs[f]).filter(x=>x!=null))];
+    for(const id of ids.slice(0,3))addrPack(id);});}
+$("addr").addEventListener("focus",()=>{warmProvince();warmMunicipality();});
+$("addr").addEventListener("input",warmMunicipality,{once:true});
+$("muni").addEventListener("change",()=>{warmedMuni="";warmProvince();});
+$("prov").addEventListener("change",()=>{warmedMuni="";warmProvince();});
+(function wait(){DB.munis?warmProvince():setTimeout(wait,250);})();   // after the page data has loaded
+
+/* ---- Printable one-page report (Print / Save as PDF) and optional Google photos ----
+   On your own site: set HVE_CONFIG.googleKey to a Google Maps Platform key (Street View Static + Maps Static APIs enabled)
+   to show the Street View photo and a pinned map in the page and the report. Without a key, the report uses the
+   OpenStreetMap pin (where map images are allowed) and printed photo links. */
+window.HVE_CONFIG=window.HVE_CONFIG||{googleKey:""};
+(function(){
+  const css=`@media print{body{background:#fff!important;padding:0!important}.wrap>*:not(#report){display:none!important}#report{display:block!important}
+    #report{color:#000;font-size:12px}#report h2{margin:0 0 4px}#report .rp-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px}
+    #report .rp-photo{max-width:100%;border:1px solid #ccc}@page{margin:14mm}}
+    #report{display:none;border:1px solid var(--line);border-radius:10px;padding:20px;background:var(--surface)}
+    #report .rp-big{font:600 34px var(--display);color:var(--accent)}#report .rp-sec{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+    #report table{width:auto}#report .rp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px}
+    #report .rp-photo{max-width:100%;border-radius:6px}#report .rp-map{height:220px;border-radius:6px;border:1px solid var(--line)}`;
+  const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
+  const rep=document.createElement("section");rep.id="report";rep.setAttribute("aria-label","Printable report");document.querySelector(".wrap").appendChild(rep);
+  const box=document.querySelector('fieldset[data-step="3"] .row:last-of-type')||document.querySelector('fieldset[data-step="3"]');
+  const b=document.createElement("button");b.type="button";b.className="cta";b.id="printBtn";b.textContent="Print / Save as PDF";
+  const msg=document.createElement("div");msg.className="hint";msg.id="printMsg";msg.setAttribute("aria-live","polite");
+  box.after(b,msg);
+  b.addEventListener("click",async()=>{await buildReport();rep.style.display="block";rep.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
+    const t0=Date.now();window.print();
+    if(Date.now()-t0<60)msg.textContent="The report is shown below. If no print dialog opened, this preview blocks printing; Print / Save as PDF works when the page is on your own website.";});
+})();
+
+function gPhoto(ll,w,h){const k=HVE_CONFIG.googleKey;if(!k||!ll)return "";const [la,lo]=ll.split(",");
+  return `https://maps.googleapis.com/maps/api/streetview?size=${w}x${h}&location=${la},${lo}&fov=80&key=${encodeURIComponent(k)}`;}
+function gMap(ll,w,h){const k=HVE_CONFIG.googleKey;if(!k||!ll)return "";const [la,lo]=ll.split(",");
+  return `https://maps.googleapis.com/maps/api/staticmap?center=${la},${lo}&zoom=17&size=${w}x${h}&markers=color:red%7C${la},${lo}&key=${encodeURIComponent(k)}`;}
+
+async function buildReport(){
+  const p=aiProp||{},it=p.pick||{},rep=$("report"),e=s=>esc(s||"");
+  const facts=[...$("facts").querySelectorAll("div")].map(d=>[d.querySelector("span")?.textContent,d.querySelector("b")?.textContent]).filter(x=>x[0]);
+  const adj=[...$("adjBox").querySelectorAll("div")].map(d=>[...d.children].map(c=>c.textContent));
+  const hist=p.history||[];
+  const ll=it.ll||"",[la,lo]=ll.split(","),q=encodeURIComponent($("addr").value);
+  const photo=gPhoto(ll,640,320),gm=gMap(ll,640,260);
+  rep.innerHTML=`<div class="eyebrow">Home value report · ${new Date().toLocaleDateString(LANG==="fr"?"fr-CA":"en-CA",{year:"numeric",month:"long",day:"numeric"})}</div>
+  <h2 style="font-family:var(--brand);color:var(--accent-2)">${e($("addr").value)||e(st.muni)}</h2>
+  <div class="rp-big">${e($("rVal").textContent)}</div><div class="range">${e($("rRange").textContent)}</div>
+  ${photo?`<div class="rp-sec"><img class="rp-photo" src="${photo}" alt="Street View photo near this address"></div>`:""}
+  <div class="rp-sec"><b>How we got this number</b><p>${$("aiBox").innerHTML||""}</p>
+    ${adj.length?`<table>${adj.map(([k,v])=>`<tr><td>${e(k)}</td><td style="text-align:right">${e(v)}</td></tr>`).join("")}</table>`:""}</div>
+  <div class="rp-sec"><b>Property</b><div class="rp-grid">${facts.map(([k,v])=>`<div><span class="hint">${e(k)}</span><br>${e(v)}</div>`).join("")}
+    <div><span class="hint">Type</span><br>${e($("ptype").selectedOptions[0]?.textContent)}</div><div><span class="hint">Living area</span><br>${e($("sqft").value)} sq ft</div></div></div>
+  ${(p.near||[]).length?`<div class="rp-sec"><b>Homes near you on this street</b><table>${p.near.map(n=>`<tr><td>${e(n.civic)}</td><td style="text-align:right">${money(n.val)} (${n.year})</td></tr>`).join("")}</table></div>`:""}
+  ${hist.length?`<div class="rp-sec"><b>Assessment history</b><div style="height:170px"><canvas id="rpHist"></canvas></div>
+    <table>${hist.map(([y,v])=>`<tr><td>${y}</td><td style="text-align:right">${money(v)}</td></tr>`).join("")}</table></div>`:""}
+  <div class="rp-sec"><b>Location</b>${gm?`<br><img class="rp-photo" src="${gm}" alt="Map with a pin at this address">`:`<div class="rp-map" id="rpMap"></div>`}
+    <p class="hint">${la?`Coordinates ${la}, ${lo} · `:""}Street View: https://www.google.com/maps/search/?api=1&amp;query=${q}</p></div>
+  <div class="rp-sec"><b>Equity and borrowing</b><div class="rp-grid"><div><span class="hint">Estimated equity</span><br>${e($("eqVal").textContent)}</div>
+    ${[...$("borrow").querySelectorAll("div")].map(d=>`<div><span class="hint">${e(d.children[0]?.textContent)}</span><br>${e(d.children[1]?.textContent)}</div>`).join("")}</div></div>
+  <p class="notice">Indicative only. Values come from public municipal assessment records, the 2021 Census and published regional benchmarks, not from sold listings. Not an appraisal and not suitable for lending decisions. Sources: Statistics Canada (National Address Register, 2021 Census, Canadian Housing Statistics Program), municipal open data, MAMH Québec, published MLS® HPI benchmarks.</p>`;
+  if(document.fonts)await document.fonts.ready;
+  if(hist.length&&window.Chart){new Chart($("rpHist"),{type:"line",data:{labels:hist.map(h=>h[0]),datasets:[{data:hist.map(h=>h[1]),borderColor:css("--print-primary"),backgroundColor:css("--print-primary"),pointRadius:2,tension:.2}]},
+    options:{animation:false,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:css("--print-muted"),font:{family:css("--mono"),size:12}},grid:{color:css("--print-line")}},y:{ticks:{color:css("--print-muted"),font:{family:css("--mono"),size:12},callback:v=>fmt$(v)},grid:{color:css("--print-line")}}}}});}
+  if(!gm&&la&&typeof mapReady!=="undefined"&&mapReady&&window.L){const m=L.map("rpMap",{zoomControl:false,attributionControl:true});
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(m);m.setView([+la,+lo],17);
+    L.circleMarker([+la,+lo],{radius:9,color:css("--print-accent"),fillOpacity:1,className:"hve-pin"}).addTo(m);await new Promise(r=>setTimeout(r,600));}
+  else if(!gm){const el=$("rpMap");if(el)el.outerHTML=`<p class="hint">Map pin: ${la?la+", "+lo:"—"}</p>`;}
+}
+
+/* ---- Insights: what can be built on the lot, neighbourhood profile, zoning, commercial flag, Google Map ----
+   All from free public sources: provincial/municipal housing law (2023-2025), municipal zoning in open data, CMHC rents
+   (StatCan 34-10-0133), 2021 Census block profiles, StatCan address register building-use codes. */
+(function(){
+  const css=`.ins{display:grid;gap:10px}.ins h4{margin:0;font:600 14px var(--body);color:var(--accent)}
+  .badge{display:inline-block;font:600 12px var(--body);padding:3px 10px;border-radius:999px;background:color-mix(in srgb,var(--accent-2) 14%,transparent);color:var(--accent-2)}
+  .prof{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;font-size:13px}
+  @media (max-width:480px){.prof{grid-template-columns:minmax(0,1fr)}}
+  .pbar{height:5px;border-radius:9px;background:var(--line);overflow:hidden;margin-top:3px}.pbar i{display:block;height:100%;background:var(--accent)}
+  .build{border:1px solid var(--line);border-radius:10px;padding:12px;background:color-mix(in srgb,var(--good) 7%,var(--surface))}
+  .build .num{font:600 26px var(--display);color:var(--good)}
+  #gmap{width:100%;height:240px;border:0;border-radius:8px}`;
+  const s=document.createElement("style");s.textContent=css;document.head.appendChild(s);
+  const box=document.createElement("div");box.id="insights";box.className="ins";box.hidden=true;
+  $("facts").after(box);
+})();
+
+const INS={rents:null,prof:{},profca:null,nonres:{},recent:null};
+const dollars=v=>"$"+Math.round(v).toLocaleString("en-CA");   // exact, for rents and monthly costs
+const fmtPct=v=>v==null?"—":Math.round(v)+"%";
+/* units allowed on a typical residential lot (main home included), from provincial law and municipal by-laws */
+const BUILD_RULES={
+  ON:{n:3,why:"Ontario's More Homes Built Faster Act (2022) allows 3 units on most urban residential lots (main home + 2 additional units)."},
+  BC:{n:4,why:"BC's small-scale multi-unit housing law (Bill 44, 2023) allows 3–4 units on most single-family lots in municipalities over 5,000 people, and up to 6 near frequent transit."},
+  AB:{n:2,why:"Alberta municipalities generally allow a secondary or backyard suite."},
+  QC:{n:2,why:"Québec's Bill 31 (2024) lets municipalities allow an accessory dwelling unit; many now do."},
+  MB:{n:2,why:"Most Manitoba municipalities allow a secondary suite."},SK:{n:2,why:"Most Saskatchewan municipalities allow a secondary or garden suite."},
+  NS:{n:2,why:"Most Nova Scotia municipalities allow a secondary or backyard suite."},NB:{n:2,why:"Most New Brunswick municipalities allow a secondary suite."},
+  NL:{n:2,why:"Most municipalities allow a secondary suite."},PE:{n:2,why:"Most municipalities allow a secondary suite."},
+  YT:{n:2,why:"Garden and secondary suites are generally allowed."},NT:{n:2,why:"Secondary suites are generally allowed."},NU:{n:2,why:"Secondary suites may be allowed; check with the municipality."}};
+const CITY_RULES={ // municipalities that adopted more permissive by-laws (Housing Accelerator Fund agreements and city reforms)
+  "ON|TORONTO":{n:4,why:"Toronto allows multiplexes of up to 4 units on residential lots city-wide (2023), and up to 6 in parts of Toronto and East York."},
+  "ON|OTTAWA":{n:4,why:"Ottawa allows up to 4 units on residential lots under its Housing Accelerator commitments."},
+  "ON|MISSISSAUGA":{n:4,why:"Mississauga permits up to 4 units on residential lots (2024)."},
+  "ON|HAMILTON":{n:4,why:"Hamilton permits up to 4 units on residential lots."},"ON|LONDON":{n:4,why:"London permits up to 4 units on residential lots."},
+  "ON|KITCHENER":{n:4,why:"Kitchener permits up to 4 units on residential lots."},
+  "AB|CALGARY":{n:4,why:"Calgary's 2024 city-wide rezoning (R-CG) allows rowhouses and townhomes of about 4 homes, each with a secondary suite."},
+  "AB|EDMONTON":{n:8,why:"Edmonton's 2024 zoning bylaw allows up to 8 units on most mid-block residential lots (RS zone)."},
+  "MB|WINNIPEG":{n:4,why:"Winnipeg allows up to 4 units on residential lots under its Housing Accelerator agreement."},
+  "SK|SASKATOON":{n:4,why:"Saskatoon allows up to 4 units on residential lots."},"SK|REGINA":{n:4,why:"Regina allows up to 4 units on residential lots."},
+  "NS|HALIFAX":{n:4,why:"Halifax allows up to 4 units on residential lots across most of the municipality (2024)."},
+  "NB|MONCTON":{n:4,why:"Moncton allows up to 4 units on residential lots."},"NB|FREDERICTON":{n:4,why:"Fredericton allows up to 4 units on residential lots."},
+  "BC|VANCOUVER":{n:6,why:"Vancouver's multiplex zoning (2023) allows up to 6 units on most residential lots (8 for rental)."},
+  "BC|VICTORIA":{n:6,why:"Victoria's missing-middle policy and Bill 44 allow up to 6 units on many residential lots."}};
+function zoningMeaning(z){if(!z)return null;const u=z.toUpperCase();
+  if(/^(C|CC|CB|CR|CS|CD-|DC|M[A-Z]?\b|I|IL|IG|IH|IB)/.test(u)&&!/^CD-1/.test(u))return "commercial, mixed-use or industrial zone";
+  if(/R-CG|RCG|RS\b|^RT|^RM|^RF[3-5]|^RA|M-C|M-G|RH|R2|R3|R4|RIL|RSL/.test(u))return "residential zone that allows more than one home";
+  if(/^R|^RF[12]|^R1|^RS[1-9]|^R-C1|^R-1/.test(u))return "low-density residential zone";
+  if(/^A|^AG|^RR|^RU/.test(u))return "agricultural or rural zone";
+  return null;}
+async function rentsFor(prov,muni){if(!INS.rents)INS.rents=getJSON("data/rents.json").catch(()=>({}));const r=await INS.rents;
+  return r[`${prov}|${plain(muni)}`]||r[`${prov}|${plain(muni).split(" ")[0]}`]||r[`${prov}|*`]||null;}
+async function profileFor(da){if(!da)return null;const pr=da.slice(0,2);
+  if(!INS.prof[pr])INS.prof[pr]=getJSON("data/prof_"+pr+".json").catch(()=>({}));
+  if(!INS.profca)INS.profca=getJSON("data/prof_ca.json").catch(()=>null);
+  return (await INS.prof[pr])[da]||null;}
+async function isNonRes(it){if(!it||!it.fsa)return false;const L=it.fsa[0];
+  if(!INS.nonres[L])INS.nonres[L]=getJSON("data/nonres/"+L+".json").catch(()=>({}));
+  const d=((await INS.nonres[L])[it.fsa])||{},list=(d[it.street]||"").split(" ");
+  return list.includes(it.unit?`${it.unit}/${it.civic}`:it.civic);}
+
+const SCH={};
+async function schoolsNear(prov,ll){if(!ll)return [];const [la,lo]=ll.split(",").map(Number);
+  if(!(prov in SCH))SCH[prov]=getJSON("data/schools_"+prov+".json").catch(()=>[]);const all=await SCH[prov];
+  const km=(a,b)=>{const r=Math.PI/180,x=(b[1]-lo)*r*Math.cos(la*r),y=(b[0]-la)*r;return 6371*Math.hypot(x,y);};
+  const d=all.map(s=>Object.assign([...s],{d:km(0,[s[1],s[2]])})).filter(s=>s.d<15).sort((a,b)=>a.d-b.d);
+  return [...d.filter(s=>s[3]!=="S").slice(0,3),...d.filter(s=>s[3]!=="E").slice(0,2)].filter((s,i,a)=>a.indexOf(s)===i).sort((a,b)=>a.d-b.d);}
+async function insights(it){const box=$("insights");if(!it||!it.postal){box.hidden=true;return;}
+  const prov=provOf(it.fsa)||st.prov,muni=st.muni,det=aiProp.detail||null,zone=det&&det[2]||null,zmean=zoningMeaning(zone);
+  const nonres=await isNonRes(it),condo=isCondo(st.sub)||!!it.unit;
+  const [rent,prof]=await Promise.all([rentsFor(prov,muni),profileFor(it.da)]);
+  const parts=[];let buildPart="";
+  if(nonres||(zmean&&/commercial|industrial/.test(zmean)))parts.push(`<div><span class="badge">${nonres?"Non-residential or commercial building":"Commercial / mixed-use zoning"}</span>
+    <p class="hint">${nonres?"Statistics Canada's address register marks this address as non-residential. ":""}Residential value models fit it less well; a commercial appraisal or income approach is more reliable.</p></div>`);
+  if(zone)parts.push(`<div><h4>Zoning: ${esc(zone)}</h4><p class="hint">${zmean?esc(zmean[0].toUpperCase()+zmean.slice(1))+". ":""}From the city's open property data. Check the full by-law before building.</p></div>`);
+  // what can be built
+  if(!condo&&!nonres){const rule=CITY_RULES[`${prov}|${plain(muni)}`]||BUILD_RULES[prov]||BUILD_RULES.ON;
+    let n=rule.n;if(zmean&&/more than one home/.test(zmean))n=Math.max(n,3);if(zmean&&/agricultural/.test(zmean))n=2;
+    const add=Math.max(1,n-1),r1=rent&&rent[1]||1200,r2=rent&&rent[2]||1500;
+    const unitRent=add<=2?r1:r2,gross=add*unitRent*12,net=gross*.7,valueAdd=net/.05;
+    const cost=add===1?[120000,180000]:[add*250000,add*350000],lo=Math.max(0,valueAdd-cost[1]),hi=Math.max(0,valueAdd-cost[0]);
+    buildPart=(`<div class="build"><h4>What can I build here?</h4>
+      <div class="num">Up to ${n} home${n>1?"s":""} on this lot</div>
+      <p class="hint">${typeof LANG!=="undefined"&&LANG==="fr"?`Selon la loi provinciale et les règlements municipaux récents, jusqu’à ${n} logements sont permis sur ce type de terrain résidentiel.`:esc(rule.why)}</p>
+      <div class="adj"><div><span>Added units</span><span>${add}</span></div>
+      <div><span>Typical rent per unit (CMHC ${rent?"2025":"estimate"})</span><span>${dollars(unitRent)}/mo</span></div>
+      <div><span>Potential rent income</span><span>${money(gross)}/yr</span></div>
+      <div><span>Value of that income (5% cap rate, 30% costs)</span><span>${money(valueAdd)}</span></div>
+      <div><span>Typical build cost</span><span>${money(cost[0])} – ${money(cost[1])}</span></div>
+      <div><span>Possible equity created</span><span>${money(lo)} – ${money(hi)}</span></div></div>
+      <p class="hint">Financing: Canada's Secondary Suite Refinance Program (2025) allows refinancing up to 90% of the finished value with a 30-year amortization to add a suite; multiplexes of 5+ units can use CMHC MLI Select. Estimates only; confirm zoning, servicing, permits and costs.</p></div>`);}
+  // neighbourhood profile
+  const ca=await INS.profca;
+  if(prof&&prof.length){const v=prof,F=["pop","growth","age","inc","own","sfd","apt","old","new","ocost","rcost","bach","unemp","transit","lowinc"],i=k=>F.indexOf(k);
+    const rk=F.map((f,j)=>{const P=ca&&ca.pct&&ca.pct[f];if(!P||v[j]==null)return null;let n=0;while(n<P.length&&P[n]<=v[j])n++;return Math.max(0,Math.min(100,(n-1)*5));});
+    const row=(label,val,rank)=>`<div><span class="hint">${label}</span><br><b>${val}</b>${rank!=null?`<div class="pbar" title="Higher than ${rank}% of Canadian neighbourhoods"><i style="width:${rank}%"></i></div>`:""}</div>`;
+    parts.push(`<div><h4>Your neighbourhood (2021 Census block ${esc(it.da)})</h4><div class="prof">
+      ${row("Median household income",v[i("inc")]!=null?money(v[i("inc")]):"—",rk[i("inc")])}
+      ${row("Homeowners",fmtPct(v[i("own")]),rk[i("own")])}
+      ${row("Population growth 2016–21",v[i("growth")]!=null?(v[i("growth")]>0?"+":"")+v[i("growth")]+"%":"—",rk[i("growth")])}
+      ${row("Median age",v[i("age")]??"—",rk[i("age")])}
+      ${row("University degree",fmtPct(v[i("bach")]),rk[i("bach")])}
+      ${row("Commute by transit",fmtPct(v[i("transit")]),rk[i("transit")])}
+      ${row("Detached houses",fmtPct(v[i("sfd")]),rk[i("sfd")])}
+      ${row("Homes built before 1961",fmtPct(v[i("old")]),rk[i("old")])}
+      ${row("Owner monthly costs",v[i("ocost")]!=null?dollars(v[i("ocost")]):"—",rk[i("ocost")])}
+      ${row("Renter monthly costs",v[i("rcost")]!=null?dollars(v[i("rcost")]):"—",rk[i("rcost")])}</div>
+      <p class="hint">Bars show how this block compares with all Canadian neighbourhoods.</p></div>`);}
+  // newer than the Census: municipal population (StatCan July 1 estimates) and the local job market (Labour Force Survey)
+  if(!INS.recent)INS.recent=getJSON("data/recent.json").catch(()=>null);const rec=await INS.recent;const rm=rec&&rec.muni&&rec.muni[`${muni}|${prov}`];
+  if(rm){const jb=rec.jobs[rm[3]]||rec.jobs[prov],gr=((rm[1]/rm[0]-1)*100).toFixed(1),mo=jb?new Date(jb[0]+"-15").toLocaleDateString("en-CA",{month:"long",year:"numeric"}):"";
+    parts.push(`<div><h4>${esc(muni)} today</h4><div class="prof">
+      <div><span class="hint">Population ${rm[2]}</span><br><b>${rm[1].toLocaleString("en-CA")}</b></div>
+      <div><span class="hint">Growth since 2021</span><br><b>${gr>0?"+":""}${gr}%</b></div>
+      ${jb?`<div><span class="hint">Unemployment, ${esc(mo)} (${esc(rec.jobs[rm[3]]?rm[3]+" area":prov)})</span><br><b>${jb[1]}%</b>${jb[2]!=null?` <small class="hint">${jb[1]<=jb[2]?"down":"up"} from ${jb[2]}% a year earlier</small>`:""}</div>`:""}</div>
+      <p class="hint">Statistics Canada population estimates (July 1, ${rm[2]}) and Labour Force Survey (3-month average). Updated automatically as new releases come out.</p></div>`);}
+  // schools: the closest elementary and secondary schools, with Ontario EQAO placement by year
+  const sch=await schoolsNear(prov,it.ll);
+  if(sch.length)parts.push(`<div><h4>Nearby schools</h4><div class="schools">${sch.map(x=>{const h=Object.entries(x[7]||{}),last=h[h.length-1];
+      return `<div class="sch"><div><b>${esc(x[0])}</b> <small class="hint">${x[3]==="E"?"Elementary":x[3]==="S"?"Secondary":"K–12"}${x[6]?" · "+esc(x[6]):""} · ${esc(x[4])} · ${x.d<1?Math.round(x.d*1000)+" m":x.d.toFixed(1)+" km"}</small></div>
+        ${last?`<div class="hint">Better than <b>${last[1][1]}%</b> of Ontario ${x[3]==="S"?"secondary":"elementary"} schools in ${last[0]} (${last[1][0]}% of students at the provincial standard)</div>
+        <div class="rank-trend">${h.map(([y,[sc,rk]])=>`<span title="${y}: ${sc}% at standard"><i style="height:${Math.max(4,rk*.36)}px"></i><small>${y.slice(2)}</small></span>`).join("")}</div>`:""}</div>`;}).join("")}</div>
+    <p class="hint">Closest schools by distance; your assigned school depends on the board's boundary, so confirm with ${sch[0][5]?esc(sch[0][5]):"the school board"}. ${prov==="ON"?"Placement from Ontario's EQAO results (data.ontario.ca), refreshed each school year; bars show the yearly rank, 2019–21 skipped while testing paused.":"School list from Statistics Canada's Open Database of Educational Facilities."}</p></div>`);
+  if(buildPart)parts.push(buildPart);
+  box.innerHTML=parts.join("");box.hidden=!parts.length;
+  // free street-level photos from Mapillary (free token, no credit card) when HVE_CONFIG.mapillaryToken is set
+  const [la,lo]=(it.ll||"").split(","),tok=(window.HVE_CONFIG||{}).mapillaryToken;
+  if(tok&&la){try{const u=`https://graph.mapillary.com/images?access_token=${encodeURIComponent(tok)}&fields=id,thumb_1024_url,captured_at&lng=${lo}&lat=${la}&radius=60&limit=3`;
+    const r=await fetch(u);const j=await r.json();const imgs=(j.data||[]).filter(x=>x.thumb_1024_url);
+    if(imgs.length){box.insertAdjacentHTML("afterbegin",`<div><h4>Street photos near this address</h4><div style="display:grid;grid-template-columns:repeat(${Math.min(3,imgs.length)},1fr);gap:6px">${imgs.map(x=>`<a href="https://www.mapillary.com/app/?pKey=${x.id}" target="_blank" rel="noopener"><img src="${x.thumb_1024_url}" alt="Street photo near this address" style="width:100%;border-radius:6px"></a>`).join("")}</div><p class="hint">Photos: Mapillary contributors (CC BY-SA)${imgs[0].captured_at?", taken "+new Date(imgs[0].captured_at).getFullYear():""}.</p></div>`);box.hidden=false;}}catch(e){}}}
+const _pickIns=pick;
+pick=async function(it){await _pickIns(it);try{await insights(it);}catch(e){}};
+
+/* ---- English / French. One layer translates every text node, placeholder and chart label, including text the
+   page writes later (estimates, explanations, suggestions), so new features stay covered. Numbers switch to the
+   French-Canadian format (1 050 000 $). The choice is remembered per browser. ---- */
+const FR_EXACT={
+"Does it come with parking?":"Avec stationnement?","A storage locker?":"Un casier de rangement?","No parking":"Sans stationnement","Parking (1)":"Stationnement (1)","Parking (2)":"Stationnement (2)","Map":"Carte","Satellite":"Satellite","Street View":"Street View","2 spaces":"2 places","1 space":"1 place",
+"Benchmark Home Value":"Valeur repère de votre propriété",
+"All provinces & territories · 2016 – Sep 2026":"Toutes les provinces et tous les territoires · 2016 – sept. 2026",
+"Answer a few questions to see what your home may be worth today, your estimated equity, and how a renovation could add value.":"Répondez à quelques questions pour connaître la valeur actuelle possible de votre propriété, votre avoir propre estimé et l’effet d’une rénovation sur sa valeur.",
+"Address":"Adresse","Your home":"Votre propriété","Your estimate":"Votre estimation",
+"Find out what your home may be worth today.":"Découvrez ce que votre propriété pourrait valoir aujourd’hui.",
+"Your home address":"Adresse de votre propriété","Province":"Province","Municipality":"Municipalité","Get started":"Commencer",
+"Type a few words of your address and pick it from the list.":"Tapez quelques mots de votre adresse et choisissez-la dans la liste.",
+"Type your street address, or a postal code. Pick your municipality first if you don't know the postal code.":"Tapez votre adresse ou un code postal. Choisissez d’abord votre municipalité si vous ne connaissez pas le code postal.",
+"Tell us about your home":"Parlez-nous de votre propriété","Property type":"Type de propriété","Houses":"Maisons","Condos":"Copropriétés",
+"Detached house":"Maison individuelle","Link (detached above grade)":"Maison liée (détachée hors sol)","Semi-detached":"Jumelé",
+"Freehold townhouse":"Maison en rangée (pleine propriété)","Duplex (2 units)":"Duplex (2 logements)","Triplex / fourplex":"Triplex / quadruplex",
+"Rural home / acreage":"Maison rurale / terre","Cottage / recreational":"Chalet / propriété de loisir","Mobile / manufactured home":"Maison mobile / usinée",
+"Condo apartment":"Appartement en copropriété","Condo loft":"Loft en copropriété","Condo townhouse":"Maison en rangée en copropriété",
+"Stacked townhouse":"Maison en rangée superposée","Penthouse":"Penthouse","Detached":"Individuelle","Semi":"Jumelé","Townhouse":"En rangée","Condo apt":"Appart. copro.",
+"Monthly condo fee ($)":"Frais de copropriété mensuels ($)","Condo details":"Détails de la copropriété","Floor":"Étage","Main view":"Vue principale",
+"No notable view":"Aucune vue particulière","City":"Ville","Park / green space":"Parc / espace vert","Water / lake":"Eau / lac","Mountain":"Montagne",
+"Locker":"Casier","No":"Non","Yes":"Oui","Building amenities":"Services de l’immeuble","None":"Aucun","Basic (gym, party room)":"De base (gym, salle commune)",
+"Full (pool, concierge)":"Complets (piscine, concierge)","Special assessment owing ($)":"Cotisation spéciale due ($)","Reserve fund":"Fonds de prévoyance",
+"Healthy":"Bien financé","Low / underfunded":"Faible / sous-financé","Not sure":"Je ne sais pas","Repairs needed":"Réparations nécessaires",
+"What you paid ($)":"Prix payé ($)","When you bought":"Date d’achat","Renovations since purchase ($)":"Rénovations depuis l’achat ($)",
+"Bedrooms":"Chambres","Bathrooms":"Salles de bain","Living area (sq ft)":"Superficie habitable (pi²)","Condition":"État","Needs work":"Travaux requis",
+"Average":"Moyen","Updated":"Mis à jour","Fully renovated":"Entièrement rénové","Parking":"Stationnement","1 space":"1 place","2 spaces":"2 places",
+"Lot":"Terrain","Small":"Petit","Typical":"Typique","Large":"Grand","Oversized / ravine":"Très grand / ravin",
+"Mortgage balance owing ($)":"Solde hypothécaire ($)","Back":"Retour","See my estimate":"Voir mon estimation",
+"Estimated value today":"Valeur estimée aujourd’hui","Estimated home equity":"Avoir propre estimé","Rate for payments (%)":"Taux pour les paiements (%)",
+"Amortization":"Amortissement","20 years":"20 ans","25 years":"25 ans","30 years":"30 ans","Could a renovation add value?":"Une rénovation pourrait-elle ajouter de la valeur?",
+"Project":"Projet","Kitchen remodel":"Rénovation de cuisine","Bathroom remodel":"Rénovation de salle de bain","Finish basement":"Finition du sous-sol",
+"Interior paint":"Peinture intérieure","New flooring":"Nouveaux planchers","Windows & doors":"Portes et fenêtres","Addition":"Agrandissement","Deck or patio":"Terrasse ou patio",
+"Budget ($)":"Budget ($)","Edit my answers":"Modifier mes réponses","Copy summary":"Copier le résumé","Summary copied.":"Résumé copié.",
+"Select-all is ready: press Ctrl+C to copy.":"Le texte est sélectionné : appuyez sur Ctrl+C pour copier.",
+"Indicative only. Values come from public municipal assessment records, the 2021 Census and published regional benchmarks, not from sold listings. Not an appraisal and not suitable for lending decisions.":"À titre indicatif seulement. Les valeurs proviennent des rôles d’évaluation municipaux publics, du Recensement de 2021 et des indices régionaux publiés, et non des ventes inscrites. Ce n’est pas une évaluation et ne convient pas aux décisions de prêt.",
+"Benchmark price by type":"Prix repère par type","Year-over-year change":"Variation sur un an","vs. province and region":"par rapport à la province et à la région",
+"Monthly carrying cost, 20% down":"Coût mensuel, mise de fonds de 20 %","All municipalities":"Toutes les municipalités","— click a row, click headers to sort":"— cliquez sur une ligne, ou sur un titre pour trier",
+"Municipality ":"Municipalité ","Benchmark":"Repère","1Y":"1 an","3Y":"3 ans","5Y":"5 ans","10Y":"10 ans","vs peak":"vs sommet",
+"1-year change":"Variation sur 1 an","5-year change":"Variation sur 5 ans","Market trends":"Tendances du marché",
+"Clear address":"Effacer l’adresse","Start typing, e.g. 15 Deermeade":"Commencez à taper, p. ex. 15 Deermeade","e.g. 850000":"p. ex. 850000",
+"optional, for your equity":"facultatif, pour votre avoir propre",
+"Refine my estimate":"Préciser mon estimation","Show my estimate":"Voir mon estimation","Can't find it? Choose your province and municipality":"Introuvable? Choisissez votre province et votre municipalité",
+"Legal description":"Description légale","Street photos near this address":"Photos de rue près de cette adresse","What can I build here?":"Que puis-je construire ici?","Added units":"Logements ajoutés","Potential rent income":"Revenus de location potentiels","Typical build cost":"Coût de construction typique","Possible equity created":"Avoir propre potentiellement créé","Median household income":"Revenu médian des ménages","Homeowners":"Propriétaires","Population growth 2016–21":"Croissance démographique 2016–2021","Median age":"Âge médian","University degree":"Diplôme universitaire","Commute by transit":"Transport en commun pour le travail","Detached houses":"Maisons individuelles","Homes built before 1961":"Logements construits avant 1961","Owner monthly costs":"Frais mensuels des propriétaires","Renter monthly costs":"Frais mensuels des locataires","Bars show how this block compares with all Canadian neighbourhoods.":"Les barres comparent cet îlot à l’ensemble des quartiers canadiens.","Non-residential or commercial building":"Bâtiment non résidentiel ou commercial","Commercial / mixed-use zoning":"Zonage commercial ou mixte","Value of that income (5% cap rate, 30% costs)":"Valeur de ce revenu (taux de capitalisation 5 %, frais 30 %)","Homes near you on this street":"Propriétés voisines dans cette rue","Print / Save as PDF":"Imprimer / Enregistrer en PDF","How we got this number":"Comment nous avons obtenu ce chiffre",
+"Property":"Propriété","Assessment history":"Historique des évaluations","Location":"Emplacement","Equity and borrowing":"Avoir propre et emprunt","Estimated equity":"Avoir propre estimé",
+"Type":"Type","Living area":"Superficie habitable","Street View ↗":"Street View ↗","Google Maps ↗":"Google Maps ↗","Satellite ↗":"Satellite ↗","Bing Streetside ↗":"Bing Streetside ↗","Instant estimate":"Estimation instantanée",
+"Postal area":"Région postale","Postal area median (Census, today)":"Médiane de la région postale (Recensement, aujourd’hui)",
+"Typical year built":"Année de construction typique","Searching…":"Recherche…","Looking up this property…":"Recherche de cette propriété…",
+"Home-equity line available (65% limit)":"Marge sur valeur domiciliaire disponible (limite de 65 %)","Interest-only payment on full line / mo":"Paiement des intérêts seulement sur la marge complète / mois",
+"Refinance cash-out available (80%)":"Liquidités disponibles par refinancement (80 %)","New mortgage at 80% / mo":"Nouveau prêt à 80 % / mois","Current balance payment / mo":"Paiement sur le solde actuel / mois",
+"Add your mortgage balance on the previous step to see your equity.":"Ajoutez votre solde hypothécaire à l’étape précédente pour voir votre avoir propre.",
+"Answer a few questions to sharpen the estimate.":"Répondez à quelques questions pour préciser l’estimation.",
+"Found records for this street. Answer a few questions to sharpen the estimate.":"Nous avons des données pour cette rue. Répondez à quelques questions pour préciser l’estimation.",
+"Pick your municipality below or add the postal code, then type the street again.":"Choisissez votre municipalité ci-dessous ou ajoutez le code postal, puis retapez la rue.",
+"The local data didn't load. Estimates will use the regional benchmarks only.":"Les données locales n’ont pas pu être chargées. Les estimations utiliseront seulement les indices régionaux.",
+"Rendered with Chart.js":"Affiché avec Chart.js","Rendered with built-in canvas fallback":"Affiché avec le moteur de secours intégré","Shown as a table (chart renderers unavailable)":"Affiché sous forme de tableau (graphiques indisponibles)",
+"Roof replacement":"Remplacement du toit","Furnace or A/C":"Fournaise ou climatiseur","Windows":"Fenêtres","Foundation or water leaks":"Fondation ou infiltrations d’eau",
+"Old wiring or panel":"Câblage ou panneau électrique désuet","Old plumbing":"Plomberie désuète","Water damage or mould":"Dégâts d’eau ou moisissure","Dated kitchen":"Cuisine désuète",
+"Dated bathroom(s)":"Salle(s) de bain désuète(s)","Worn flooring":"Planchers usés","Needs painting":"Peinture à refaire","Siding, deck or driveway":"Revêtement, terrasse ou entrée",
+"Condo":"Copro.","Town":"Rangée","Mortgage payment / mo":"Paiement hypothécaire / mois",
+"Greater Toronto & Hamilton":"Grand Toronto et Hamilton","Ottawa region":"Région d’Ottawa","Southwestern Ontario":"Sud-ouest de l’Ontario","Central & Eastern Ontario":"Centre et est de l’Ontario",
+"Northern Ontario":"Nord de l’Ontario","Calgary region":"Région de Calgary","Edmonton region":"Région d’Edmonton","Rest of Alberta":"Reste de l’Alberta","Metro Vancouver":"Grand Vancouver",
+"Rest of British Columbia":"Reste de la Colombie-Britannique","Saskatchewan & Manitoba":"Saskatchewan et Manitoba","Greater Montréal":"Grand Montréal","Rest of Québec":"Reste du Québec",
+"Atlantic Canada":"Canada atlantique","Northern territories":"Territoires du Nord","British Columbia":"Colombie-Britannique","Newfoundland and Labrador":"Terre-Neuve-et-Labrador",
+"Nova Scotia":"Nouvelle-Écosse","New Brunswick":"Nouveau-Brunswick","Prince Edward Island":"Île-du-Prince-Édouard","Northwest Territories":"Territoires du Nord-Ouest","Québec":"Québec"};
+// phrases inside longer, data-filled sentences (longest first)
+const FR_PHRASE=[["benchmark","repère"],
+["2021 Census values for your block and postal area, moved to today and split by property type using local assessment ratios","valeurs du Recensement de 2021 pour votre îlot et votre région postale, mises à jour à aujourd’hui et réparties par type selon les ratios d’évaluation locaux"],
+["From your neighbourhood's Census values and local assessment ratios.","D’après les valeurs du Recensement de votre quartier et les ratios d’évaluation locaux."],
+["Tell us about your home to sharpen it.","Parlez-nous de votre propriété pour la préciser."],
+["From real assessments on your street.","D’après les évaluations réelles de votre rue."],
+["From assessments in your postal area.","D’après les évaluations de votre région postale."],
+["From public Census and assessment data","D’après les données publiques du Recensement et des évaluations"],
+["From real assessment records","D’après les rôles d’évaluation réels"],
+["averaged with your purchase price indexed to today","moyenne avec votre prix d’achat indexé à aujourd’hui"],
+["Typical error at this level:","Erreur typique à ce niveau :"],
+["moved to today with the regional price index","mise à jour avec l’indice régional des prix"],
+["Your home's details are applied on top.","Les caractéristiques de votre propriété sont appliquées ensuite."],
+["2021 Census median home value","valeur médiane des logements au Recensement de 2021"],
+["No records for this street. We'll use postal area","Aucune donnée pour cette rue. Nous utiliserons la région postale"],
+["% of the estimated value. Borrowing room up to 80% of value:","% de la valeur estimée. Capacité d’emprunt jusqu’à 80 % de la valeur :"],
+["estimated value added;","valeur ajoutée estimée;"],["kitchens typically recover 65-80% of cost","une cuisine récupère généralement 65 à 80 % du coût"],
+["bathrooms typically recover 60-80%","une salle de bain récupère généralement 60 à 80 %"],["finished basements recover 50-70%","un sous-sol fini récupère 50 à 70 %"],
+["paint often recovers its full cost","la peinture récupère souvent tout son coût"],["flooring recovers 60-80%","les planchers récupèrent 60 à 80 %"],
+["windows recover 45-65%","les fenêtres récupèrent 45 à 65 %"],["additions recover 45-65%","un agrandissement récupère 45 à 65 %"],["decks recover 50-70%","une terrasse récupère 50 à 70 %"],
+["in this neighbourhood (Census block","dans ce quartier (îlot du Recensement"],["Neighbourhood median (block","Médiane du quartier (îlot"],
+["homes on record","propriétés au rôle"],["on this street","dans cette rue"],["typical · ","typique · "],["on record","au rôle"],
+["adjusted for your","ajustée pour vos"],["sq ft","pi²"],["assessments","évaluations"],["typical detached house","maison individuelle typique"],
+["typical condo townhouse","maison en rangée en copropriété typique"],["typical condo","copropriété typique"],["typical townhouse","maison en rangée typique"],
+["typical semi","jumelé typique"],["typical duplex","duplex typique"],["typical plex","plex typique"],["typical mobile home","maison mobile typique"],
+["in postal area","dans la région postale"],[" is "," vaut "],[" today"," aujourd’hui"],["Range ","Fourchette "],["Your neighbourhood (2021 Census block","Votre quartier (îlot du Recensement de 2021"],["Zoning:","Zonage :"],["Up to ","Jusqu’à "],[" homes on this lot"," logements sur ce terrain"],[" home on this lot"," logement sur ce terrain"],["Typical rent per unit (CMHC","Loyer typique par logement (SCHL"],["/mo","/mois"],["/yr","/an"],["From the city's open property data. Check the full by-law before building.","Selon les données foncières ouvertes de la ville. Consultez le règlement complet avant de construire."],["Residential value models fit it less well; a commercial appraisal or income approach is more reliable.","Les modèles résidentiels conviennent moins bien; une évaluation commerciale ou par le revenu est plus fiable."],["Statistics Canada's address register marks this address as non-residential.","Le registre d’adresses de Statistique Canada indique que cette adresse est non résidentielle."],["Financing: Canada's Secondary Suite Refinance Program (2025) allows refinancing up to 90% of the finished value with a 30-year amortization to add a suite; multiplexes of 5+ units can use CMHC MLI Select. Estimates only; confirm zoning, servicing, permits and costs.","Financement : le Programme de refinancement pour logements accessoires (2025) permet de refinancer jusqu’à 90 % de la valeur une fois les travaux terminés, sur 30 ans, pour ajouter un logement; les immeubles de 5 logements et plus peuvent utiliser MLI Select de la SCHL. Estimations seulement; vérifiez le zonage, les services, les permis et les coûts."],["Assessments usually land within 5–10% of market value.","Les évaluations se situent généralement à 5–10 % de la valeur marchande."],["From this home's own assessment","D’après l’évaluation de cette propriété"],["assessed at","évaluée à"],[" roll, combined with"," au rôle, combinée avec"],["the street's typical value of","la valeur typique de la rue de"],["the neighbourhood's typical value of","la valeur typique du quartier de"],["and your purchase price indexed to today","et votre prix d’achat indexé à aujourd’hui"],[" on the "," au rôle "],[" since "," depuis "],["Assessed ","Évaluée "],["Home value report","Rapport sur la valeur de la propriété"],["The report is shown below. If no print dialog opened, this preview blocks printing; Print / Save as PDF works when the page is on your own website.","Le rapport s’affiche ci-dessous. Si la fenêtre d’impression ne s’est pas ouverte, cet aperçu bloque l’impression; Imprimer / Enregistrer en PDF fonctionne lorsque la page est sur votre propre site."],["Coordinates","Coordonnées"],["Map pin:","Repère :"],["Postal area ","Région postale "],
+["Repairs needed","Réparations nécessaires"],["Special assessment","Cotisation spéciale"],["Amenities","Services"],["View","Vue"],["Floor ","Étage "],
+["deducted","déduits"],["confidence","confiance"],["area benchmark","repère du secteur"],["Based on","Fondé sur"],["High","Élevée"],["Medium","Moyenne"],["Low","Faible"],
+["Indicative only — not an appraisal.","À titre indicatif seulement — ce n’est pas une évaluation."],["Home value estimate:","Valeur estimée de la propriété :"],["Equity:","Avoir propre :"],
+["avg","moy."],[" on "," sur "],["typical ","typique "],["(block ","(îlot "],[": ",": "]];
+FR_PHRASE.push(["Detached benchmark","Repère maison individuelle"],["Semi benchmark","Repère jumelé"],["Town benchmark","Repère maison en rangée"],["Condo benchmark","Repère copropriété"],
+["vs peak","vs sommet"]);
+// region and province names also appear inside longer lines ("Greater Toronto & Hamilton · Ontario")
+for(const k of ["Greater Toronto & Hamilton","Ottawa region","Southwestern Ontario","Central & Eastern Ontario","Northern Ontario","Calgary region","Edmonton region","Rest of Alberta","Metro Vancouver","Rest of British Columbia","Saskatchewan & Manitoba","Greater Montréal","Rest of Québec","Atlantic Canada","Northern territories","British Columbia","Newfoundland and Labrador","Nova Scotia","New Brunswick","Prince Edward Island","Northwest Territories"])FR_PHRASE.push([k,FR_EXACT[k]]);
+FR_PHRASE.sort((a,b)=>b[0].length-a[0].length);
+const MONTHS_FR={Jan:"janv.",Feb:"févr.",Mar:"mars",Apr:"avr.",May:"mai",Jun:"juin",Jul:"juil.",Aug:"août",Sep:"sept.",Oct:"oct.",Nov:"nov.",Dec:"déc."};
+let LANG="en";try{LANG=localStorage.getItem("hve-lang")||(navigator.language||"").slice(0,2)==="fr"&&"fr"||"en";}catch(e){}
+const ORIG=new WeakMap(),ORIGA=new WeakMap();
+function frMoney(s){return s.replace(/\$(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?(K|M)?/g,(m,n,d,u)=>{
+  if(u)return n.replace(/,/g," ")+(d?d.replace(".",","):"")+(u==="M"?" M$":" k$");return n.replace(/,/g," ")+" $";});}
+function toFr(t){const k=t.trim();if(!k)return t;
+  if(FR_EXACT[k])return t.replace(k,FR_EXACT[k]);
+  let o=t;for(const [a,b] of FR_PHRASE)if(o.includes(a))o=o.split(a).join(b);
+  o=o.replace(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[\s  ](\d\d)/g,(m,a,b)=>MONTHS_FR[a]+" "+b);
+  o=o.replace(/([+\-−]?\d+)\.(\d+)%/g,"$1,$2 %");               // French decimals and spacing before %
+  return frMoney(o);}
+function trNode(n){if(n.nodeType===3){const p=n.parentNode;if(!p||/^(SCRIPT|STYLE)$/.test(p.nodeName))return;
+    if(LANG==="fr"){const cur=n.nodeValue;const was=ORIG.get(n);if(was&&was.fr===cur)return;const fr=toFr(cur);ORIG.set(n,{en:cur,fr});if(fr!==cur)n.nodeValue=fr;}
+    else{const was=ORIG.get(n);if(was&&n.nodeValue===was.fr){n.nodeValue=was.en;ORIG.delete(n);}}return;}
+  if(n.nodeType!==1)return;
+  for(const at of ["placeholder","aria-label","label"]){if(!n.hasAttribute||!n.hasAttribute(at))continue;
+    const m=ORIGA.get(n)||{};if(!(at in m))m[at]=n.getAttribute(at);ORIGA.set(n,m);
+    n.setAttribute(at,LANG==="fr"?(FR_EXACT[m[at]]||m[at]):m[at]);}
+  n.childNodes.forEach(trNode);}
+let trBusy=false;
+const trObs=new MutationObserver(ms=>{if(trBusy||LANG!=="fr")return;trBusy=true;
+  for(const m of ms){if(m.type==="characterData")trNode(m.target);else m.addedNodes.forEach(trNode);}trBusy=false;});
+trObs.observe(document.body,{subtree:true,childList:true,characterData:true});
+// charts draw on canvas, so translate their labels before drawing
+const _render=render;
+render=function(id,spec){if(LANG==="fr"){spec={...spec,labels:spec.labels.map(l=>l.replace(/^([A-Z][a-z]{2})/,m=>MONTHS_FR[m]||m)),
+  sets:spec.sets.map(s=>({...s,label:toFr(s.label)})),fmt:(f=>v=>frMoney(String(f(v))))(spec.fmt)};}return _render(id,spec);};
+function setLang(l){LANG=l;try{localStorage.setItem("hve-lang",l);}catch(e){}document.documentElement.lang=l==="fr"?"fr-CA":"en-CA";
+  $("langBtn").textContent=l==="fr"?"English":"Français";$("langBtn").setAttribute("lang",l==="fr"?"en":"fr");
+  trBusy=true;trNode(document.body);trBusy=false;market();}
+(function(){const b=document.createElement("button");b.id="langBtn";b.type="button";b.className="ghost lang";b.textContent="Français";
+  b.addEventListener("click",()=>setLang(LANG==="fr"?"en":"fr"));document.querySelector("header").appendChild(b);
+  if(LANG==="fr")setLang("fr");})();
+</script>

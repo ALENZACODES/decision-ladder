@@ -36,10 +36,22 @@ def _get(obj, path: str):
     return obj
 
 
+def expected_sets(case: dict) -> list[list[float]]:
+    """One list of expected figures per acceptable method (expect_from may be a dict or a list of dicts)."""
+    ef = case.get("expect_from")
+    if not ef:
+        return []
+    return [expected_numbers({"expect_from": e}) for e in (ef if isinstance(ef, list) else [ef])]
+
+
 def expected_numbers(case: dict) -> list[float]:
     ef = case.get("expect_from")
     if not ef:
         return []
+    if isinstance(ef, list):
+        ef = ef[0]
+    from . import modules as OS
+    OS.load_all()
     out = T.run(ef["tool"], ef["args"])
     vals = []
     for p in ef["paths"]:
@@ -71,15 +83,17 @@ def run_evals(llm, offline: bool = False, cases_path: Path = CASES, research=Non
         except Exception as e:  # noqa: BLE001 - an eval must record failures, not stop
             res, err = None, f"{type(e).__name__}: {e}"
         ms = (time.perf_counter() - t0) * 1000
-        exp = expected_numbers(c)
+        sets = [x for x in expected_sets(c) if x]
+        exp = sets[0] if sets else []
         if res is None:
             rows.append({"id": c["id"], "error": err, "ms": round(ms)})
             continue
         called = [s.name for s in res.steps if s.kind in ("tool", "repair", "research")]
         tool_ok = any(t in called for t in c["expect_tools"])
-        acc = all(answer_has(res.answer, v) for v in exp) if exp else None
+        acc = any(all(answer_has(res.answer, v) for v in xs) for xs in sets) if sets else None
         after = llm.usage.to_dict()
-        rows.append({"id": c["id"], "tool_ok": tool_ok, "tools": called, "accuracy": acc, "expected": exp,
+        rows.append({"id": c["id"], "tool_ok": tool_ok, "tools": called, "accuracy": acc, "expected": sets,
+                     "routing": res.to_dict().get("routing"), "modules_used": res.to_dict().get("modules_used"),
                      "provenance_ok": res.verification["ok"], "repaired": res.repaired, "ms": round(ms),
                      "tokens": after["prompt_tokens"] + after["completion_tokens"] - before["prompt_tokens"] - before["completion_tokens"],
                      "answer": res.answer})

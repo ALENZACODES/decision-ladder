@@ -1,0 +1,12 @@
+{
+  "name": "renewal-radar",
+  "version": "18.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "syntax": "find frontend/js -type f -name '*.js' -exec node --check {} \\;"
+  },
+  "author": "John Khan",
+  "description": "Renewal Radar by John Khan: Canadian mortgage renewal intelligence"
+}

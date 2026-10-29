@@ -19,7 +19,10 @@ from ..llm.client import LLMError, NemotronClient, tool_args
 from . import tools as T
 from . import verify
 
-SYSTEM = """You are Decision Ladder, the analyst desk for a licensed Canadian mortgage broker (Ontario, Alberta, BC).
+SYSTEM = """You are Decision Ladder, the agent of a Canadian mortgage operating system for a licensed broker (Ontario, Alberta, BC).
+Your tools are the broker's own apps: cash to close, land transfer tax, affordability, rent vs buy, prepayment, pre-underwriting
+file review, document checklists, benchmark home prices and postal-area values, the housing affordability index, renewal
+checks, renewal shock, lender-method penalties, the Bank of Canada rate book, private credit deal screening and research.
 Rules you must follow:
 - Every dollar amount, rate, ratio or count you state MUST come from a tool result in this conversation or from the user's message. Never do mortgage arithmetic yourself; call a tool.
 - Prefer one well-chosen tool call over many. Call several tools in one turn when they are independent.
@@ -37,6 +40,14 @@ class Step:
     ms: float = 0.0
 
 
+def _module_of(tool: str) -> str | None:
+    from .. import modules as OS
+    for m in OS.MODULES.values():
+        if tool in m.tools:
+            return m.name
+    return "Decision Ladder core" if tool in T.TOOLS else None
+
+
 @dataclass
 class AgentResult:
     answer: str
@@ -49,8 +60,13 @@ class AgentResult:
     def to_dict(self) -> dict:
         return {"answer": self.answer, "repaired": self.repaired, "verification": self.verification,
                 "usage": self.usage, "model": self.model,
-                "steps": [{"kind": s.kind, "name": s.name, "args": s.args, "result": s.result, "ms": round(s.ms, 1)}
-                          for s in self.steps]}
+                "routing": next(({"stages": s.result.get("stages"), "by": s.result.get("by"),
+                                  "tools_offered": s.result.get("tools_offered"), "of": s.result.get("of")}
+                                 for s in self.steps if s.kind == "route"), None),
+                "modules_used": sorted({m for s in self.steps if s.kind in ("tool", "repair", "research")
+                                       for m in [_module_of(s.name)] if m}),
+                "steps": [{"kind": s.kind, "name": s.name, "module": _module_of(s.name) if s.kind != "route" else None,
+                           "args": s.args, "result": s.result, "ms": round(s.ms, 1)} for s in self.steps]}
 
 
 def research_tool(research) -> T.Tool:
@@ -63,19 +79,40 @@ def research_tool(research) -> T.Tool:
                   fn, "research")
 
 
+def rate_check_tool(research) -> T.Tool:
+    from ..research.tavily import lender_rate_check
+
+    def fn(a: dict) -> dict:
+        return lender_rate_check(research, a["bank"])
+    return T.Tool("lender_rate_check",
+                  "Live check (Tavily Extract) of a Big-6 bank's own mortgage-rate page: is the rate book's posted 5-year rate "
+                  "still shown? Returns confirmed / changed_or_not_shown, the rates found beside a 5-year label and the "
+                  "rate book's capture date.",
+                  T._obj({"bank": {"type": "string", "description": "RBC, TD, Scotiabank, BMO, CIBC or National Bank"}}, ["bank"]),
+                  fn, "research")
+
+
 class Copilot:
-    def __init__(self, llm: NemotronClient, research=None, max_rounds: int = 6, tool_names: list[str] | None = None):
+    def __init__(self, llm: NemotronClient, research=None, max_rounds: int = 6, tool_names: list[str] | None = None,
+                 route: bool = True):
+        from .. import modules as _os  # registers the Mortgage OS module tools (idempotent)
+        _os.load_all()
+        self.route = route
+        self.routing: dict | None = None
         self.llm = llm
         self.max_rounds = max_rounds
         self.extra = {}
         if research is not None:
-            t = research_tool(research)
-            self.extra[t.name] = t
+            for t in (research_tool(research), rate_check_tool(research)):
+                self.extra[t.name] = t
         self.tool_names = tool_names
 
     def _specs(self) -> list[dict]:
         names = self.tool_names or list(T.TOOLS)
-        return T.specs(names + [n for n in self.extra if n not in names], list(self.extra.values()))
+        names = names + [n for n in self.extra if n not in names]
+        if self.routing and self.routing.get("tools"):
+            names = [n for n in names if n in set(self.routing["tools"])]
+        return T.specs(names, list(self.extra.values()))
 
     def ask(self, question: str, *, context: dict | None = None, history: list[dict] | None = None) -> AgentResult:
         msgs: list[dict] = [{"role": "system", "content": SYSTEM}]
@@ -85,6 +122,16 @@ class Copilot:
         steps: list[Step] = []
         evidence: list[Any] = [user]
         answer = ""
+        available = set(self.tool_names or T.TOOLS) | set(self.extra)
+        if self.route and len(available) > 24:
+            from .router import route
+            t0 = time.perf_counter()
+            self.routing = route(self.llm, question, available)
+            steps.append(Step("route", "nemotron-nano router" if self.routing["by"] == "nemotron-nano" else self.routing["by"],
+                              {"question": question[:200]},
+                              {"stages": self.routing["stages"], "tools_offered": len(self.routing["tools"]),
+                               "of": len(available), "reason": self.routing["reason"], "by": self.routing["by"]},
+                              (time.perf_counter() - t0) * 1000))
         for _ in range(self.max_rounds):
             res = self.llm.chat(msgs, tools=self._specs(), purpose="copilot")
             if not res.tool_calls:

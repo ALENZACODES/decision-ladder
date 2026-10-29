@@ -9,6 +9,8 @@
   python -m decision_ladder models                     list models your Token Factory key can use
   python -m decision_ladder smoke                      live end-to-end check against Token Factory
   python -m decision_ladder eval [--offline]           run the evaluation suite (evals/cases.json)
+  python -m decision_ladder job renewal-book --input book.csv --out DIR    background job (Nebius Serverless Job)
+  python -m decision_ladder os                         list the Mortgage OS modules, stages and tools
 """
 from __future__ import annotations
 
@@ -24,8 +26,14 @@ def _llm(offline: bool):
         if not offline:
             print("[NEBIUS_API_KEY not set: using the offline scripted stand-in, no model calls]", file=sys.stderr)
         return offline_client()
-    from .llm.client import NemotronClient
-    return NemotronClient()
+    from .llm.client import LLMError, NemotronClient
+    c = NemotronClient()
+    try:   # check the configured Nemotron IDs against /v1/models (Nano / Super / Ultra)
+        r = c.resolve_models()
+        print(f"[models] reasoner={c.reasoner}  fast={c.fast}  ultra={c.ultra}  ({r['ultra_reason']})", file=sys.stderr)
+    except LLMError as e:
+        print(f"[models] could not list models: {e}", file=sys.stderr)
+    return c
 
 
 def _research(offline: bool):
@@ -93,6 +101,21 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(out["summary"], indent=2))
         for r in out["queue"]:
             print(f"  {r['priority']:>5}  {r['tier']:<15} {r['borrower']:<16} {r['lender']:<14} {r['why']}")
+        return 0
+    if cmd == "job":
+        from .jobs import main as job_main
+        return job_main(argv[1:] + (["--offline"] if offline else []))
+    if cmd == "os":
+        from . import modules as OS
+        errs = OS.load_all()
+        cat = OS.catalog()
+        for st in cat["stages"]:
+            print(f"\n[{st['name']}]")
+            for k in st["modules"]:
+                m = OS.MODULES[k]
+                print(f"  {m.name:<44} {m.lines_of_code:>6} lines  tools: {', '.join(m.tools) or '-'}")
+        t = cat["totals"]
+        print(f"\n{t['modules']} modules, {t['tools']} tools, {t['module_lines']:,} lines in modules/" + (f"  errors: {errs}" if errs else ""))
         return 0
     if cmd == "models":
         llm = _llm(False)

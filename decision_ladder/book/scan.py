@@ -87,6 +87,17 @@ def scan_row(row: dict, as_of: date) -> dict:
         out["penalty_today"] = None if est.get("total_estimate") is None else float(est["total_estimate"])
         out["penalty_method"] = est.get("controlling_method")
         out["penalty_status"] = est.get("status") or pen.get("error")
+        # Renewal Radar's lender-exact method where it is verified for this lender (Mortgage OS module)
+        from .. import modules as OS
+        OS.load_all()
+        if "rr_bank_penalty" in T.TOOLS:
+            ex = T.run("rr_bank_penalty", {"lender": row["lender"], "balance": bal, "contract_rate": rate, "start": start,
+                                           "maturity": row["maturity"], "payout": as_of.isoformat(),
+                                           "posted_at_origination": _f(row, "original_posted_rate")})
+            if isinstance(ex, dict) and ex.get("status") == "exact-method" and ex.get("penalty") is not None:
+                out["penalty_today"] = float(ex["penalty"])
+                out["penalty_method"] = f"{ex.get('method')} ({ex.get('lender')} exact method, Renewal Radar)"
+                out["penalty_status"] = "exact-method"
         if out["penalty_today"] is None and est.get("three_month_interest") is not None:
             out["penalty_floor"] = float(est["three_month_interest"])
     else:

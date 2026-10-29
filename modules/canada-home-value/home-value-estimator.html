@@ -1,0 +1,535 @@
+<title>Benchmark Home Value</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: estimator console on the left, live market panel on the right; stacks on phones. */
+:root{
+  --bg:#f3f5f9; --surface:#ffffff; --fg:#0b1a33; --muted:#56627a; --line:#d6dce8;
+  --accent:#011f5b; --accent-2:#990000; --good:#2e7d4f; --bad:#b4442f;
+  --s1:#011f5b; --s2:#990000; --s3:#4f7cac; --s4:#b38f2e;
+  --display:"Inter",Arial,sans-serif; --brand:Georgia,"Times New Roman",serif; --body:"DM Sans",system-ui,-apple-system,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b1324; --surface:#121c33; --fg:#e8edf7; --muted:#9aa8c2; --line:#26324d;
+  --accent:#82afd3; --accent-2:#e06666; --good:#6fcf97; --bad:#ef8a73;
+  --s1:#82afd3; --s2:#e06666; --s3:#b7cdea; --s4:#d9b45c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1324; --surface:#121c33; --fg:#e8edf7; --muted:#9aa8c2; --line:#26324d;
+  --accent:#82afd3; --accent-2:#e06666; --good:#6fcf97; --bad:#ef8a73;
+  --s1:#82afd3; --s2:#e06666; --s3:#b7cdea; --s4:#d9b45c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:24px}
+header h1{font-family:var(--brand);font-weight:400;color:var(--accent-2);font-size:clamp(28px,4vw,40px);margin:0;text-wrap:balance;letter-spacing:-.01em}
+header p{margin:6px 0 0;color:var(--muted);max-width:68ch}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:14px;min-width:0}
+label{font-size:13px;font-weight:600;display:grid;gap:5px}
+input,select{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);width:100%}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:500 13px var(--body);padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.cta{font:600 15px var(--body);padding:11px;border:0;border-radius:6px;background:var(--accent);color:var(--surface);cursor:pointer}
+.steps{list-style:none;display:flex;gap:6px;padding:0;margin:0;font:500 12px var(--mono);color:var(--muted)}
+.steps li{flex:1;border-top:3px solid var(--line);padding-top:6px}
+.steps li.on{border-color:var(--accent);color:var(--fg)}
+fieldset{border:0;padding:0;margin:0;display:grid;gap:14px;min-width:0}
+.q{font-family:var(--display);font-size:22px;font-weight:500;color:var(--accent);padding:0;margin-bottom:4px;text-wrap:balance}
+.ghost{font:600 15px var(--body);padding:11px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--fg);cursor:pointer}
+.hint{font-size:12px;color:var(--muted)}
+.result{border-top:1px solid var(--line);padding-top:14px;display:grid;gap:4px}
+.big{font-family:var(--display);font-size:38px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1.1}
+.range{font:500 14px var(--mono);color:var(--muted)}
+.pill{display:inline-block;font:500 12px var(--mono);padding:2px 8px;border-radius:999px;border:1px solid currentColor}
+.up{color:var(--good)} .down{color:var(--bad)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:600px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{display:grid;gap:2px}
+.stat b{font:600 20px var(--mono);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+.charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:760px){.charts{grid-template-columns:minmax(0,1fr)}}
+.chart{display:grid;gap:8px;min-width:0}
+.chart h3{margin:0;font:600 14px var(--body)}
+.chart .box{position:relative;height:240px}
+.chart canvas{width:100%!important;height:100%!important}
+.mode{font:400 11px var(--mono);color:var(--muted)}
+.tbl{overflow-x:auto;max-height:260px;overflow-y:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:600;color:var(--muted);position:sticky;top:0;background:var(--surface);cursor:pointer}
+tr.sel td{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.notice{font-size:12px;color:var(--muted);border-left:3px solid var(--accent-2);padding-left:10px}
+.ss{font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">All provinces &amp; territories · 2016 – Sep 2026</div>
+  <h1>Benchmark Home Value</h1>
+  <p>Answer a few questions to see what your home may be worth today, your estimated equity, and how a renovation could add value.</p>
+</header>
+
+<div class="grid">
+  <form class="panel" id="f" autocomplete="off">
+    <ol class="steps" id="steps"><li data-s="1">Address</li><li data-s="2">Your home</li><li data-s="3">Your estimate</li></ol>
+    <fieldset data-step="1">
+      <legend class="q">Find out what your home may be worth today.</legend>
+      <label for="addr">Your home address
+        <input id="addr" placeholder="e.g. 4571 Dunedin Cres, Mississauga ON L5L 3X3">
+      </label>
+      <div class="hint" id="addrHint">We match the city or postal-code area (FSA) in what you type.</div>
+      <div class="row">
+        <label for="prov">Province
+          <select id="prov"></select>
+        </label>
+        <label for="muni">Municipality <select id="muni"></select></label>
+      </div>
+      <button class="cta" type="button" data-go="2">Get started</button>
+    </fieldset>
+    <fieldset data-step="2" hidden>
+      <legend class="q">Tell us about your home</legend>
+      <div>
+        <label for="ptype" style="margin-bottom:6px">Property type</label>
+        <select id="ptype" aria-label="Property type">
+          <optgroup label="Houses">
+            <option value="detached">Detached house</option><option value="link">Link (detached above grade)</option>
+            <option value="semi">Semi-detached</option><option value="town">Freehold townhouse</option>
+            <option value="duplex">Duplex (2 units)</option><option value="multiplex">Triplex / fourplex</option>
+            <option value="rural">Rural home / acreage</option><option value="cottage">Cottage / recreational</option>
+            <option value="mobile">Mobile / manufactured home</option>
+          </optgroup>
+          <optgroup label="Condos">
+            <option value="condo">Condo apartment</option><option value="loft">Condo loft</option>
+            <option value="condotown">Condo townhouse</option><option value="stacked">Stacked townhouse</option>
+            <option value="penthouse">Penthouse</option>
+          </optgroup>
+        </select>
+        <div class="seg" id="type" hidden>
+          <button type="button" data-v="detached" aria-pressed="true">Detached</button>
+          <button type="button" data-v="semi" aria-pressed="false">Semi</button>
+          <button type="button" data-v="town" aria-pressed="false">Townhouse</button>
+          <button type="button" data-v="condo" aria-pressed="false">Condo apt</button>
+        </div>
+        <label for="cfee" id="cfeeWrap" hidden style="margin-top:10px">Monthly condo fee ($) <input id="cfee" type="number" min="0" step="1" value="650"></label>
+      </div>
+      <div class="row">
+        <label for="pp">What you paid ($) <input id="pp" type="number" min="10000" step="1" placeholder="e.g. 850000"></label>
+        <label for="pd">When you bought <input id="pd" type="month" min="1990-01" max="2026-09"></label>
+      </div>
+      <label for="reno">Renovations since purchase ($) <input id="reno" type="number" min="0" step="1" value="0"></label>
+      <div class="row">
+        <label for="beds">Bedrooms <select id="beds"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label>
+        <label for="baths">Bathrooms <select id="baths"><option>1</option><option>1.5</option><option>2</option><option selected>2.5</option><option>3</option><option>3.5</option><option>4</option></select></label>
+      </div>
+      <div class="row">
+        <label for="sqft">Living area (sq ft) <input id="sqft" type="number" min="200" max="20000" step="1" value="1800"></label>
+        <label for="cond">Condition
+          <select id="cond"><option value="0.93">Needs work</option><option value="1" selected>Average</option><option value="1.05">Updated</option><option value="1.1">Fully renovated</option></select>
+        </label>
+      </div>
+      <div class="row">
+        <label for="park">Parking <select id="park"><option value="0">None</option><option value="1">1 space</option><option value="2" selected>2 spaces</option><option value="3">3+</option></select></label>
+        <label for="lot">Lot <select id="lot"><option value="0.96">Small</option><option value="1" selected>Typical</option><option value="1.06">Large</option><option value="1.12">Oversized / ravine</option></select></label>
+      </div>
+      <label for="bal">Mortgage balance owing ($) <input id="bal" type="number" min="0" step="1" placeholder="optional, for your equity"></label>
+      <div class="row"><button class="ghost" type="button" data-go="1">Back</button><button class="cta" type="submit">See my estimate</button></div>
+    </fieldset>
+    <fieldset data-step="3" hidden>
+      <div class="result" aria-live="polite">
+        <div class="eyebrow" id="rLabel">Estimated value today</div>
+        <div class="big" id="rVal">—</div>
+        <div class="range" id="rRange"></div>
+        <div id="rMeta" class="hint"></div>
+      </div>
+      <div class="result">
+        <div class="eyebrow">Estimated home equity</div>
+        <div class="big" id="eqVal" style="font-size:28px">—</div>
+        <div class="hint" id="eqMeta"></div>
+      </div>
+      <div class="result">
+        <div class="eyebrow">Could a renovation add value?</div>
+        <div class="row">
+          <label for="proj">Project <select id="proj">
+            <option value="kitchen">Kitchen remodel</option><option value="bath">Bathroom remodel</option><option value="basement">Finish basement</option>
+            <option value="paint">Interior paint</option><option value="floors">New flooring</option><option value="windows">Windows &amp; doors</option>
+            <option value="addition">Addition</option><option value="deck">Deck or patio</option></select></label>
+          <label for="pcost">Budget ($) <input id="pcost" type="number" min="0" step="1" value="40000"></label>
+        </div>
+        <div><b id="pAdd" style="font:600 20px var(--mono)">—</b> <span class="hint" id="pMeta"></span></div>
+      </div>
+      <button class="ghost" type="button" data-go="2">Edit my answers</button>
+    </fieldset>
+    <p class="notice">Indicative only. Values are modelled from public regional benchmark levels, not from sold listings for this property. Not an appraisal and not suitable for lending decisions.</p>
+  </form>
+
+  <section class="panel" aria-label="Market trends">
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline">
+      <div><div class="eyebrow" id="mRegion"></div><h2 id="mName" style="margin:2px 0 0;font-family:var(--display);font-size:26px"></h2></div>
+      <div class="seg" id="span">
+        <button type="button" data-v="12" aria-pressed="false">1Y</button>
+        <button type="button" data-v="36" aria-pressed="false">3Y</button>
+        <button type="button" data-v="60" aria-pressed="false">5Y</button>
+        <button type="button" data-v="999" aria-pressed="true">10Y</button>
+      </div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="charts">
+      <div class="chart"><h3>Benchmark price by type</h3><div class="box" id="c1"></div><div class="mode" id="m1"></div></div>
+      <div class="chart"><h3>Year-over-year change</h3><div class="box" id="c2"></div><div class="mode" id="m2"></div></div>
+      <div class="chart"><h3>vs. province and region</h3><div class="box" id="c3"></div><div class="mode" id="m3"></div></div>
+      <div class="chart"><h3>Monthly carrying cost, 20% down</h3><div class="box" id="c4"></div><div class="mode" id="m4"></div></div>
+    </div>
+    <div>
+      <h3 style="margin:8px 0;font:600 14px var(--body)">All municipalities <span class="ss">— click a row, click headers to sort</span></h3>
+      <div class="tbl"><table id="rank"><thead></thead><tbody></tbody></table></div>
+    </div>
+    <p class="ss" id="health"></p>
+  </section>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+"use strict";
+/* ---------- Regional index anchors (Jan 2016 = 100). Shapes follow public CREA/board HPI history. ---------- */
+const ANCH={
+ GTA:[[2016,0,100],[2017,3,136],[2018,0,118],[2019,0,121],[2020,0,131],[2021,0,150],[2022,1,191],[2023,0,156],[2024,0,159],[2025,0,151],[2026,8,146]],
+ OTT:[[2016,0,100],[2017,0,107],[2018,0,113],[2019,0,124],[2020,0,140],[2021,0,165],[2022,2,178],[2023,0,158],[2024,0,160],[2025,0,162],[2026,8,163]],
+ SWO:[[2016,0,100],[2017,3,124],[2018,0,128],[2019,0,140],[2020,0,158],[2021,0,190],[2022,1,222],[2023,0,172],[2024,0,171],[2025,0,165],[2026,8,161]],
+ EON:[[2016,0,100],[2017,0,108],[2018,0,118],[2019,0,128],[2020,0,145],[2021,0,178],[2022,2,205],[2023,0,175],[2024,0,176],[2025,0,174],[2026,8,173]],
+ NON:[[2016,0,100],[2017,0,102],[2018,0,105],[2019,0,110],[2020,0,122],[2021,0,140],[2022,3,158],[2023,0,150],[2024,0,154],[2025,0,158],[2026,8,160]],
+ CGY:[[2016,0,100],[2017,0,97],[2018,0,96],[2019,0,93],[2020,0,92],[2021,0,99],[2022,5,116],[2023,0,118],[2024,0,134],[2025,0,141],[2026,8,138]],
+ EDM:[[2016,0,100],[2017,0,99],[2018,0,97],[2019,0,94],[2020,0,92],[2021,0,96],[2022,4,101],[2023,0,100],[2024,0,106],[2025,0,116],[2026,8,122]],
+ VAN:[[2016,0,100],[2016,6,118],[2017,0,115],[2018,3,128],[2019,3,115],[2020,0,117],[2021,0,123],[2022,2,150],[2023,0,128],[2024,0,134],[2025,0,128],[2026,8,122]],
+ BCO:[[2016,0,100],[2017,0,112],[2018,0,125],[2019,0,124],[2020,0,128],[2021,0,150],[2022,2,190],[2023,0,160],[2024,0,163],[2025,0,158],[2026,8,155]],
+ PRA:[[2016,0,100],[2017,0,99],[2018,0,99],[2019,0,98],[2020,0,100],[2021,0,108],[2022,4,115],[2023,0,113],[2024,0,118],[2025,0,124],[2026,8,128]],
+ MTL:[[2016,0,100],[2017,0,105],[2018,0,111],[2019,0,120],[2020,0,135],[2021,0,160],[2022,4,180],[2023,0,178],[2024,0,182],[2025,0,192],[2026,8,200]],
+ QCO:[[2016,0,100],[2017,0,103],[2018,0,107],[2019,0,113],[2020,0,125],[2021,0,145],[2022,4,165],[2023,0,168],[2024,0,176],[2025,0,190],[2026,8,203]],
+ ATL:[[2016,0,100],[2017,0,102],[2018,0,104],[2019,0,108],[2020,0,120],[2021,0,148],[2022,4,170],[2023,0,168],[2024,0,178],[2025,0,188],[2026,8,193]],
+ TER:[[2016,0,100],[2017,0,101],[2018,0,103],[2019,0,106],[2020,0,110],[2021,0,118],[2022,4,126],[2023,0,128],[2024,0,132],[2025,0,136],[2026,8,138]],
+ ABO:[[2016,0,100],[2017,0,98],[2018,0,96],[2019,0,93],[2020,0,91],[2021,0,97],[2022,4,106],[2023,0,107],[2024,0,116],[2025,0,124],[2026,8,127]]
+};
+const REGION_NAME={GTA:"Greater Toronto & Hamilton",OTT:"Ottawa region",SWO:"Southwestern Ontario",EON:"Central & Eastern Ontario",NON:"Northern Ontario",CGY:"Calgary region",EDM:"Edmonton region",ABO:"Rest of Alberta",VAN:"Metro Vancouver",BCO:"Rest of British Columbia",PRA:"Saskatchewan & Manitoba",MTL:"Greater Montréal",QCO:"Rest of Québec",ATL:"Atlantic Canada",TER:"Northern territories"};
+const PROV={BC:"British Columbia",AB:"Alberta",SK:"Saskatchewan",MB:"Manitoba",ON:"Ontario",QC:"Québec",NB:"New Brunswick",NS:"Nova Scotia",PE:"Prince Edward Island",NL:"Newfoundland and Labrador",YT:"Yukon",NT:"Northwest Territories",NU:"Nunavut"};
+const FSA1={A:"St. John's",B:"Halifax",C:"Charlottetown",E:"Moncton",G:"Québec City",H:"Montréal",J:"Gatineau",K:"Ottawa",L:"Mississauga",M:"Toronto",N:"London",P:"Greater Sudbury",R:"Winnipeg",S:"Saskatoon",T:"Calgary",V:"Vancouver",X:"Yellowknife",Y:"Whitehorse"};
+/* Type multipliers vs composite and typical size per region */
+const TYPE={
+ GTA:{detached:1.42,semi:1.05,town:0.8,condo:0.58}, OTT:{detached:1.2,semi:0.98,town:0.82,condo:0.56},
+ SWO:{detached:1.15,semi:0.92,town:0.84,condo:0.6}, EON:{detached:1.12,semi:0.9,town:0.82,condo:0.62},
+ NON:{detached:1.08,semi:0.85,town:0.78,condo:0.65}, CGY:{detached:1.3,semi:1.2,town:0.73,condo:0.51},
+ EDM:{detached:1.2,semi:0.92,town:0.68,condo:0.46}, ABO:{detached:1.15,semi:0.9,town:0.7,condo:0.5},
+ VAN:{detached:1.66,semi:1.15,town:0.95,condo:0.63}, BCO:{detached:1.25,semi:1.0,town:0.82,condo:0.58},
+ PRA:{detached:1.15,semi:0.9,town:0.75,condo:0.6}, MTL:{detached:1.25,semi:1.0,town:0.9,condo:0.75},
+ QCO:{detached:1.12,semi:0.92,town:0.85,condo:0.75}, ATL:{detached:1.1,semi:0.9,town:0.82,condo:0.8},
+ TER:{detached:1.15,semi:0.95,town:0.85,condo:0.7}
+};
+const SQFT={detached:2000,semi:1500,town:1450,condo:800};
+/* [name, province, region, composite benchmark Sep 2026 (CAD), FSA prefixes] — indicative levels */
+const M=[
+["Toronto","ON","GTA",908200,"M"],["Mississauga","ON","GTA",867500,"L4T L4W L4X L4Y L4Z L5A L5B L5C L5E L5G L5H L5J L5K L5L L5M L5N L5R L5S L5T L5V L5W"],
+["Brampton","ON","GTA",829200,"L6P L6R L6S L6T L6V L6W L6X L6Y L6Z L7A"],["Oakville","ON","GTA",1128800,"L6H L6J L6K L6L L6M"],
+["Burlington","ON","GTA",840600,"L7L L7M L7N L7P L7R L7S L7T"],["Milton","ON","GTA",861600,"L9T L9E"],["Halton Hills","ON","GTA",935000,"L7G L7J"],
+["Vaughan","ON","GTA",1119400,"L4H L4J L4K L4L L6A"],["Markham","ON","GTA",1052500,"L3P L3R L3S L3T L6B L6C L6E L6G"],
+["Richmond Hill","ON","GTA",1157700,"L4B L4C L4E L4S"],["Aurora","ON","GTA",1106800,"L4G"],["Newmarket","ON","GTA",959500,"L3X L3Y"],
+["King","ON","GTA",1587000,"L7B"],["Whitchurch-Stouffville","ON","GTA",1115000,"L4A"],["East Gwillimbury","ON","GTA",1012000,"L9N"],
+["Georgina","ON","GTA",703000,"L4P L0E"],["Pickering","ON","GTA",866800,"L1V L1W L1X L1Y"],["Ajax","ON","GTA",846900,"L1S L1T L1Z"],
+["Whitby","ON","GTA",897200,"L1M L1N L1P L1R"],["Oshawa","ON","GTA",699700,"L1G L1H L1J L1K L1L"],["Clarington","ON","GTA",738900,"L1B L1C L1E"],
+["Caledon","ON","GTA",1059900,"L7C L7E L7K"],["Hamilton","ON","GTA",686000,"L8E L8G L8H L8J L8K L8L L8M L8N L8P L8R L8S L8T L8V L8W L9A L9B L9C L9G L9H L9K"],
+["Grimsby","ON","GTA",712000,"L3M"],
+["Ottawa","ON","OTT",623500,"K0A K1A K1B K1C K1E K1G K1H K1J K1K K1L K1M K1N K1P K1R K1S K1T K1V K1W K1X K1Y K1Z K2A K2B K2C K2E K2G K2H K2J K2K K2L K2M K2P K2R K2S K2T K2V K2W K4A K4B K4C K4M K4P"],
+["Russell","ON","OTT",595000,"K4R"],["Clarence-Rockland","ON","OTT",537000,"K4K"],["Arnprior","ON","OTT",566000,"K7S"],
+["Kitchener","ON","SWO",730000,"N2A N2B N2C N2E N2G N2H N2K N2M N2N N2P N2R"],["Waterloo","ON","SWO",800000,"N2J N2L N2T N2V"],
+["Cambridge","ON","SWO",740000,"N1R N1S N1T N3C N3E N3H"],["Guelph","ON","SWO",800000,"N1E N1G N1H N1K N1L"],
+["London","ON","SWO",610000,"N5V N5W N5X N5Y N5Z N6A N6B N6C N6E N6G N6H N6J N6K N6L N6M N6N N6P"],["St. Thomas","ON","SWO",560000,"N5P N5R"],
+["Woodstock","ON","SWO",590000,"N4S N4T N4V"],["Brantford","ON","SWO",650000,"N3P N3R N3S N3T N3V"],["Stratford","ON","SWO",620000,"N4Z N5A"],
+["Windsor","ON","SWO",540000,"N8N N8P N8R N8S N8T N8W N8X N8Y N9A N9B N9C N9E N9G N9J N9K"],["Sarnia","ON","SWO",510000,"N7S N7T N7V N7W N7X"],
+["Chatham-Kent","ON","SWO",430000,"N7L N7M"],["St. Catharines","ON","SWO",640000,"L2M L2N L2P L2R L2S L2T L2V L2W"],["Niagara Falls","ON","SWO",640000,"L2E L2G L2H L2J"],
+["Welland","ON","SWO",570000,"L3B L3C"],["Niagara-on-the-Lake","ON","SWO",1100000,"L0S"],["Fort Erie","ON","SWO",590000,"L2A"],["Welland Canal Region","ON","SWO",560000,""],
+["Barrie","ON","EON",740000,"L4M L4N L9J L9S"],["Innisfil","ON","EON",820000,"L9S"],["Orillia","ON","EON",620000,"L3V"],["Collingwood","ON","EON",820000,"L9Y"],
+["Wasaga Beach","ON","EON",700000,"L9Z"],["Bradford West Gwillimbury","ON","EON",1000000,"L3Z"],["Orangeville","ON","EON",780000,"L9W"],
+["Peterborough","ON","EON",630000,"K9H K9J K9K K9L"],["Kawartha Lakes","ON","EON",640000,"K9V"],["Cobourg","ON","EON",680000,"K9A"],
+["Belleville","ON","EON",530000,"K8N K8P K8R"],["Quinte West","ON","EON",540000,"K8V"],["Prince Edward County","ON","EON",660000,"K0K"],
+["Kingston","ON","EON",590000,"K7K K7L K7M K7N K7P"],["Brockville","ON","EON",460000,"K6V"],["Cornwall","ON","EON",420000,"K6H K6J K6K"],
+["Owen Sound","ON","EON",530000,"N4K"],["Huntsville","ON","EON",720000,"P1H"],["Bracebridge","ON","EON",700000,"P1L"],["Gravenhurst","ON","EON",690000,"P1P"],
+["Greater Sudbury","ON","NON",460000,"P3A P3B P3C P3E P3G P3L P3N P3P P3Y"],["Thunder Bay","ON","NON",360000,"P7A P7B P7C P7E P7G P7J P7K"],
+["Sault Ste. Marie","ON","NON",330000,"P6A P6B P6C"],["North Bay","ON","NON",450000,"P1A P1B P1C"],["Timmins","ON","NON",300000,"P4N P4P P4R"],
+["Kenora","ON","NON",390000,"P9N"],["Elliot Lake","ON","NON",260000,"P5A"],["Temiskaming Shores","ON","NON",280000,"P0J"],
+["Calgary","AB","CGY",566700,"T1Y T2A T2B T2C T2E T2G T2H T2J T2K T2L T2M T2N T2P T2R T2S T2T T2V T2W T2X T2Y T2Z T3A T3B T3C T3E T3G T3H T3J T3K T3L T3M T3N T3P T3R T3S T3Z"],
+["Airdrie","AB","CGY",505800,"T4A T4B"],["Cochrane","AB","CGY",591000,"T4C"],["Okotoks","AB","CGY",606800,"T1S"],["Chestermere","AB","CGY",690200,"T1X"],
+["Canmore","AB","CGY",1114000,"T1W"],["High River","AB","CGY",465000,"T1V"],["Strathmore","AB","CGY",436000,"T1P"],
+["Edmonton","AB","EDM",430000,"T5A T5B T5C T5E T5G T5H T5J T5K T5L T5M T5N T5P T5R T5S T5T T5V T5W T5X T5Y T5Z T6A T6B T6C T6E T6G T6H T6J T6K T6L T6M T6N T6P T6R T6S T6T T6V T6W T6X"],
+["St. Albert","AB","EDM",520000,"T8N"],["Sherwood Park","AB","EDM",510000,"T8A T8B T8H"],["Spruce Grove","AB","EDM",440000,"T7X"],
+["Leduc","AB","EDM",420000,"T9E"],["Fort Saskatchewan","AB","EDM",440000,"T8L"],["Beaumont","AB","EDM",500000,"T4X"],["Stony Plain","AB","EDM",410000,"T7Z"],
+["Red Deer","AB","ABO",390000,"T4N T4P T4R"],["Lethbridge","AB","ABO",410000,"T1H T1J T1K"],["Medicine Hat","AB","ABO",350000,"T1A T1B T1C"],
+["Grande Prairie","AB","ABO",370000,"T8V T8W T8X"],["Fort McMurray","AB","ABO",380000,"T9H T9J T9K"],["Lloydminster","AB","ABO",320000,"T9V"],
+["Camrose","AB","ABO",360000,"T4V"],["Brooks","AB","ABO",310000,"T1R"],["Sylvan Lake","AB","ABO",460000,"T4S"],["Cold Lake","AB","ABO",340000,"T9M"],
+["Vancouver","BC","VAN",1075900,"V5K V5L V5M V5N V5P V5R V5S V5T V5V V5W V5X V5Y V5Z V6A V6B V6C V6E V6G V6H V6J V6K V6L V6M V6N V6P V6R V6S V6Z"],
+["Burnaby","BC","VAN",982000,"V5A V5B V5C V5E V5G V5H V5J"],["Richmond","BC","VAN",1010000,"V6V V6W V6X V6Y V7A V7B V7C V7E"],
+["Surrey","BC","VAN",898000,"V3R V3S V3T V3V V3W V3X V3Z V4A V4N V4P"],["Coquitlam","BC","VAN",954000,"V3B V3C V3E V3J V3K"],
+["North Vancouver","BC","VAN",1169000,"V7G V7H V7J V7K V7L V7M V7N V7P V7R"],["West Vancouver","BC","VAN",2339000,"V7S V7T V7V V7W"],
+["New Westminster","BC","VAN",767000,"V3L V3M"],["Langley","BC","VAN",936000,"V1M V2Y V2Z V3A"],["Maple Ridge","BC","VAN",861000,"V2W V2X V4R"],
+["Abbotsford","BC","BCO",830000,"V2S V2T V3G V4X"],["Chilliwack","BC","BCO",700000,"V2P V2R V4Z"],["Victoria","BC","BCO",860000,"V8R V8S V8T V8V V8W V9A"],
+["Saanich","BC","BCO",980000,"V8N V8P V8X V8Y V8Z"],["Langford","BC","BCO",800000,"V9B V9C"],["Nanaimo","BC","BCO",740000,"V9R V9S V9T V9V V9X"],
+["Courtenay","BC","BCO",650000,"V9N"],["Kelowna","BC","BCO",790000,"V1V V1W V1X V1Y V1Z V4T V4V"],["Vernon","BC","BCO",650000,"V1B V1H V1T"],
+["Penticton","BC","BCO",640000,"V2A"],["Kamloops","BC","BCO",620000,"V1S V2B V2C V2E V2H"],["Prince George","BC","BCO",450000,"V2K V2L V2M V2N"],
+["Squamish","BC","BCO",1050000,"V8B"],["Whistler","BC","BCO",1800000,"V8E"],["Fort St. John","BC","BCO",380000,"V1J"],
+["Saskatoon","SK","PRA",420000,"S7H S7J S7K S7L S7M S7N S7P S7R S7S S7T S7V S7W"],["Regina","SK","PRA",340000,"S4N S4P S4R S4S S4T S4V S4W S4X S4Y S4Z"],
+["Prince Albert","SK","PRA",270000,"S6V S6W S6X"],["Moose Jaw","SK","PRA",270000,"S6H S6J S6K"],["Swift Current","SK","PRA",290000,"S9H"],
+["Winnipeg","MB","PRA",380000,"R2C R2E R2G R2H R2J R2K R2L R2M R2N R2P R2R R2V R2W R2X R2Y R3A R3B R3C R3E R3G R3H R3J R3K R3L R3M R3N R3P R3R R3T R3V R3W R3X R3Y"],
+["Brandon","MB","PRA",300000,"R7A R7B R7C"],["Steinbach","MB","PRA",360000,"R5G"],["Winkler","MB","PRA",340000,"R6W"],
+["Montréal","QC","MTL",600000,"H1A H1B H1C H1E H1G H1H H1J H1K H1L H1M H1N H1P H1R H1S H1T H1V H1W H1X H1Y H1Z H2A H2B H2C H2E H2G H2H H2J H2K H2L H2M H2N H2P H2R H2S H2T H2V H2W H2X H2Y H2Z H3A H3B H3C H3E H3G H3H H3J H3K H3L H3M H3N H3P H3R H3S H3T H3V H3W H3X H3Y H3Z H4A H4B H4C H4E H4G H4H H4J H4K H4L H4M H4N H4P H4R H4S H4T H4V H4W H4X H4Y H4Z H8N H8P H8R H8S H8T H8Y H8Z H9A H9B H9C H9E H9G H9H H9J H9K H9P H9R H9S H9W H9X"],
+["Laval","QC","MTL",580000,"H7A H7B H7C H7E H7G H7H H7J H7K H7L H7M H7N H7P H7R H7S H7T H7V H7W H7X H7Y"],
+["Longueuil","QC","MTL",540000,"J4G J4H J4J J4K J4L J4M J4N"],["Terrebonne","QC","MTL",520000,"J6V J6W J6X J6Y"],["Repentigny","QC","MTL",480000,"J5Y J5Z J6A"],
+["Blainville","QC","MTL",560000,"J7B J7C"],["Brossard","QC","MTL",620000,"J4W J4X J4Y J4Z"],["Vaudreuil-Dorion","QC","MTL",550000,"J7V"],
+["Gatineau","QC","QCO",470000,"J8L J8M J8P J8R J8T J8V J8X J8Y J8Z J9A J9H J9J"],["Québec City","QC","QCO",400000,"G1B G1C G1E G1G G1H G1J G1K G1L G1M G1N G1P G1R G1S G1T G1V G1W G1X G1Y G2A G2B G2C G2E G2G G2J G2K G2L G2M G2N G3A G3E G3G G3H G3J G3K"],
+["Lévis","QC","QCO",390000,"G6V G6W G6X G6Y G6Z G7A"],["Sherbrooke","QC","QCO",400000,"J1E J1G J1H J1J J1K J1L J1M J1N"],["Trois-Rivières","QC","QCO",330000,"G8T G8V G8W G8Y G8Z G9A G9B G9C"],
+["Saguenay","QC","QCO",290000,"G7B G7G G7H G7J G7K G7N G7P G7S G7T G7X G7Y G7Z"],["Drummondville","QC","QCO",350000,"J2A J2B J2C J2E"],["Granby","QC","QCO",380000,"J2G J2H J2J"],
+["Rimouski","QC","QCO",300000,"G5L G5M G5N"],["Saint-Jérôme","QC","QCO",440000,"J5L J7Y J7Z"],
+["Halifax","NS","ATL",560000,"B3A B3B B3E B3G B3H B3J B3K B3L B3M B3N B3P B3R B3S B3T B3V B3Z B4A B4B B4C B4E B4G"],["Truro","NS","ATL",340000,"B2N"],
+["Cape Breton (Sydney)","NS","ATL",300000,"B1A B1B B1C B1E B1G B1H B1J B1K B1L B1M B1N B1P B1R B1S B1T B1V B1W B1X B1Y"],["New Glasgow","NS","ATL",290000,"B2H"],["Kentville","NS","ATL",380000,"B4N"],
+["Moncton","NB","ATL",360000,"E1A E1B E1C E1E E1G"],["Dieppe","NB","ATL",380000,"E1A"],["Saint John","NB","ATL",300000,"E2H E2J E2K E2L E2M E2N"],["Fredericton","NB","ATL",360000,"E3A E3B E3C E3E E3G"],
+["Charlottetown","PE","ATL",430000,"C1A C1B C1C C1E"],["Summerside","PE","ATL",330000,"C1N"],["Stratford PE","PE","ATL",470000,"C1B"],
+["St. John's","NL","ATL",360000,"A1A A1B A1C A1E A1G A1H"],["Mount Pearl","NL","ATL",330000,"A1N"],["Corner Brook","NL","ATL",270000,"A2H"],["Gander","NL","ATL",270000,"A1V"],
+["Whitehorse","YT","TER",600000,"Y1A"],["Yellowknife","NT","TER",470000,"X1A"],["Iqaluit","NU","TER",600000,"X0A"]
+].filter(m=>m[4]!=="" || m[0]!=="Welland Canal Region").map(([name,prov,reg,bench,fsa])=>({name,prov,reg,bench,fsa:fsa.split(" ").filter(Boolean)}));
+
+/* ---------- Five-year fixed rate history (approx. posted-discounted average) for carrying cost ---------- */
+const RATE=[[2016,0,2.6],[2018,6,3.4],[2019,6,2.9],[2020,6,2.1],[2021,6,2.0],[2022,6,4.4],[2023,6,5.5],[2024,6,5.0],[2025,6,4.3],[2026,8,4.2]];
+
+/* ---------- Series builder with fail-safe #1: data validation ---------- */
+const START=new Date(2016,0,1), END=new Date(2026,8,1);
+const MONTHS=[];for(let d=new Date(START);d<=END;d.setMonth(d.getMonth()+1))MONTHS.push(new Date(d));
+const mi=(y,m)=>(y-2016)*12+m;
+function interp(anchors){
+  const out=new Array(MONTHS.length).fill(NaN);
+  for(let k=0;k<anchors.length-1;k++){const[a,b]=[anchors[k],anchors[k+1]];const i0=mi(a[0],a[1]),i1=mi(b[0],b[1]);
+    for(let i=i0;i<=i1&&i<out.length;i++){const t=(i-i0)/(i1-i0);const s=(1-Math.cos(Math.PI*t))/2;out[i]=a[2]+(b[2]-a[2])*s;}}
+  return out;
+}
+function seasonal(arr){return arr.map((v,i)=>v*(1+0.012*Math.sin((MONTHS[i].getMonth()-1)/12*2*Math.PI)));}
+const health={fixed:0,clamped:0,renderer:{}};
+function sanitize(arr,lo,hi){ // fill gaps by linear interpolation, clamp outliers, never return NaN
+  const a=arr.slice();let last=-1;
+  for(let i=0;i<a.length;i++){if(!Number.isFinite(a[i])){continue;}
+    if(a[i]<lo||a[i]>hi){a[i]=Math.min(hi,Math.max(lo,a[i]));health.clamped++;}
+    if(last>=0&&i-last>1){for(let j=last+1;j<i;j++){a[j]=a[last]+(a[i]-a[last])*(j-last)/(i-last);health.fixed++;}}
+    else if(last<0&&i>0){for(let j=0;j<i;j++){a[j]=a[i];health.fixed++;}}
+    last=i;}
+  if(last<0)return a.map(()=>lo);
+  for(let j=last+1;j<a.length;j++){a[j]=a[last];health.fixed++;}
+  return a;
+}
+const IDX={};for(const r in ANCH)IDX[r]=sanitize(seasonal(interp(ANCH[r])),20,500);
+const RATES=sanitize(interp(RATE),0.5,15);
+function seriesFor(m,type){const idx=IDX[m.reg],now=idx[idx.length-1],mult=TYPE[m.reg][type];
+  return sanitize(idx.map(v=>Math.round(m.bench*mult*v/now/1000)*1000),20000,20000000);}
+function provSeries(prov,type){const ms=M.filter(x=>x.prov===prov);const s=new Array(MONTHS.length).fill(0);
+  ms.forEach(m=>seriesFor(m,type).forEach((v,i)=>s[i]+=v/ms.length));return s.map(Math.round);}
+function regSeries(reg,type){const ms=M.filter(x=>x.reg===reg);const s=new Array(MONTHS.length).fill(0);
+  ms.forEach(m=>seriesFor(m,type).forEach((v,i)=>s[i]+=v/ms.length));return s.map(Math.round);}
+function payment(price,rate){const P=price*0.8,r=rate/100/12,n=300;return P*r/(1-Math.pow(1+r,-n));}
+
+/* ---------- Chart rendering with fail-safes #2 (canvas fallback) and #3 (table fallback) ---------- */
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmt$=v=>v>=1e6?"$"+(v/1e6).toFixed(2)+"M":"$"+Math.round(v/1000)+"K";
+const charts={};
+function render(id,spec){
+  const box=document.getElementById(id),mode=document.getElementById("m"+id.slice(1));
+  if(charts[id]){try{charts[id].destroy()}catch(e){}charts[id]=null;}
+  box.innerHTML="";
+  try{ if(!window.Chart)throw new Error("Chart.js not loaded");
+    const c=document.createElement("canvas");box.appendChild(c);charts[id]=chartjs(c,spec);
+    mode.textContent="Rendered with Chart.js";health.renderer[id]="chartjs";return;
+  }catch(e){box.innerHTML="";}
+  try{ const c=document.createElement("canvas");box.appendChild(c);drawCanvas(c,spec);
+    mode.textContent="Rendered with built-in canvas fallback";health.renderer[id]="canvas";return;
+  }catch(e){box.innerHTML="";}
+  box.style.height="auto";box.appendChild(tableOf(spec));mode.textContent="Shown as a table (chart renderers unavailable)";health.renderer[id]="table";
+}
+function chartjs(c,spec){
+  const fg=css("--muted"),grid=css("--line");
+  return new Chart(c,{type:spec.kind,data:{labels:spec.labels,datasets:spec.sets.map(s=>({label:s.label,data:s.data,borderColor:s.color,
+    backgroundColor:spec.kind==="bar"?s.data.map(v=>v>=0?css("--good"):css("--bad")):s.fill?s.color+"22":s.color,fill:!!s.fill,
+    borderWidth:spec.kind==="bar"?0:2,pointRadius:0,pointHoverRadius:4,tension:.25}))},
+    options:{responsive:true,maintainAspectRatio:false,animation:matchMedia("(prefers-reduced-motion: reduce)").matches?false:{duration:400},
+      interaction:{mode:"index",intersect:false},
+      plugins:{legend:{display:spec.sets.length>1,labels:{color:fg,boxWidth:10,font:{size:11}}},
+        tooltip:{callbacks:{label:t=>t.dataset.label+": "+spec.fmt(t.parsed.y)}}},
+      scales:{x:{ticks:{color:fg,maxTicksLimit:6,maxRotation:0,font:{size:10}},grid:{display:false}},
+        y:{ticks:{color:fg,callback:spec.fmt,font:{size:10}},grid:{color:grid}}}}});
+}
+function drawCanvas(c,spec){
+  const dpr=window.devicePixelRatio||1,W=c.parentElement.clientWidth||400,H=c.parentElement.clientHeight||240;
+  c.width=W*dpr;c.height=H*dpr;const g=c.getContext("2d");if(!g)throw new Error("no 2d");g.scale(dpr,dpr);
+  const L=56,R=8,T=10,B=22,all=spec.sets.flatMap(s=>s.data).filter(Number.isFinite);
+  let lo=Math.min(...all),hi=Math.max(...all);if(spec.kind==="bar"){lo=Math.min(0,lo);hi=Math.max(0,hi);}if(hi===lo)hi=lo+1;
+  const n=spec.labels.length,x=i=>L+(W-L-R)*(n<2?0:i/(n-1)),y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  g.font="10px "+css("--mono");g.fillStyle=css("--muted");g.strokeStyle=css("--line");g.lineWidth=1;
+  for(let k=0;k<=4;k++){const v=lo+(hi-lo)*k/4,yy=y(v);g.beginPath();g.moveTo(L,yy);g.lineTo(W-R,yy);g.stroke();g.fillText(spec.fmt(v),2,yy+3);}
+  [0,Math.floor(n/2),n-1].forEach(i=>g.fillText(spec.labels[i],Math.min(x(i),W-50),H-6));
+  spec.sets.forEach(s=>{
+    if(spec.kind==="bar"){const bw=Math.max(1,(W-L-R)/n-1);s.data.forEach((v,i)=>{g.fillStyle=v>=0?css("--good"):css("--bad");const y0=y(0),y1=y(v);g.fillRect(x(i)-bw/2,Math.min(y0,y1),bw,Math.abs(y1-y0));});}
+    else{g.strokeStyle=s.color;g.lineWidth=2;g.beginPath();s.data.forEach((v,i)=>i?g.lineTo(x(i),y(v)):g.moveTo(x(i),y(v)));g.stroke();}
+  });
+}
+function tableOf(spec){
+  const wrap=document.createElement("div");wrap.className="tbl";const t=document.createElement("table");
+  t.innerHTML="<thead><tr><th>Month</th>"+spec.sets.map(s=>"<th>"+s.label+"</th>").join("")+"</tr></thead>";
+  const tb=document.createElement("tbody");
+  for(let i=spec.labels.length-1;i>=0;i-=Math.max(1,Math.floor(spec.labels.length/24)))
+    tb.insertAdjacentHTML("beforeend","<tr><td>"+spec.labels[i]+"</td>"+spec.sets.map(s=>"<td>"+spec.fmt(s.data[i])+"</td>").join("")+"</tr>");
+  t.appendChild(tb);wrap.appendChild(t);return wrap;
+}
+
+/* ---------- State ---------- */
+const $=id=>document.getElementById(id);
+const st={prov:"ON",muni:"Mississauga",type:"detached",span:999,sort:{k:"yoy",d:-1}};
+try{const s=JSON.parse(localStorage.getItem("hve")||"{}");Object.assign(st,s);}catch(e){}
+function save(){try{localStorage.setItem("hve",JSON.stringify({prov:st.prov,muni:st.muni,type:st.type,sub:st.sub,span:st.span}))}catch(e){}}
+const cur=()=>M.find(m=>m.name===st.muni)||M[0];
+const label=d=>d.toLocaleString("en-CA",{month:"short",year:"2-digit"});
+
+function fillMuni(){$("muni").innerHTML=M.filter(m=>m.prov===st.prov).sort((a,b)=>a.name.localeCompare(b.name)).map(m=>`<option${m.name===st.muni?" selected":""}>${m.name}</option>`).join("");
+  if(!M.some(m=>m.name===st.muni&&m.prov===st.prov)){st.muni=$("muni").value;}}
+function setSeg(id,v){[...$(id).children].forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v==String(v))));}
+
+function matchAddress(txt){
+  const t=txt.toUpperCase();const pc=t.match(/\b([ABCEGHJKLMNPRSTVXY]\d[A-Z])\s?\d[A-Z]\d\b/)||t.match(/\b([ABCEGHJKLMNPRSTVXY]\d[A-Z])\b/);
+  if(pc){const f=pc[1];const hit=M.find(m=>m.fsa.includes(f))||M.find(m=>m.name===FSA1[f[0]]);if(hit)return{m:hit,how:"postal area "+f};}
+  const byName=[...M].sort((a,b)=>b.name.length-a.name.length).find(m=>t.includes(m.name.toUpperCase()));
+  if(byName)return{m:byName,how:"city name"};
+  return null;
+}
+
+let lastV=0;
+function estimate(){
+  const m=cur(),type=st.type,s=seriesFor(m,type),base=s[s.length-1];
+  const sq=+$("sqft").value||SQFT[type],sizeAdj=Math.pow(Math.min(4,Math.max(.3,sq/SQFT[type])),.62);
+  const beds=+$("beds").value,baths=+$("baths").value,typB={detached:3.5,semi:3,town:3,condo:2}[type],typBa={detached:2.5,semi:2,town:2,condo:1.5}[type];
+  const roomAdj=1+0.025*(beds-typB)+0.03*(baths-typBa);
+  const parkAdj=1+(type==="condo"?0.04:0.015)*(+$("park").value-(type==="condo"?1:2));
+  const lotAdj=type==="condo"?1:+$("lot").value;
+  const model=base*sizeAdj*roomAdj*parkAdj*lotAdj*(+$("cond").value);
+  let v=model,spread=0.06+Math.min(.06,Math.abs(Math.log(sq/SQFT[type]))*0.08)+(["NON","ABO","TER","ATL","PRA"].includes(m.reg)?0.02:0),how="area benchmark model";
+  const pp=+$("pp").value,pd=$("pd").value;
+  if(pp>10000&&/^\d{4}-\d{2}$/.test(pd)){
+    // Repeat-sale method: index the owner's purchase forward with the area's price index, add renovation value, blend with the model.
+    const [py,pm]=pd.split("-").map(Number),idx=IDX[m.reg],now=idx[idx.length-1],i=mi(py,pm-1);
+    const g={ON:0.06,BC:0.07,QC:0.045}[m.prov]||0.035; // pre-2016 annual growth used to extend the index backwards
+    const then=i>=0?idx[Math.min(i,idx.length-1)]:idx[0]/Math.pow(1+g,-i/12);
+    const yrs=Math.max(0,(idx.length-1-i)/12);
+    const indexed=pp*now/then+(+$("reno").value||0)*0.6*Math.pow(0.97,yrs/2);
+    const w=Math.max(.5,.85-yrs*.015);
+    v=indexed*w+model*(1-w);
+    spread=Math.min(.14,0.04+yrs*0.005);
+    how=`your ${pd} purchase indexed to today (${Math.round(w*100)}% weight) + area model`;
+  }
+  const r5=x=>Math.round(x/5000)*5000;
+  lastV=r5(v);
+  $("rVal").textContent="$"+r5(v).toLocaleString("en-CA");
+  $("rRange").textContent="Range $"+r5(v*(1-spread)).toLocaleString("en-CA")+" – $"+r5(v*(1+spread)).toLocaleString("en-CA");
+  const conf=spread<.08?"High":spread<.1?"Medium":"Low";
+  const yoy=(s[s.length-1]/s[s.length-13]-1)*100;
+  $("rMeta").innerHTML=`${m.name}, ${m.prov} · ${$("type").querySelector('[aria-pressed="true"]').textContent} · confidence <b>${conf}</b> · area benchmark <span class="${yoy>=0?"up":"down"}">${yoy>=0?"+":""}${yoy.toFixed(1)}% YoY</span><br>Based on ${how}.`;
+}
+
+function market(){
+  const m=cur(),n=Math.min(st.span,MONTHS.length),sl=a=>a.slice(-n),labels=sl(MONTHS.map(label));
+  $("mName").textContent=m.name;$("mRegion").textContent=REGION_NAME[m.reg]+" · "+PROV[m.prov];
+  const types=["detached","semi","town","condo"],names={detached:"Detached",semi:"Semi",town:"Town",condo:"Condo"},cols=[css("--s1"),css("--s2"),css("--s3"),css("--s4")];
+  const byType=types.map(t=>seriesFor(m,t)),sel=seriesFor(m,st.type);
+  const last=sel[sel.length-1],y1=sel[sel.length-13],y5=sel[sel.length-61],pk=Math.max(...sel),pkI=sel.indexOf(pk);
+  const pmt=payment(last,RATES[RATES.length-1]);
+  const st1=(v,l,c)=>`<div class="stat"><b class="${c||""}">${v}</b><span>${l}</span></div>`;
+  const pc=(a,b)=>{const p=(a/b-1)*100;return[(p>=0?"+":"")+p.toFixed(1)+"%",p>=0?"up":"down"]};
+  const [a1,c1]=pc(last,y1),[a5,c5]=pc(last,y5),[ap,cp]=pc(last,pk);
+  $("stats").innerHTML=st1(fmt$(last),names[st.type]+" benchmark")+st1(a1,"1-year change",c1)+st1(a5,"5-year change",c5)+st1(ap,"vs peak ("+label(MONTHS[pkI])+")",cp);
+  render("c1",{kind:"line",labels,fmt:fmt$,sets:types.map((t,i)=>({label:names[t],data:sl(byType[i]),color:cols[i]}))});
+  const yoy=sel.map((v,i)=>i>=12?+((v/sel[i-12]-1)*100).toFixed(1):NaN);
+  const yoyS=sanitize(yoy,-60,80);
+  render("c2",{kind:"bar",labels,fmt:v=>(+v).toFixed(0)+"%",sets:[{label:names[st.type]+" YoY",data:sl(yoyS)}]});
+  render("c3",{kind:"line",labels,fmt:fmt$,sets:[{label:m.name,data:sl(sel),color:css("--s1")},{label:REGION_NAME[m.reg],data:sl(regSeries(m.reg,st.type)),color:css("--s3")},{label:PROV[m.prov]+" avg",data:sl(provSeries(m.prov,st.type)),color:css("--s2")}]});
+  render("c4",{kind:"line",labels,fmt:v=>"$"+Math.round(v).toLocaleString("en-CA"),sets:[{label:"Mortgage payment / mo",data:sl(sel.map((v,i)=>payment(v,RATES[i]))),color:css("--s2"),fill:true}]});
+  rank();
+  const r=Object.values(health.renderer);
+  $("health").textContent=`Data checks: ${health.fixed} gap months filled, ${health.clamped} outliers clamped. Renderers: ${r.filter(x=>x==="chartjs").length} Chart.js, ${r.filter(x=>x==="canvas").length} canvas fallback, ${r.filter(x=>x==="table").length} table fallback. Current payment at ${RATES[RATES.length-1].toFixed(2)}% 5-yr fixed, 25-yr amortization: $${Math.round(pmt).toLocaleString("en-CA")}/mo.`;
+}
+
+function rank(){
+  const rows=M.filter(m=>m.prov===st.prov).map(m=>{const s=seriesFor(m,st.type),l=s[s.length-1];return{m,price:l,yoy:(l/s[s.length-13]-1)*100,y5:(l/s[s.length-61]-1)*100,pk:(l/Math.max(...s)-1)*100};});
+  const k=st.sort.k,d=st.sort.d;rows.sort((a,b)=>k==="name"?d*a.m.name.localeCompare(b.m.name):d*(a[k]-b[k]));
+  const H=[["name","Municipality"],["price","Benchmark"],["yoy","1Y"],["y5","5Y"],["pk","vs peak"]];
+  $("rank").tHead.innerHTML="<tr>"+H.map(([k2,l])=>`<th data-k="${k2}">${l}${st.sort.k===k2?(d>0?" ▲":" ▼"):""}</th>`).join("")+"</tr>";
+  const p=v=>`<span class="${v>=0?"up":"down"}">${v>=0?"+":""}${v.toFixed(1)}%</span>`;
+  $("rank").tBodies[0].innerHTML=rows.map(r=>`<tr data-n="${r.m.name}" class="${r.m.name===st.muni?"sel":""}" style="cursor:pointer"><td>${r.m.name}</td><td>${fmt$(r.price)}</td><td>${p(r.yoy)}</td><td>${p(r.y5)}</td><td>${p(r.pk)}</td></tr>`).join("");
+}
+
+function refresh(){save();estimate();extras();market();}
+$("prov").innerHTML=Object.entries(PROV).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");$("prov").value=st.prov;fillMuni();setSeg("type",st.type);setSeg("span",st.span);
+$("prov").onchange=e=>{st.prov=e.target.value;fillMuni();st.muni=$("muni").value;refresh();};
+$("muni").onchange=e=>{st.muni=e.target.value;refresh();};
+$("type").onclick=e=>{const b=e.target.closest("button");if(!b)return;st.type=b.dataset.v;setSeg("type",st.type);$("sqft").value=SQFT[st.type];refresh();};
+$("span").onclick=e=>{const b=e.target.closest("button");if(!b)return;st.span=+b.dataset.v;setSeg("span",st.span);market();save();};
+$("rank").onclick=e=>{const th=e.target.closest("th");if(th){const k=th.dataset.k;st.sort={k,d:st.sort.k===k?-st.sort.d:-1};rank();return;}
+  const tr=e.target.closest("tr[data-n]");if(tr){st.muni=tr.dataset.n;fillMuni();refresh();}};
+["beds","baths","sqft","cond","park","lot","pp","pd","reno"].forEach(id=>$(id).addEventListener("change",()=>{estimate();extras();}));
+$("addr").addEventListener("input",()=>{const r=matchAddress($("addr").value);
+  if(r){if(r.m.prov!==st.prov){st.prov=r.m.prov;$("prov").value=st.prov;}st.muni=r.m.name;fillMuni();$("addrHint").textContent=`Matched ${r.m.name}, ${r.m.prov} by ${r.how}.`;}
+  else $("addrHint").textContent="Add the city or postal code so we can place the address.";});
+$("f").addEventListener("submit",e=>{e.preventDefault();refresh();go(3);});
+const ROI={kitchen:[.72,"kitchens typically recover 65-80% of cost"],bath:[.7,"bathrooms typically recover 60-80%"],basement:[.6,"finished basements recover 50-70%"],paint:[1.0,"paint often recovers its full cost"],floors:[.7,"flooring recovers 60-80%"],windows:[.55,"windows recover 45-65%"],addition:[.55,"additions recover 45-65%"],deck:[.6,"decks recover 50-70%"]};
+function extras(){
+  const bal=+$("bal").value;
+  if(lastV&&$("bal").value!==""){const eq=lastV-bal;$("eqVal").textContent=(eq<0?"-$":"$")+Math.abs(Math.round(eq/1000)*1000).toLocaleString("en-CA");
+    $("eqMeta").textContent=Math.round(eq/lastV*100)+"% of the estimated value. Borrowing room up to 80% of value: $"+Math.max(0,Math.round((lastV*.8-bal)/1000)*1000).toLocaleString("en-CA")+".";}
+  else{$("eqVal").textContent="—";$("eqMeta").textContent="Add your mortgage balance on the previous step to see your equity.";}
+  const r=ROI[$("proj").value],c=+$("pcost").value||0;
+  $("pAdd").textContent="+$"+(Math.round(c*r[0]/1000)*1000).toLocaleString("en-CA");$("pMeta").textContent="estimated value added; "+r[1]+".";
+}
+function go(n){document.querySelectorAll("fieldset[data-step]").forEach(f=>f.hidden=f.dataset.step!=String(n));
+  document.querySelectorAll("#steps li").forEach(li=>li.classList.toggle("on",+li.dataset.s<=n));
+  if(go.ready){const s=$("steps").getBoundingClientRect();if(s.top<0)$("steps").scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});}go.ready=true;}
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(+b.dataset.go)));
+["bal","proj","pcost"].forEach(id=>$(id).addEventListener("input",extras));
+go(1);
+
+/* Detailed residential types: each maps to a benchmark base type, a value factor and a typical size. */
+const SUB={detached:["detached",1,2000],link:["detached",.9,1900],semi:["semi",1,1500],town:["town",1,1450],
+  duplex:["detached",1.08,2400],multiplex:["detached",1.22,3200],rural:["detached",.92,2000],cottage:["detached",.82,1300],
+  mobile:["detached",.32,1100],condo:["condo",1,800],loft:["condo",1.08,950],condotown:["town",.9,1300],
+  stacked:["condo",1.15,1050],penthouse:["condo",1.6,1500]};
+const SUBNAME={link:"Link",duplex:"Duplex",multiplex:"Triplex / fourplex",rural:"Rural / acreage",cottage:"Cottage",mobile:"Mobile home",
+  loft:"Condo loft",condotown:"Condo townhouse",stacked:"Stacked townhouse",penthouse:"Penthouse"};
+const isCondo=s=>["condo","loft","condotown","stacked","penthouse"].includes(s);
+st.sub=st.sub&&SUB[st.sub]?st.sub:st.type;
+function applySub(resetSize){const [base,,sq]=SUB[st.sub];st.type=base;setSeg("type",base);$("ptype").value=st.sub;
+  $("cfeeWrap").hidden=!isCondo(st.sub);$("lot").disabled=isCondo(st.sub);if(resetSize)$("sqft").value=sq;}
+$("ptype").addEventListener("change",()=>{st.sub=$("ptype").value;applySub(true);refresh();});
+$("cfee").addEventListener("input",()=>{estimate();extras();});
+const _estBase=estimate;
+estimate=function(){
+  const [base,f,sq0]=SUB[st.sub]||SUB.detached,sqIn=+$("sqft").value||sq0;
+  // run the base-type model at the base type's typical-size scale, then apply the sub-type factor
+  const keep=$("sqft").value;$("sqft").value=Math.round(sqIn*SQFT[base]/sq0);_estBase();$("sqft").value=keep;
+  let k=f;
+  if(isCondo(st.sub)){const fee=+$("cfee").value||0,per=fee/Math.max(300,sqIn);k*=Math.min(1.06,Math.max(.85,1-(per-.65)*.18));}
+  if(st.sub==="mobile"||st.sub==="cottage"||st.sub==="rural"){/* wider uncertainty */const r=$("rRange").textContent.match(/\$[\d,]+/g);}
+  if(k!==1){lastV=Math.round(lastV*k/5000)*5000;$("rVal").textContent="$"+lastV.toLocaleString("en-CA");
+    $("rRange").textContent=$("rRange").textContent.replace(/\$([\d,]+)/g,(m,n)=>"$"+(Math.round(+n.replace(/,/g,"")*k/5000)*5000).toLocaleString("en-CA"));}
+  if(SUBNAME[st.sub])$("rMeta").innerHTML=$("rMeta").innerHTML.replace(/ · (Detached|Semi|Townhouse|Condo apt) · /," · "+SUBNAME[st.sub]+" · ");
+};
+applySub(false);
+
+let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(market,200);});
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",market);
+new MutationObserver(market).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+refresh();
+</script>

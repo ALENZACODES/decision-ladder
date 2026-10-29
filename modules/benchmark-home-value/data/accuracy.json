@@ -1,0 +1,1 @@
+{"test_records": 374069, "median_abs_pct_err": 0.0966, "within_10pct": 0.511, "within_20pct": 0.732, "by_level": {"street": 0.0947, "postal": 0.2187}, "by_type": {"detached": 0.103, "condotown": 0.0513, "semi": 0.0562, "condo": 0.0981, "town": 0.0548, "duplex": 0.1273, "multiplex": 0.1003, "mobile": 0.3658}, "size_exponent": 0.5}

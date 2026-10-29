@@ -149,6 +149,9 @@ class OfflineTransport:
         system = next((m["content"] for m in msgs if m["role"] == "system"), "")
         last = msgs[-1]
         usage = {"prompt_tokens": sum(len(str(m.get("content", ""))) // 4 for m in msgs), "completion_tokens": 60}
+        if "You route questions" in system:
+            from ..agent.router import offline_route_reply
+            return self._msg(offline_route_reply(last["content"]), usage)
         if "underwriting documents" in system:
             from ..intake.documents import read
             r = read(last["content"])
@@ -196,4 +199,4 @@ class OfflineTransport:
 def offline_client():
     from .client import NemotronClient
     return NemotronClient(OfflineTransport(), reasoner="offline/nemotron-super-stand-in",
-                          fast="offline/nemotron-nano-stand-in", offline=True)
+                          fast="offline/nemotron-nano-stand-in", ultra="offline/nemotron-ultra-stand-in", offline=True)

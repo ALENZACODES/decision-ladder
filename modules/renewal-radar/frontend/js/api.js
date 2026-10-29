@@ -1,0 +1,46 @@
+/** All actions target the same-origin FastAPI server; secrets stay server-side. */
+async function request(path,options={}){
+  const res=await fetch(path,{...options,headers:{...(options.body instanceof FormData?{}:{'Content-Type':'application/json'}),...(options.headers||{})},cache:'no-store'});
+  if(!res.ok){let message=`Request failed (${res.status})`;try{const err=await res.json();message=typeof err.detail==='string'?err.detail:JSON.stringify(err.detail)}catch{}throw new Error(message)}
+  const ct=res.headers.get('content-type')||'';
+  return ct.includes('application/json')?res.json():res;
+}
+export const api={
+  health:()=>request('/api/health'), demo:()=>request('/api/demo'),
+  market:()=>request('/api/market'), bankRates:()=>request('/api/market/banks/live'),
+  rateSnapshot:()=>request('/api/v17/market/snapshot'),
+  rateRefresh:()=>request('/api/v17/market/refresh',{method:'POST'}),
+  analyze:(body)=>request('/api/analyze',{method:'POST',body:JSON.stringify(body)}),
+  penalty:(body)=>request('/api/penalty',{method:'POST',body:JSON.stringify(body)}),
+  penaltyTimeline:(body)=>request('/api/v17/penalty/timeline',{method:'POST',body:JSON.stringify(body)}),
+  liveRates:()=>request('/api/ratewatch/live'),
+  bookImport:(file,options={})=>{const form=new FormData();form.append('file',file);if(options.date_order)form.append('date_order',options.date_order);return request('/api/broker/book/import',{method:'POST',body:form})},
+  bookOcr:(files)=>{const form=new FormData();for(const f of files)form.append('files',f);return request('/api/broker/book/ocr',{method:'POST',body:form})},
+  bookReview:(body)=>request('/api/broker/book/review',{method:'POST',body:JSON.stringify(body)}),
+  bookReviewCsv:(body)=>request('/api/broker/book/review.csv',{method:'POST',body:JSON.stringify(body)}),
+  bookSample:()=>request('/api/broker/book/sample.csv'),
+  liveRatesRefresh:()=>request('/api/ratewatch/live/refresh',{method:'POST'}),
+  ratewatchPenalty:(body)=>request('/api/ratewatch/penalty',{method:'POST',body:JSON.stringify(body)}),
+  ratewatchForecast:(body)=>request('/api/ratewatch/forecast',{method:'POST',body:JSON.stringify(body)}),
+  ratewatchExtra:(tool,body)=>request('/api/ratewatch/extras/'+encodeURIComponent(tool),{method:'POST',body:JSON.stringify(body)}),
+  ratewatchLetter:(body)=>request('/api/ratewatch/letter',{method:'POST',body:JSON.stringify(body)}),
+  negotiate:(body)=>request('/api/negotiation',{method:'POST',body:JSON.stringify(body)}),
+  insight:(body)=>request('/api/agent/insight',{method:'POST',body:JSON.stringify(body)}),
+  agentRun:(body)=>request('/api/agent/run',{method:'POST',body:JSON.stringify(body)}),
+  pdfExtract:(file)=>{const form=new FormData();form.append('file',file);return request('/api/documents/extract',{method:'POST',body:form})},
+  pdfSemanticAudit:(file)=>{const form=new FormData();form.append('file',file);return request('/api/v16/ocr/semantic-audit/pdf',{method:'POST',body:form})},
+  documentRead:(file,language='eng')=>{const form=new FormData();form.append('file',file);return request('/api/v17/documents/read?language='+encodeURIComponent(language),{method:'POST',body:form})},
+  ledger:(body)=>request('/api/ledger.csv',{method:'POST',body:JSON.stringify(body)}),
+  annual:(body)=>request('/api/ledger/annual',{method:'POST',body:JSON.stringify(body)}),
+  report:(body)=>request('/api/report/pdf',{method:'POST',body:JSON.stringify(body)}),
+  save:(body)=>request('/api/cases',{method:'POST',body:JSON.stringify(body)}),
+  update:(id,token,body)=>request(`/api/cases/${encodeURIComponent(id)}`,{method:'PUT',headers:{'X-Case-Token':token},body:JSON.stringify(body)}),
+  load:(id,token)=>request(`/api/cases/${encodeURIComponent(id)}`,{headers:{'X-Case-Token':token}}),
+  share:(id,token,hours)=>request(`/api/cases/${encodeURIComponent(id)}/share`,{method:'POST',headers:{'X-Case-Token':token},body:JSON.stringify({expires_hours:hours})}),
+  readShare:(token)=>request('/api/shares/'+encodeURIComponent(token)),
+  revokeShare:(id,access,token)=>request(`/api/cases/${encodeURIComponent(id)}/shares/${encodeURIComponent(token)}`,{method:'DELETE',headers:{'X-Case-Token':access}})
+};
+export async function downloadResponse(response,filename){
+  const blob=await response.blob();const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);
+}

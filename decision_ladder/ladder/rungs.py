@@ -33,8 +33,12 @@ class RungResult:
     findings: list[str] = field(default_factory=list)
     evidence: dict = field(default_factory=dict)
 
+    stage: str = ""
+    engines: list = field(default_factory=list)
+
     def to_dict(self) -> dict:
         return {"key": self.key, "title": self.title, "status": self.status, "summary": self.summary,
+                "stage": self.stage, "engines": self.engines,
                 "metrics": self.metrics, "findings": self.findings, "evidence": self.evidence}
 
 
@@ -42,6 +46,7 @@ REQUIRED = {
     "purchase": ["borrower_name", "province", "price", "down_payment", "annual_income", "contract_rate", "credit_score"],
     "renewal": ["borrower_name", "province", "balance", "contract_rate", "maturity", "renewal_rate", "annual_income"],
     "refinance": ["borrower_name", "province", "balance", "contract_rate", "maturity", "annual_income", "property_value_or_purchase"],
+    "commercial": ["borrower_name", "province", "loan", "value", "noi", "rate"],
 }
 
 
@@ -198,6 +203,9 @@ def _qual_file(f: dict, ctx: dict) -> dict:
 
 def rung_qualification(f: dict, ctx: dict) -> RungResult:
     purpose = _purpose(f)
+    if purpose == "commercial":
+        return RungResult("qualification", "B-20 stress test (GDS/TDS)", SKIP,
+                          "Commercial loans are underwritten on DSCR and debt yield (see the commercial rung).")
     if purpose == "purchase":
         qf = _qual_file(f, ctx)
         q = qualify.qualify(**qf)
@@ -226,6 +234,8 @@ def rung_qualification(f: dict, ctx: dict) -> RungResult:
 
 
 def rung_lender(f: dict, ctx: dict) -> RungResult:
+    if _purpose(f) == "commercial":
+        return RungResult("lender", "Lender fit", SKIP, "Residential lender categories do not apply to commercial deals.")
     q = ctx.get("qualification") or ctx.get("switch") or {}
     ltv = q.get("ltv") or (ctx.get("rungs", {}).get("collateral", {}).get("metrics", {}).get("ltv")) or 80.0
     if f.get("credit_score") is None or not q:
@@ -264,14 +274,24 @@ def rung_market(f: dict, ctx: dict) -> RungResult:
             findings.append(f"File rate is {abs(gap):.2f} points below the BoC average new {'insured' if insured else 'uninsured'} 5y+ rate: confirm the rate is available.")
         elif gap > 0.60:
             findings.append(f"File rate is {gap:.2f} points above the BoC average: the client may be able to do better.")
+    ev = {"snapshot": snap}
+    cyc = T.run("rate_cycle_history", {"from": "2022-01"})
+    if isinstance(cyc, dict) and "error" not in cyc:
+        pol, mtg = cyc["summary"]["policy"], cyc["summary"]["mortgage"]
+        ev["rate_cycle"] = {k: v for k, v in cyc.items() if k != "rows"}
+        if pol.get("max") and mtg.get("max"):
+            metrics.update({"policy_peak": pol["max"]["value"], "policy_peak_month": pol["max"]["month"],
+                            "mortgage_5y_peak": mtg["max"]["value"], "mortgage_5y_peak_month": mtg["max"]["month"]})
+            findings.append(f"Rate cycle (Canada's Rate Cycle dashboard): policy rate peaked at {pol['max']['value']}% "
+                            f"({pol['max']['month']}); the 5-year conventional rate peaked at {mtg['max']['value']}% ({mtg['max']['month']}).")
     return RungResult("market", "Market & rate check", status,
                       f"Policy {metrics['policy_rate']}% / prime {metrics['prime']}% / GoC 5y {metrics['goc_5y']}%",
-                      metrics, findings, {"snapshot": snap})
+                      metrics, findings, ev)
 
 
 def rung_exit_cost(f: dict, ctx: dict) -> RungResult:
     purpose = _purpose(f)
-    if purpose == "purchase":
+    if purpose in ("purchase", "commercial"):
         return RungResult("exit_cost", "Exit cost & renewal economics", SKIP, "No existing mortgage on a purchase.")
     today = _today(f)
     mat = date.fromisoformat(f["maturity"])
@@ -292,7 +312,24 @@ def rung_exit_cost(f: dict, ctx: dict) -> RungResult:
             pen_total = float(est["total_estimate"])
             metrics["penalty_estimate"] = pen_total
             metrics["penalty_method"] = est.get("controlling_method")
-        findings += (pen.get("warnings") or []) if isinstance(pen, dict) else []
+        generic_warnings = (pen.get("warnings") or []) if isinstance(pen, dict) else []
+        # Renewal Radar's lender-exact method (reproduced against the lender's own calculator where verified)
+        exact = T.run("rr_bank_penalty", {"lender": f.get("lender", "generic"), "balance": f["balance"],
+                                          "contract_rate": f["contract_rate"], "start": f["term_start"],
+                                          "maturity": f["maturity"], "payout": today.isoformat(),
+                                          "posted_at_origination": f.get("original_posted_rate"),
+                                          "discount": f.get("contract_discount")})
+        ev["penalty_lender_exact"] = exact
+        if isinstance(exact, dict) and exact.get("status") == "exact-method" and exact.get("penalty") is not None:
+            if pen_total:
+                findings.append(f"Generic posted-minus-discount estimate (whole months): {pen_total:,.2f}.")
+            pen_total = float(exact["penalty"])
+            metrics.update({"penalty_estimate": pen_total, "penalty_method": f"{exact.get('method')} ({exact.get('lender')} exact method)",
+                            "penalty_method_source": exact.get("method_source")})
+            findings.insert(0, f"Renewal Radar {exact.get('lender')} exact method: {pen_total:,.2f} "
+                               f"({exact.get('remaining_months')} months left, day-exact).")
+        else:
+            findings += generic_warnings
     elif months_left > 0:
         findings.append("term_start missing: cannot date the penalty precisely.")
     if f.get("original_principal") and f.get("original_rate") and f.get("original_amort_years") and f.get("months_elapsed"):
@@ -310,6 +347,37 @@ def rung_exit_cost(f: dict, ctx: dict) -> RungResult:
         metrics["best_offer"] = cmp_["lowest_net_cost"]
         worst = max(o["extra_cost_vs_best"] for o in cmp_["offers"])
         metrics["max_saving_vs_worst_offer"] = worst
+    new_rate = f.get("renewal_rate") or f.get("new_rate")
+    if new_rate:
+        chk = T.run("renewal_offer_check", {"balance": f["balance"], "years": float(f.get("remaining_amort_years", 20)),
+                                            "currentRate": f["contract_rate"], "offerRate": new_rate})
+        ev["renewal_check"] = chk
+        if isinstance(chk, dict) and "error" not in chk and chk.get("keep"):
+            keep = chk["keep"]
+            if keep.get("covers") and keep.get("extraMonths") is not None:
+                xm = keep["extraMonths"]
+                metrics["keep_old_payment_extra_months"] = round(xm, 1)
+                findings.append(f"Renewal Check: keeping today's payment at {new_rate}% "
+                                + (f"stretches the mortgage by about {xm / 12:.1f} years." if xm >= 0 else
+                                   f"pays the mortgage off about {-xm / 12:.1f} years sooner."))
+            elif keep.get("covers") is False:
+                findings.append("Renewal Check: today's payment would no longer cover the interest at the new rate.")
+    if purpose == "renewal":
+        alt = min((float(o["rate"]) for o in offers), default=None) if offers else None
+        sw = T.run("rr_switch_pathway", {"balance": f["balance"], "offered_rate": f.get("renewal_rate"),
+                                         "maturity_date": f["maturity"], "new_contract_rate": alt})
+        ev["switch_pathway"] = sw
+        if isinstance(sw, dict) and sw.get("headline"):
+            findings.append(f"Renewal Radar switch pathway: {sw['headline']}.")
+        plan = T.run("rr_renewal_plan", {"maturity_date": f["maturity"]})
+        ev["renewal_plan"] = plan
+        if alt is not None and f.get("renewal_rate") and alt < float(f["renewal_rate"]):
+            neg = T.run("rr_negotiation_script", {"balance": f["balance"], "offered_rate": f["renewal_rate"],
+                                                  "maturity_date": f["maturity"], "lender": f.get("lender"),
+                                                  "competing_rate": alt})
+            ev["negotiation"] = neg
+            if isinstance(neg, dict) and neg.get("call_script"):
+                findings.append("Renewal Radar drafted a retention-call script and email to ask the lender to match.")
     pr = renewal.renewal_priority(months_to_maturity=months_left, pct_change=float(metrics.get("payment_change_pct", 0) or 0),
                                   balance=float(f["balance"]))
     metrics["priority"] = pr["score"]
@@ -372,14 +440,40 @@ def rung_decision(f: dict, ctx: dict) -> RungResult:
             options.append(f"Add income or a co-borrower: {o['min_annual_income']:,.0f}/yr needed (+{o['shortfall']:,.0f})")
         elif o.get("lever") == "30_year_amortization" and o.get("passes"):
             options.append("Use a 30-year amortization")
+    fix = ctx.get("closing_fix")
+    if fix:
+        options.append(f"Keep cash for closing: put {fix['down_payment']:,.0f} down"
+                       + (" (insured)" if fix.get("insured") else "")
+                       + ("; still passes the stress test" if fix.get("still_passes_stress_test") else "; stress test then fails"))
     return RungResult("decision", "Decision", PASS if verdict == "GO" else (REFER if verdict == "GO WITH CONDITIONS" else FAIL),
                       verdict, {"verdict": verdict, "fails": len(fails), "refers": len(refers)},
                       blockers + conditions, {"options": options})
 
 
-LADDER: list[tuple[str, Callable[[dict, dict], RungResult]]] = [
-    ("intake", rung_intake), ("screening", rung_screening), ("documents", rung_documents),
-    ("collateral", rung_collateral), ("insurance", rung_insurance), ("qualification", rung_qualification),
-    ("lender", rung_lender), ("market", rung_market), ("exit_cost", rung_exit_cost),
-    ("compliance", rung_compliance), ("decision", rung_decision),
-]
+def _staged_ladder():
+    from . import os_rungs as O
+    # (key, rung function, lifecycle stage, engines: module keys from the Mortgage OS registry)
+    return [
+        ("intake", rung_intake, "lead", ["decision-ladder"]),
+        ("screening", rung_screening, "documents", ["mortgageloanops"]),
+        ("documents", rung_documents, "documents", ["decision-ladder", "doc-quest"]),
+        ("affordability", O.rung_affordability, "prequal", ["canadian-mortgage-suite", "canada-housing-affordability-index-1980-2026"]),
+        ("readiness", O.rung_readiness, "underwriting", ["pre-underwriting-copilot"]),
+        ("insurance", rung_insurance, "underwriting", ["decision-ladder"]),
+        ("qualification", rung_qualification, "underwriting", ["mortgageloanops", "decision-ladder"]),
+        ("crosscheck", O.rung_crosscheck, "underwriting", ["mortgageloanops", "canadian-mortgage-suite", "pre-underwriting-copilot",
+                                                         "cash-to-close", "renewal-check", "renewal-radar"]),
+        ("lender", rung_lender, "underwriting", ["mortgageloanops", "renewal-radar"]),
+        ("property", O.rung_property, "property", ["benchmark-home-value"]),
+        ("closing", O.rung_closing, "closing", ["cash-to-close", "canadian-mortgage-suite"]),
+        ("market", rung_market, "market", ["renewal-radar", "canada-rate-cycle-dashboard"]),
+        ("exit_cost", rung_exit_cost, "servicing", ["renewal-radar", "renewal-check", "mortgageloanops"]),
+        ("renewal_outlook", O.rung_renewal_outlook, "servicing", ["renewal-shock-radar"]),
+        ("commercial", O.rung_commercial, "commercial", ["private-credit-screener"]),
+        ("compliance", rung_compliance, "lead", ["mortgageloanops"]),
+        ("decision", rung_decision, "decision", ["decision-ladder"]),
+    ]
+
+
+LADDER_STAGED = _staged_ladder()
+LADDER: list[tuple[str, Callable[[dict, dict], RungResult]]] = [(k, fn) for k, fn, _, _ in LADDER_STAGED]
