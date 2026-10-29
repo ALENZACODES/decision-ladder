@@ -94,13 +94,17 @@ jobs:
           if-no-files-found: ignore
       - name: publish results to the live-results branch (no secrets in these files)
         if: always()
+        env:
+          TOKEN: ${{ github.token }}
         run: |
-          mkdir -p /tmp/out && for f in models.txt smoke.txt eval.txt smoke_report.json eval_report.json live_ladder_report.json health.json; do [ -f "$f" ] && cp "$f" /tmp/out/; done
-          [ -f demo/decision-ladder-demo.mp4 ] && cp demo/decision-ladder-demo.mp4 demo/narration.* /tmp/out/ 2>/dev/null || true
-          if grep -rIl -- "$NEBIUS_API_KEY" /tmp/out 2>/dev/null; then echo "key found in output, not publishing"; exit 1; fi
+          mkdir -p /tmp/out
+          for f in models.txt smoke.txt eval.txt smoke_report.json eval_report.json live_ladder_report.json health.json \
+                   demo/decision-ladder-demo.mp4 demo/narration.txt demo/narration.srt; do
+            if [ -f "$f" ]; then cp "$f" /tmp/out/; fi
+          done
+          if grep -rIlF -- "$NEBIUS_API_KEY" /tmp/out; then echo "::error::key found in output, not publishing"; exit 1; fi
+          cd /tmp/out && echo "run ${{ github.run_id }} at $(date -u +%FT%TZ) on ${{ github.sha }}" > RUN.txt
+          git init -q && git checkout -q -b live-results
           git config user.name "live-run" && git config user.email "live-run@users.noreply.github.com"
-          git fetch origin live-results || true
-          git switch --orphan results-tmp
-          git rm -rfq . 2>/dev/null || true
-          cp /tmp/out/* . && echo "run ${{ github.run_id }} at $(date -u +%FT%TZ) on ${{ github.sha }}" > RUN.txt
-          git add -A && git commit -qm "live results ${{ github.run_id }}" && git push -f origin HEAD:live-results
+          git add -A && git commit -qm "live results ${{ github.run_id }}"
+          git push -qf "https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git" HEAD:live-results
