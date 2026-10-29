@@ -42,12 +42,15 @@ async function caption(page, text) {
   }, text);
 }
 
+// A scene shows its caption, runs its action, then holds: at least `seconds` in total and at least
+// HOLD seconds after the action finished, so a slow live model call never cuts the result off screen.
+const HOLD = 4;
 async function scene(page, text, seconds, action) {
   const start = now();
   await caption(page, text);
   if (action) await action();
-  const left = seconds - (now() - start);
-  if (left > 0) await page.waitForTimeout(left * 1000);
+  const left = Math.max(seconds - (now() - start), HOLD);
+  await page.waitForTimeout(left * 1000);
   scenes.push({ start, end: now(), text });
 }
 
@@ -58,7 +61,7 @@ async function tab(page, name) {
 
 // A click starts a request: wait until the button shows it is busy (disabled), then until it is idle again.
 async function waitIdle(page, selector, timeout = 120000) {
-  await page.waitForFunction((sel) => document.querySelector(sel)?.disabled, selector, { timeout: 3000 }).catch(() => {});
+  await page.waitForFunction((sel) => document.querySelector(sel)?.disabled, selector, { timeout: 1500 }).catch(() => {});
   await page.waitForFunction((sel) => {
     const b = document.querySelector(sel);
     return b && !b.disabled;
@@ -78,58 +81,80 @@ const smoothScroll = (page, y) => page.evaluate((yy) => window.scrollTo({ top: y
   const mode = await page.textContent("#modeBadge");
   console.log("mode badge:", mode);
 
-  await scene(page, "Decision Ladder: Canadian mortgage decisions, top down. NVIDIA Nemotron on Nebius Token Factory reasons; tested calculators decide.", 9);
+  const rung = async (title) => {
+    const b = page.locator("button.rung", { hasText: title }).first();
+    await b.scrollIntoViewIfNeeded().catch(() => {});
+    await b.click().catch(() => {});
+    await page.waitForTimeout(700);
+  };
 
-  await scene(page, "A client emails their broker. Nemotron Nano extracts the file. Every value must quote the sentence it came from, or it is dropped.", 14, async () => {
+  await scene(page, "Decision Ladder Mortgage OS: fourteen of my own mortgage apps in one system, driven by NVIDIA Nemotron on Nebius Token Factory.", 10);
+  await scene(page, "Every stage of a Canadian mortgage, from first email to renewal and commercial deals. Each card is one of my apps, running inside the OS.", 9,
+    () => smoothScroll(page, 420));
+
+  await scene(page, "A client emails her broker. Nemotron Nano extracts the file and reads her pay stub and T4; every value must quote its source.", 14, async () => {
     await tab(page, "intake");
+    for (const t of ["+ Pay stub", "+ T4 slip"]) await page.click(`text=${t}`).catch(() => {});
     await page.click("#btnExtractRun");
     await waitIdle(page, "#btnExtractRun");
-    await smoothScroll(page, 300);
+    await smoothScroll(page, 260);
   });
 
-  await scene(page, "The file climbs eleven rungs. Every rung is deterministic, tested code: screening, insurance, the OSFI B-20 stress test, lender fit, market, exit cost.", 14, async () => {
-    await tab(page, "ladder");
-    await page.selectOption("#samplePick", { index: 0 }).catch(() => {});
-    await page.click("#runLadder");
+  await scene(page, "Her file climbs a 17-rung ladder. Each rung is computed by one of my apps: Doc Quest, the Mortgage Suite, the Pre-Underwriting Check, Benchmark Home Value, Cash to Close.", 15, async () => {
+    await tab(page, "os");
+    await smoothScroll(page, 0);
+    await page.click("#osRunPriya");
     await waitIdle(page, "#runLadder");
   });
-  await scene(page, "This purchase fails the stress test. Instead of stopping at no, the ladder computes the path to yes, and re-checks every option against the same test.", 12, async () => {
-    const r = await page.$("text=B-20 stress test");
-    if (r) await r.click().catch(() => {});
-    await page.waitForTimeout(800);
-    await smoothScroll(page, 1350);
+  await scene(page, "The B-20 stress test fails. The ladder computes a path to yes, re-checking every option against the same test.", 10,
+    () => rung("B-20 stress test"));
+  await scene(page, "Cash to Close finds she is $19,875 short on closing day, and finds the down payment that keeps cash for closing costs.", 11,
+    () => rung("Cash to close"));
+  await scene(page, "Five independent engines, in Python and JavaScript, compute the same quantities. They agree to the cent; differences are labelled, never hidden.", 12,
+    () => rung("Cross-check"));
+  await scene(page, "Every number opens in the app that computed it: here, Cash to Close, embedded in the OS.", 10, async () => {
+    await rung("Cash to close");
+    const link = page.locator(".eng.link", { hasText: "Cash to Close" }).first();
+    await link.click().catch(() => {});
+    await page.waitForTimeout(1500);
   });
-  await scene(page, "Nemotron 3 Super writes the broker memo. A provenance verifier traces every figure back to a calculator; anything it cannot trace is flagged on screen.", 12, async () => {
-    await smoothScroll(page, 950);
+  await scene(page, "Nemotron 3 Ultra writes the credit decision; a provenance verifier traces every figure back to a calculator.", 10, async () => {
+    await tab(page, "ladder");
+    const memo = page.locator("text=Broker decision memo").first();
+    await memo.scrollIntoViewIfNeeded().catch(() => {});
   });
 
-  await scene(page, "As a copilot, Nemotron chooses among 19 tools. Here: TD's own penalty method, with TD's posted rates from the rate book.", 16, async () => {
+  await scene(page, "As a copilot, Nemotron Nano routes each question to the right apps, and Nemotron Super calls their tools.", 14, async () => {
     await tab(page, "copilot");
-    const chip = await page.$("text=What is the penalty to break a TD");
-    if (chip) await chip.click();
+    await page.fill("#chatInput", "A first-time buyer in Ontario has $60,000 saved and wants a $700,000 home. How much cash do they need on closing day, and what is the land transfer tax?");
     await page.click("#chatSend").catch(() => {});
     await waitIdle(page, "#chatSend");
-    await smoothScroll(page, 500);
-  });
-  await scene(page, "For anything newer than the rate book, Tavily searches only official Canadian sources: Bank of Canada, OSFI, FSRA, CMHC. Every source is cited.", 16, async () => {
-    const chip = await page.$("text=What did the Bank of Canada do most recently");
-    if (chip) await chip.click();
-    await page.click("#chatSend").catch(() => {});
-    await waitIdle(page, "#chatSend");
-    await smoothScroll(page, 2000);
+    await smoothScroll(page, 600);
   });
 
-  await scene(page, "For a whole book: a ranked renewal queue with payment shock, today's penalty by lender method, and outreach drafts that pass a compliance guardrail.", 14, async () => {
+  await scene(page, "Five years later, renewal: Renewal Radar reads the letter, checks the switch pathway, drafts the negotiation script and computes the lender-exact penalty.", 13, async () => {
+    await tab(page, "ladder");
+    await page.selectOption("#samplePick", "pandemic_renewal_rbc").catch(() => {});
+    await page.click("#runLadder");
+    await waitIdle(page, "#runLadder");
+    await rung("Exit cost");
+  });
+
+  await scene(page, "Commercial deals go through the Private Credit Deal Screener: DSCR, debt yield, grade, and which assumption moves it.", 10, async () => {
+    await page.selectOption("#samplePick", "hamilton_commercial").catch(() => {});
+    await page.click("#runLadder");
+    await waitIdle(page, "#runLadder");
+    await rung("Commercial");
+  });
+
+  await scene(page, "Overnight, the whole book runs as a Nebius Serverless job: a ranked renewal queue with lender-exact penalties and guardrailed outreach.", 11, async () => {
     await tab(page, "book");
     await page.click("#btnBook");
     await waitIdle(page, "#btnBook");
     await smoothScroll(page, 450);
   });
 
-  await scene(page, "Every number carries its date and source: Bank of Canada Valet series and the Big-6 banks' own posted rates.", 9,
-    () => tab(page, "market"));
-
-  await scene(page, "Open source, MIT, zero dependencies, 240+ tests. Nemotron reasons; calculators decide.", 8,
+  await scene(page, "Open source, MIT. Nemotron Nano, Super and Ultra on Token Factory, Tavily for live sources, and every number from tested code.", 8,
     () => tab(page, "how"));
 
   await page.close();

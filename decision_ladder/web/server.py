@@ -194,7 +194,8 @@ def make_handler(svc: Services, limiter: RateLimiter):
             if target.is_dir():
                 target = target / "index.html"
             if not str(target).startswith(str(root)) or not target.is_file():
-                return self._json({"error": "not found"}, 404)
+                # plain-text 404 so a module page's optional assets fail quietly (its own fallbacks take over)
+                return self._send(404, b"not found", "text/plain; charset=utf-8")
             ctype = mimetypes.guess_type(str(target))[0] or "application/octet-stream"
             if target.suffix in (".mjs", ".js"):
                 ctype = "text/javascript"

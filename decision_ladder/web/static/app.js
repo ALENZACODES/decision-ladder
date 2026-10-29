@@ -212,27 +212,69 @@
       h("div", { class: "hint" }, `${(run.file && run.file.borrower_name) || "File"} · ${(run.file && run.file.purpose) || "purchase"} · ${(run.file && run.file.province) || ""}`));
     target.appendChild(head);
 
-    // ladder (bottom-to-top) + detail
+    // journey strip: lifecycle stages present in the run, coloured by their worst rung
+    const stageName = (k) => (((state.os || {}).stages || []).find((x) => x.key === k) || {}).name || label(k || "other");
+    const order = [];
+    rungs.forEach((r) => { const k = r.stage || "other"; if (!order.includes(k)) order.push(k); });
+    const worst = (list) => list.some((r) => r.status === "FAIL") ? "FAIL" : list.some((r) => r.status === "REFER") ? "REFER" : "PASS";
+    const strip = h("div", { class: "journey", role: "list" });
+    const btnByKey = {};
+    order.forEach((k, i) => {
+      const list = rungs.filter((r) => (r.stage || "other") === k && r.status !== "SKIP");
+      if (!list.length) return;
+      const st = worst(list);
+      strip.appendChild(h("button", { class: "jstage " + st, type: "button", role: "listitem", onclick: () => {
+        const first = list[0];
+        const b = btnByKey[first.key];
+        if (b) { b.click(); b.scrollIntoView({ behavior: "smooth", block: "center" }); }
+      } }, h("span", { class: "jn" }, String(strip.children.length + 1)), h("span", {}, stageName(k)),
+        h("span", { class: "jc" }, `${list.length}`)));
+    });
+    target.appendChild(h("div", { class: "card" }, h("div", { class: "row between" }, h("h2", {}, "Client journey"),
+      h("span", { class: "hint" }, "Each stage is computed by your own apps. Click a stage.")), strip));
+
+    // ladder (bottom-to-top), grouped by stage, skipped rungs hidden behind a toggle
     const ladder = h("div", { class: "ladder", role: "list" });
     const detail = h("div", { class: "card detail" }, h("div", { class: "hint" }, "Select a rung to see its figures and evidence."));
     const btns = [];
+    const skipped = rungs.filter((r) => r.status === "SKIP");
+    let lastStage = null;
     [...rungs].reverse().forEach((r, iRev) => {
       const idx = rungs.length - iRev;
-      const b = h("button", { class: `rung ${r.status}`, role: "listitem", type: "button" },
+      const stg = r.stage || "other";
+      if (stg !== lastStage && r.status !== "SKIP") {
+        ladder.appendChild(h("div", { class: "stage-label" }, stageName(stg)));
+        lastStage = stg;
+      }
+      // plain labels on the ladder (a click selects the rung); the detail panel has the clickable app links
+      const badges = (r.engines || []).map((e) => h("span", { class: "eng", title: "Computed by " + e.name }, e.name));
+      const b = h("button", { class: `rung ${r.status}` + (r.status === "SKIP" ? " skipped" : ""), role: "listitem", type: "button" },
         h("span", { class: "num" }, idx),
-        h("span", { class: "t" }, r.title, h("span", { class: "s" }, r.summary)),
+        h("span", { class: "t" }, r.title, h("span", { class: "s" }, r.summary),
+          badges.length ? h("span", { class: "engs" }, badges) : null),
         h("span", { class: "pill " + r.status }, STATUS_TEXT[r.status] || r.status));
       b.addEventListener("click", () => {
         btns.forEach((x) => x.classList.remove("sel"));
         b.classList.add("sel");
         renderRungDetail(r, detail);
       });
+      btnByKey[r.key] = b;
       btns.push(b);
       ladder.appendChild(b);
     });
-    target.appendChild(h("div", { class: "ladder-grid" }, h("div", { class: "card" }, h("h2", {}, "The ladder"), ladder), detail));
-    const firstBad = rungs.find((r) => r.status === "FAIL") || rungs.find((r) => r.status === "REFER" && r.key !== "decision");
-    if (firstBad) btns[rungs.length - 1 - rungs.indexOf(firstBad)].click();
+    const ladderCard = h("div", { class: "card" }, h("h2", {}, "The ladder"), ladder);
+    if (skipped.length) {
+      ladder.classList.add("hide-skip");
+      const tg = h("button", { class: "btn small", type: "button", onclick: () => {
+        const hid = ladder.classList.toggle("hide-skip");
+        tg.textContent = hid ? `Show ${skipped.length} skipped rung${skipped.length > 1 ? "s" : ""}` : "Hide skipped rungs";
+      } }, `Show ${skipped.length} skipped rung${skipped.length > 1 ? "s" : ""}`);
+      ladderCard.appendChild(tg);
+    }
+    target.appendChild(h("div", { class: "ladder-grid" }, ladderCard, detail));
+    const firstBad = rungs.find((r) => r.status === "FAIL" && r.key !== "decision") || rungs.find((r) => r.status === "FAIL") ||
+      rungs.find((r) => r.status === "REFER" && r.key !== "decision");
+    if (firstBad) btnByKey[firstBad.key].click();
 
     // memo
     if (run.memo) {
@@ -297,20 +339,123 @@
     const offline = run.model && run.model.offline;
     const src = String(run.memo_source || "");
     if (offline) return h("span", { class: "pill warm" }, "offline stand-in (no model)");
-    if (src.startsWith("nemotron")) return h("span", { class: "pill nv" }, `written by ${prettyModel(run.model && run.model.reasoner)}`);
+    if (src.startsWith("nemotron")) {
+      const mm = String(run.memo_model || (run.model && run.model.reasoner) || "");
+      return h("span", { class: "pill nv", title: mm }, /ultra/i.test(mm) ? "written by Nemotron 3 Ultra" : "written by Nemotron 3 Super");
+    }
     return h("span", { class: "pill grey" }, src || "template");
   }
 
   function renderRungDetail(r, box) {
     box.textContent = "";
+    const special = { crosscheck: detailCrosscheck, closing: detailClosing, readiness: detailReadiness, property: detailProperty }[r.key];
     append(box, [
       h("div", { class: "row between" }, h("h3", {}, r.title), h("span", { class: "pill " + r.status }, r.status)),
       h("p", {}, r.summary),
-      r.metrics && Object.keys(r.metrics).length ? kvList(r.metrics) : null,
-      r.findings && r.findings.length ? h("ul", { class: "find" }, r.findings.map((f) => h("li", {}, f))) : null,
+      (r.engines || []).length ? h("div", { class: "engs" }, h("span", { class: "hint" }, "Computed by: "),
+        r.engines.map((e) => h("span", { class: "eng" + (e.ui_url ? " link" : ""), role: e.ui_url ? "button" : null,
+          onclick: () => { if (e.ui_url) openEngine(e); } }, e.name))) : null,
+    ]);
+    if (special) {
+      try { special(r, box); } catch (e) { box.appendChild(h("div", { class: "unv" }, "Could not render detail: " + e.message)); }
+    } else {
+      if (r.metrics && Object.keys(r.metrics).length) box.appendChild(kvList(r.metrics));
+      if (r.findings && r.findings.length) box.appendChild(h("ul", { class: "find" }, r.findings.map((f) => h("li", {}, f))));
+    }
+    append(box, [
       r.ms !== undefined ? h("div", { class: "hint" }, `Computed in ${fmtNum(r.ms, 2)} ms, no model involved.`) : null,
       r.evidence && Object.keys(r.evidence).length ? jsonBlock(r.evidence, "Evidence") : null,
     ]);
+  }
+
+  function fmtUnit(v, unit) {
+    if (v === null || v === undefined) return "—";
+    if (unit === "%") return fmtNum(v, 3) + "%";
+    if (String(unit).startsWith("$")) return "$" + (+v).toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + (unit === "$/mo" ? "/mo" : "");
+    return fmtNum(v, 2);
+  }
+
+  function detailCrosscheck(r, box) {
+    const checks = (r.evidence && r.evidence.checks) || [];
+    if (!checks.length) return;
+    const cards = h("div", { class: "xc" });
+    checks.forEach((c) => {
+      const ok = c.agree === true, bad = c.agree === false;
+      const tb = h("tbody", {}, (c.engines || []).map((e) => h("tr", { class: e.note ? "known" : null },
+        h("td", {}, e.engine), h("td", { class: "n" }, e.error ? h("span", { class: "unv" }, "error") : fmtUnit(e.value, c.unit)),
+        h("td", { class: "hint" }, e.error || e.note || ""))));
+      cards.appendChild(h("div", { class: "xc-item " + (ok ? "ok" : bad ? "bad" : "na") },
+        h("div", { class: "row between" }, h("b", {}, c.quantity),
+          h("span", { class: "pill " + (ok ? "PASS" : bad ? "FAIL" : "SKIP") },
+            ok ? `✓ agree (spread ${fmtUnit(c.spread, c.unit)})` : bad ? `✗ differ by ${fmtUnit(c.spread, c.unit)}` : "not compared")),
+        h("table", { class: "xc-tbl" }, tb),
+        c.note ? h("div", { class: "hint" }, c.note) : null));
+    });
+    box.appendChild(cards);
+  }
+
+  function detailClosing(r, box) {
+    const m = r.metrics || {}, ev = r.evidence || {};
+    const items = ev.items || {};
+    if (Object.keys(items).length) {
+      box.appendChild(h("ul", { class: "items" }, Object.entries(items).map(([k, v]) =>
+        h("li", {}, h("span", {}, k), h("span", { class: "n" }, fmtMoney(v))))));
+    }
+    if (m.cash_needed) {
+      const need = +m.cash_needed, sav = m.savings !== undefined ? +m.savings : null;
+      const max = Math.max(need, sav || 0) || 1;
+      box.appendChild(h("div", { class: "cmp" },
+        h("div", { class: "cmp-row" }, h("span", {}, "Cash needed"), h("span", { class: "barx" }, h("i", { class: "need", style: { width: (need / max * 100) + "%" } })), h("b", {}, fmtMoney(need))),
+        sav !== null ? h("div", { class: "cmp-row" }, h("span", {}, "Savings"), h("span", { class: "barx" }, h("i", { class: sav >= need ? "ok" : "short", style: { width: (sav / max * 100) + "%" } })), h("b", {}, fmtMoney(sav))) : null,
+        m.shortfall ? h("div", { class: "unv" }, `Short ${fmtMoney(m.shortfall)} on closing day`) : null));
+    }
+    const fx = ev.fix;
+    if (fx) {
+      box.appendChild(h("div", { class: "fixbox" }, h("b", {}, "Path to close"),
+        h("div", {}, `Put ${fmtMoney(fx.down_payment)} down; cash needed ${fmtMoney(fx.cash_needed)}.`),
+        fx.insured ? h("div", {}, `Becomes insured: premium ${fmtMoney(fx.premium)}, PST ${fmtMoney(fx.pst_on_premium)} due at closing.`) : null,
+        h("div", { class: fx.still_passes_stress_test ? "" : "unv" }, `Stress test then ${fx.still_passes_stress_test ? "passes" : "fails"}: GDS ${fmtNum(fx.gds)}% · TDS ${fmtNum(fx.tds)}%`)));
+    }
+    if (r.findings && r.findings.length) box.appendChild(h("ul", { class: "find" }, r.findings.map((f) => h("li", {}, f))));
+  }
+
+  function detailReadiness(r, box) {
+    const m = r.metrics || {};
+    const sc = Math.max(0, Math.min(100, +m.readiness_score || 0));
+    const col = sc >= 80 ? "var(--pass)" : sc >= 50 ? "var(--refer)" : "var(--fail)";
+    box.appendChild(h("div", { class: "gauge" }, h("div", { class: "gauge-bar" }, h("i", { style: { width: sc + "%", background: col } })),
+      h("b", {}, `${sc}/100`), h("span", { class: "hint" }, m.status || "")));
+    const fl = (r.findings || []).map((f) => {
+      const mm = /^\[(high|medium|low)\]\s*(.*)$/.exec(f);
+      return mm ? h("li", {}, h("span", { class: "pill " + (mm[1] === "high" ? "FAIL" : mm[1] === "medium" ? "REFER" : "SKIP") }, mm[1]), " ", mm[2])
+        : h("li", { class: "hint" }, f);
+    });
+    if (fl.length) box.appendChild(h("ul", { class: "find flags" }, fl));
+  }
+
+  function detailProperty(r, box) {
+    const m = r.metrics || {};
+    if (m.benchmark_price) {
+      const file = state.lastFile || {};
+      const price = +(file.price || m.value_basis || 0);
+      const vals = [["Local benchmark" + (m.property_type ? ` (${m.property_type})` : ""), +m.benchmark_price, "bench"]];
+      if (price) vals.push([file.price ? "Purchase price" : "Value basis", price, "price"]);
+      const max = Math.max(...vals.map((v) => v[1])) || 1;
+      box.appendChild(h("div", { class: "cmp" }, vals.map(([k, v, c]) =>
+        h("div", { class: "cmp-row" }, h("span", {}, k), h("span", { class: "barx" }, h("i", { class: c, style: { width: (v / max * 100) + "%" } })), h("b", {}, fmtMoney(v))))));
+    }
+    box.appendChild(kvList(m));
+    if (r.findings && r.findings.length) box.appendChild(h("ul", { class: "find" }, r.findings.map((f) => h("li", {}, f))));
+  }
+
+  function openEngine(e) {
+    const mods = (state.os && state.os.modules) || [];
+    const base = mods.find((x) => x.key === e.module) || { key: e.module, name: e.name, tools: [], repo: "" };
+    // the rung's link carries this client's numbers (deep link into the app's own URL state)
+    const m = Object.assign({}, base, { ui_url: e.ui_url && e.ui_url.startsWith("/apps/") ? e.ui_url : base.ui_url });
+    showTab("os");
+    openModule(m);
+    if (e.ui_url && /[#?]/.test(e.ui_url)) $("#osViewerMeta").textContent += " · opened with this client's numbers";
   }
 
   function safeUrl(u) {
@@ -437,16 +582,27 @@
 
   function renderAnswer(res) {
     const b = h("div", { class: "bubble bot" });
+    const rt = res.routing;
+    if (rt) {
+      const names = (rt.stages || []).map((k) => ((((state.os || {}).stages || []).find((x) => x.key === k) || {}).name || k));
+      const txt = rt.by === "all" ? `All ${rt.tools_offered} tools offered (no stage matched)`
+        : `${rt.by === "nemotron-nano" ? "Nemotron Nano" : rt.by === "keywords" ? "Keyword fallback" : rt.by} routed to: ${names.join(", ")} (${rt.tools_offered} of ${rt.of} tools)`;
+      b.appendChild(h("div", { class: "routechip" }, h("span", { class: "pill nv" }, "route"), " ", txt));
+    }
+    if ((res.modules_used || []).length) {
+      b.appendChild(h("div", { class: "engs" }, h("span", { class: "hint" }, "Apps used: "), res.modules_used.map((m) => h("span", { class: "eng" }, m))));
+    }
     b.appendChild(richText(res.answer, ""));
     const steps = (res.steps || []).filter((s) => s.kind !== "answer");
     const meta = h("div", { class: "meta" },
       verifBadge(res.verification), res.repaired ? h("span", { class: "pill warm" }, " repaired once ") : null,
-      h("span", {}, ` · ${steps.length} tool call(s) · ${res.model}`));
+      h("span", {}, ` · ${steps.filter((x) => x.kind !== "route").length} tool call(s) · ${res.model}`));
     b.appendChild(meta);
     if (steps.length) {
       const d = h("details", {}, h("summary", {}, "Trace: tool calls and results"));
       steps.forEach((s) => d.appendChild(h("div", { class: "step" },
-        h("span", { class: "nm" }, s.name), " ", h("span", { class: "pill " + (s.kind === "repair" ? "warm" : s.kind === "research" ? "nv" : "grey") }, s.kind),
+        h("span", { class: "nm" }, s.name), " ", h("span", { class: "pill " + (s.kind === "repair" ? "warm" : s.kind === "research" || s.kind === "route" ? "nv" : "grey") }, s.kind),
+        s.module ? h("span", { class: "eng" }, s.module) : null,
         h("span", { class: "hint" }, ` ${fmtNum(s.ms, 1)} ms`),
         jsonBlock(s.args, "Arguments"), jsonBlock(s.result, "Result"))));
       b.appendChild(d);
@@ -587,17 +743,18 @@
       h("text", { x: x + w / 2, y: y + 40, "text-anchor": "middle", "font-size": 11, fill: "#5f6b7a" }, sub));
     const arrow = (x1, y1, x2, y2) => h("line", { x1, y1, x2, y2, stroke: "#5f6b7a", "stroke-width": 1.5, "marker-end": "url(#ar)" });
     append(svg, [
-      box(10, 30, 160, 56, "Client email / docs", "free text, PDFs", "#fff"),
+      box(10, 30, 160, 56, "Client email / docs", "free text, pay stubs, letters", "#fff"),
       box(10, 120, 160, 56, "Mortgage file", "JSON, CSV book", "#fff"),
-      box(220, 30, 200, 56, "Nemotron 3 Nano", "intake JSON · drafts", "#eef7df", "#76b900"),
-      box(220, 120, 200, 146, "Decision Ladder", "11 deterministic rungs", "#f3f6fa", "#23354f"),
-      box(470, 30, 200, 56, "Nemotron 3 Super", "tool planning · memo", "#eef7df", "#76b900"),
-      box(470, 120, 200, 56, "Provenance verifier", "every figure traced", "#fff7ec", "#e07a2f"),
-      box(470, 210, 200, 56, "Tavily research", "BoC · OSFI · FSRA · CMHC", "#fff"),
-      box(720, 30, 170, 56, "Nebius Token Factory", "OpenAI-compatible API", "#0d1726", "#76b900"),
-      box(720, 120, 170, 56, "Broker memo", "verdict · path to yes", "#fff"),
-      box(720, 210, 170, 56, "Borrower message", "guardrail checked", "#fff"),
-      arrow(170, 58, 218, 58), arrow(320, 86, 320, 118), arrow(170, 148, 218, 148),
+      box(10, 210, 160, 56, "14 apps (modules)", "76K lines of tested code", "#eef3fb", "#23354f"),
+      box(220, 30, 200, 56, "Nemotron 3 Nano", "routing · intake JSON · drafts", "#eef7df", "#76b900"),
+      box(220, 120, 200, 146, "Decision Ladder", "17 rungs over the apps", "#f3f6fa", "#23354f"),
+      box(470, 30, 200, 56, "Nemotron 3 Super", "tool calls across the apps", "#eef7df", "#76b900"),
+      box(470, 120, 200, 56, "Cross-checks + verifier", "engines agree · figures traced", "#fff7ec", "#e07a2f"),
+      box(470, 210, 200, 56, "Tavily Search + Extract", "official sources · lender pages", "#fff"),
+      box(720, 30, 170, 56, "Nebius Token Factory", "Nano · Super · Ultra", "#0d1726", "#76b900"),
+      box(720, 120, 170, 56, "Nemotron 3 Ultra", "credit decision memo", "#eef7df", "#76b900"),
+      box(720, 210, 170, 56, "Nebius Serverless", "endpoint · nightly job", "#fff"),
+      arrow(170, 58, 218, 58), arrow(320, 86, 320, 118), arrow(170, 148, 218, 148), arrow(170, 238, 218, 238),
       arrow(420, 160, 468, 148), arrow(420, 58, 468, 58), arrow(570, 86, 570, 118), arrow(670, 58, 718, 58),
       arrow(670, 148, 718, 148), arrow(570, 210, 570, 178), arrow(670, 238, 718, 238),
     ]);
@@ -605,12 +762,81 @@
     for (let i = 0; i < 5; i++) svg.appendChild(h("rect", { x: 270, y: 178 + i * 16, width: 100, height: 6, rx: 2,
       fill: ["#2f8f46", "#2f8f46", "#b7791f", "#c0392b", "#2f8f46"][i] }));
     // dark box text fix
-    $$("text", svg).forEach((t) => { if (t.textContent === "Nebius Token Factory" || t.textContent === "OpenAI-compatible API") t.setAttribute("fill", "#e6edf5"); });
+    $$("text", svg).forEach((t) => { if (t.textContent === "Nebius Token Factory" || t.textContent === "Nano · Super · Ultra") t.setAttribute("fill", "#e6edf5"); });
     $("#archSvg").appendChild(svg);
   }
 
+  // ------------------------------------------------------------------ Mortgage OS home
+  async function loadOS() {
+    let cat;
+    try { cat = await api("/api/os"); } catch (e) { toast("Could not load modules: " + e.message); return; }
+    state.os = cat;
+    const t = cat.totals || {};
+    const ownLines = (cat.modules || []).reduce((a, m) => a + (m.lines_of_code || 0), 0);
+    const stats = $("#osStats");
+    stats.textContent = "";
+    for (const [k, v, sub] of [["Modules", t.modules, "your projects, embedded"], ["Nemotron tools", t.tools, "calculators, data, research"],
+                               ["Lines of code", fmtNum(ownLines, 0), "inside the modules (counted)"], ["Lifecycle stages", (cat.stages || []).length, "lead to renewal"]]) {
+      stats.appendChild(h("div", { class: "tile" }, h("div", { class: "k" }, k), h("div", { class: "v" }, String(v ?? "—")), h("div", { class: "d" }, sub)));
+    }
+    const byKey = Object.fromEntries((cat.modules || []).map((m) => [m.key, m]));
+    const wrap = $("#osStages");
+    wrap.textContent = "";
+    (cat.stages || []).forEach((st, i) => {
+      const mods = st.modules.map((k) => byKey[k]).filter(Boolean);
+      wrap.appendChild(h("div", { class: "os-stage" },
+        h("div", { class: "os-stage-head" }, h("span", { class: "os-step" }, String(i + 1)), h("span", {}, st.name)),
+        mods.length ? mods.map((m) => moduleCard(m)) : h("div", { class: "empty small" }, "Covered by the Decision Ladder rungs")));
+    });
+  }
+
+  function moduleCard(m) {
+    const open = () => openModule(m);
+    return h("div", { class: "os-mod" + (m.present ? "" : " missing") },
+      h("div", { class: "os-mod-name" }, m.name),
+      h("div", { class: "os-mod-desc" }, m.description || ""),
+      h("div", { class: "os-mod-meta" },
+        h("span", { class: "pill grey" }, m.kind),
+        m.lines_of_code ? h("span", { class: "pill grey" }, fmtNum(m.lines_of_code, 0) + " lines") : null,
+        (m.tools || []).length ? h("span", { class: "pill nv", title: m.tools.join(", ") }, m.tools.length + " tool" + (m.tools.length > 1 ? "s" : "")) : null),
+      m.ui_url ? h("button", { class: "btn small", type: "button", onclick: open }, "Open app") : null);
+  }
+
+  function openModule(m) {
+    const v = $("#osViewer");
+    v.hidden = false;
+    $("#osViewerTitle").textContent = m.name;
+    $("#osViewerMeta").textContent = [m.repo, m.lines_of_code ? fmtNum(m.lines_of_code, 0) + " lines" : "",
+      (m.tools || []).length ? "Nemotron tools: " + m.tools.join(", ") : "", m.notes || ""].filter(Boolean).join(" · ");
+    $("#osFrame").src = m.ui_url;
+    const a = $("#osNewTab");
+    a.href = m.ui_url;
+    state.osModule = m;
+    v.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  async function runSample(key) {
+    showTab("ladder");
+    const pick = $("#samplePick");
+    if (state.samples && state.samples.files[key]) {
+      pick.value = key;
+      pick.dispatchEvent(new Event("change"));
+    }
+    $("#runLadder").click();
+  }
+  $("#osRunPriya").addEventListener("click", () => runSample("oakville_stretch"));
+  $("#osRunCommercial").addEventListener("click", () => runSample("hamilton_commercial"));
+  $("#osClose").addEventListener("click", () => { $("#osViewer").hidden = true; $("#osFrame").src = "about:blank"; });
+  $("#osAsk").addEventListener("click", () => {
+    const m = state.osModule;
+    if (!m) return;
+    showTab("copilot");
+    $("#chatInput").value = `Using the ${m.name} tools (${(m.tools || []).join(", ")}), `;
+    $("#chatInput").focus();
+  });
+
   // ------------------------------------------------------------------ boot
   async function boot() {
+    loadOS();
     drawArch();
     loadHealth();
     try { await loadSamples(); } catch (e) { toast("Could not load samples: " + e.message); }

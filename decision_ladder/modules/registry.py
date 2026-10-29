@@ -26,6 +26,7 @@ STAGES = [
     ("servicing", "Servicing, renewal & refinance"),
     ("market", "Market, rates & research"),
     ("commercial", "Commercial & private credit"),
+    ("compliance", "Compliance & client messages"),
 ]
 STAGE_KEYS = [s[0] for s in STAGES]
 

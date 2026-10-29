@@ -59,13 +59,17 @@ class LadderRun:
                 "timings_ms": self.timings_ms, "model": self.model}
 
 
-def _engine_label(key: str) -> dict:
+def _engine_label(key: str, file: dict | None = None, stage: str = "") -> dict:
     from .. import modules as OS
+    from ..modules.deeplinks import deep_link
     OS.load_all()
     m = OS.MODULES.get(key)
     if m is None:
         return {"module": key, "name": {"decision-ladder": "Decision Ladder core"}.get(key, key), "ui_url": None}
-    return {"module": key, "name": m.name, "ui_url": f"/apps/{m.key}/{m.entry}" if m.kind != "data" else None}
+    url = None
+    if m.kind != "data":
+        url = deep_link(m.key, m.entry, file or {}, stage)   # the app opens pre-filled with this client's numbers
+    return {"module": key, "name": m.name, "ui_url": url}
 
 
 def climb(file: dict) -> tuple[list[dict], dict]:
@@ -82,7 +86,7 @@ def climb(file: dict) -> tuple[list[dict], dict]:
                                evidence={"error": traceback.format_exception_only(type(e), e)[-1].strip()}).to_dict()
         res["ms"] = round((time.perf_counter() - t0) * 1000, 2)
         res["stage"] = stage
-        res["engines"] = [_engine_label(e) for e in engines]
+        res["engines"] = [_engine_label(e, file, stage) for e in engines]
         ctx["rungs"][key] = res
         out.append(res)
     return out, ctx
@@ -113,7 +117,7 @@ def template_memo(rungs: list[dict]) -> str:
     if len(lines) == 3:
         lines.append("- Every rung passed.")
     opts = d["evidence"].get("options") or []
-    lines += ["", "PATH TO YES:"] + ([f"- {o}" for o in opts[:3]] or ["- Not needed"])
+    lines += ["", "PATH TO YES:"] + ([f"- {o}" for o in opts[:4]] or ["- Not needed"])
     lines += ["", "NEXT ACTIONS FOR THE BROKER:"]
     n = 1
     for r in rungs:

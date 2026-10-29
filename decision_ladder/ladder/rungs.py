@@ -463,14 +463,14 @@ def _staged_ladder():
         ("qualification", rung_qualification, "underwriting", ["mortgageloanops", "decision-ladder"]),
         ("crosscheck", O.rung_crosscheck, "underwriting", ["mortgageloanops", "canadian-mortgage-suite", "pre-underwriting-copilot",
                                                          "cash-to-close", "renewal-check", "renewal-radar"]),
-        ("lender", rung_lender, "underwriting", ["mortgageloanops", "renewal-radar"]),
+        ("lender", rung_lender, "underwriting", ["mortgageloanops"]),
         ("property", O.rung_property, "property", ["benchmark-home-value"]),
         ("closing", O.rung_closing, "closing", ["cash-to-close", "canadian-mortgage-suite"]),
         ("market", rung_market, "market", ["renewal-radar", "canada-rate-cycle-dashboard"]),
         ("exit_cost", rung_exit_cost, "servicing", ["renewal-radar", "renewal-check", "mortgageloanops"]),
         ("renewal_outlook", O.rung_renewal_outlook, "servicing", ["renewal-shock-radar"]),
         ("commercial", O.rung_commercial, "commercial", ["private-credit-screener"]),
-        ("compliance", rung_compliance, "lead", ["mortgageloanops"]),
+        ("compliance", rung_compliance, "compliance", ["mortgageloanops"]),
         ("decision", rung_decision, "decision", ["decision-ladder"]),
     ]
 

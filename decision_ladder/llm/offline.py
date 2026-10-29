@@ -75,9 +75,37 @@ def _plan(question: str, tool_names: set[str]) -> list[tuple[str, dict]]:
     if any(w in q for w in ("renewal shock", "payment shock", "renew")) and ctx.get("original_principal"):
         calls.append(("renewal_payment_shock", {k: ctx[k] for k in ("original_principal", "original_rate", "original_amort_years",
                                                                      "months_elapsed", "renewal_rate") if k in ctx}))
-    if not calls:
+    # Mortgage OS module tools (the author's apps)
+    price = ctx.get("price") or _num(rf"(?:\$|price of |home (?:for|at) |wants a )\$?([\d,.]+[km]?)\s*(?:home|house|condo|semi|purchase|property)", question) \
+        or _num(rf"\$([\d,.]+[km]?)\s*(?:home|house|condo|semi)", question)
+    if any(w in q for w in ("closing", "close on", "cash to close", "land transfer", "ltt")) and price:
+        saved = ctx.get("savings") or _num(rf"\$?([\d,.]+[km]?)\s*(?:saved|in savings)", question) or 0
+        ftb = "first-time" in q or "first time" in q
+        calls.append(("cash_to_close_ontario", {"price": price, "savings": saved, "first_time": ftb, "toronto": "toronto" in q}))
+        calls.append(("land_transfer_tax", {"price": price, "province": "ON", "first_time": ftb, "toronto": "toronto" in q}))
+    if any(w in q for w in ("benchmark", "home value", "house price", "worth")):
+        place = next((c.title() for c in ("oakville", "toronto", "mississauga", "brampton", "markham", "vaughan", "hamilton",
+                                         "ottawa", "calgary", "edmonton", "vancouver") if c in q), None)
+        if place:
+            ptype = next((t for t in ("detached", "semi", "town", "condo") if t in q), "composite")
+            calls.append(("benchmark_home_price", {"place": place, "property_type": ptype}))
+    if "affordab" in q and "index" in q:
+        calls.append(("housing_affordability_index", {}))
+    if any(w in q for w in ("commercial", "dscr", "noi", "private credit")):
+        loan = _num(r"\$([\d,.]+[km])\s*(?:on|loan)", question)
+        value = _num(r"on a \$([\d,.]+[km])", question)
+        noi = _num(r"\$([\d,.]+[km]?)\s*noi", question)
+        rate = _num(r"(\d+(?:\.\d+)?)\s*%", question)
+        if loan and value and noi and rate:
+            calls.append(("private_credit_deal_screen", {"loan": loan, "value": value, "noi": noi, "rate": rate,
+                                                         "amort": 0 if "interest-only" in q or "interest only" in q else 25}))
+    if any(w in q for w in ("document", "paperwork", "checklist")):
+        calls.append(("buyer_document_checklist", {"work": "self" if "self-employed" in q else "salaried",
+                                                   "sources": ["savings"] + (["gift"] if "gift" in q else [])}))
+    calls = [c for c in calls if c[0] in tool_names]
+    if not calls and "market_snapshot" in tool_names:
         calls.append(("market_snapshot", {}))
-    return [c for c in calls if c[0] in tool_names]
+    return calls
 
 
 def _fmt(v: Any) -> str:
@@ -116,6 +144,22 @@ def _summarize(results: list[tuple[str, dict]]) -> str:
                          f"prime {r['prime']['rate']}%, GoC 5-year {r['goc_curve']['60']['rate']}%.")
         elif name == "renewal_payment_shock":
             lines.append(f"- Payment {_fmt(r['payment_before'])} -> {_fmt(r['payment_after'])} ({r['pct_change']}%).")
+        elif name == "cash_to_close_ontario":
+            lines.append(f"- Cash to Close: {_fmt(float(r['cashToClose']))} needed on closing day "
+                         f"({_fmt(float(r['down']))} down payment); gap vs savings {_fmt(float(r.get('gap', 0)))}.")
+        elif name == "land_transfer_tax":
+            lines.append(f"- Land transfer tax (Canadian Mortgage Suite): {_fmt(float(r['total']))} after rebates.")
+        elif name == "benchmark_home_price":
+            lines.append(f"- Benchmark Home Value: {r['city']} {r['property_type']} benchmark {_fmt(float(r['benchmark_price']))} "
+                         f"({r['yoy_change_pct']}% over 12 months).")
+        elif name == "housing_affordability_index":
+            lines.append(f"- BoC affordability index {r['affordability_index_pct']}% ({r['quarter']}) vs a "
+                         f"{r['long_run_average_pct']}% long-run average.")
+        elif name == "private_credit_deal_screen":
+            m = r.get("metrics", {})
+            lines.append(f"- Private Credit Screener: grade {r['grade']}, LTV {m.get('ltv')}%, DSCR {round(m.get('dscr', 0), 2)}.")
+        elif name == "buyer_document_checklist":
+            lines.append("- Doc Quest checklist, slowest first: " + ", ".join(d["title"] for d in r.get("documents", [])[:6]) + ".")
         elif name == "web_research":
             for s in r.get("sources", [])[:3]:
                 lines.append(f"- Source: {s['title']} <{s['url']}>")

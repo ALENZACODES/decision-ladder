@@ -1,157 +1,193 @@
-# Decision Ladder
+# Decision Ladder: Mortgage OS
 
 [![tests](https://github.com/ALENZACODES/decision-ladder/actions/workflows/tests.yml/badge.svg)](https://github.com/ALENZACODES/decision-ladder/actions/workflows/tests.yml)
 
-**Canadian mortgage decisions, top down. Nemotron reasons; calculators decide.**
+**Every stage of a Canadian mortgage, one system. Nemotron reasons; calculators decide.**
 
-Decision Ladder takes a mortgage file and moves it up eleven rungs, from intake to a decision a licensed broker can act on. **NVIDIA Nemotron**, served by **Nebius Token Factory**, plans the work, reads client emails, calls tools, and writes the broker's decision memo and the client message. Tested deterministic engines do every calculation: the OSFI B-20 stress test, default-insurance premiums, lender-specific prepayment penalties, renewal shock and the rate book. A **provenance verifier** checks every figure in the model's text against the tool results and marks anything it can't trace. **Tavily** brings in news the dated rate book doesn't have yet, searching official Canadian sources only.
+Decision Ladder is an operating system for a Canadian mortgage file, from the first email to closing day, then to renewal five years later, and on to commercial deals. It runs **fourteen of my own projects as modules** inside one app: 76,319 lines of their code, each with its own screen, calculators and tests. An agent built on **NVIDIA Nemotron**, served by **Nebius Token Factory**, drives all of them.
+
+- **Nemotron 3 Nano** routes every question to the right apps, reads client emails and documents, and drafts client messages.
+- **Nemotron 3 Super** plans and runs tool calls across the apps' 50 tools.
+- **Nemotron 3 Ultra** writes the final credit decision. The hackathon brief says to "reach for Nemotron 3 Ultra when you need serious reasoning".
+- **Tavily** reads official Canadian sources and the lenders' own rate pages.
+- **Every number comes from tested code.** Every figure the models write is checked against those results, and anything that can't be traced is flagged.
 
 *By John Khan, a licensed mortgage broker (Ontario) and data scientist. Not lending advice: every output is an estimate for a licensed broker to confirm.*
 
-> **Hackathon:** Nebius × NVIDIA Global AI Hackathon 2026, *Best Apps and Agents* track.
-> **NVIDIA open models:** Nemotron 3 Super (reasoner) and Nemotron 3 Nano (fast extraction and drafting), both called through Nebius Token Factory's OpenAI-compatible API.
-> **Runs with zero dependencies:** Python 3.10+ standard library only. `python -m decision_ladder serve --offline` works with no keys.
-
-![Decision Ladder: a purchase that fails the stress test, with the path to yes](docs/screenshots/ladder.png)
-
-| Renewal book scan | Market (rate book) |
-|---|---|
-| ![Renewal book](docs/screenshots/renewal-book.png) | ![Market](docs/screenshots/market.png) |
-
-*Screenshots are from offline demo mode (labelled in the header). In live mode the badge reads "LIVE · NVIDIA Nemotron … on Nebius Token Factory".*
+> **Nebius × NVIDIA Global AI Hackathon 2026, Best Apps and Agents track.**
+> NVIDIA open models: Nemotron 3 Nano, Super and Ultra on Nebius Token Factory. The app deploys as a Nebius Serverless AI endpoint, and the nightly renewal-book scan runs as a Nebius Serverless AI job.
 
 ---
 
-## The ladder
+## One client, start to finish
 
-```
- 11  DECISION        GO / GO WITH CONDITIONS / RESTRUCTURE / DECLINE AS STRUCTURED  + path to yes
- 10  COMPLIANCE      outbound-message guardrail, FSRA disclosure checklist
-  9  EXIT COST       lender-method IRD penalty, renewal shock, offer comparison, refinance break-even
-  8  MARKET          BoC policy rate, prime, GoC curve, effective new-lending rates vs the file's rate
-  7  LENDER FIT      lender categories whose policy fits province, score, LTV, GDS, TDS
-  6  QUALIFICATION   OSFI B-20 stress test (purchase) or switch/refinance stress check (renewal)
-  5  INSURANCE       default-insurance premium, PST at closing, minimum down payment, 30-yr rules
-  4  COLLATERAL      value basis (price, stated value or regional index estimate), LTV
-  3  DOCUMENTS       stated vs document figures reconciled
-  2  SCREENING       identity / watch-list interface (honest: NOT_SCREENED without a licensed list)
-  1  INTAKE          completeness for purchase / renewal / refinance
-```
+Priya emails her broker: a $1.1M semi in Oakville, $220K saved, a 4.19% offer from her bank. Her file goes up a 17-rung ladder. Each rung is computed by one of my apps, with no language model inside the rung:
 
-Every rung returns `PASS`, `REFER`, `FAIL` or `SKIP`. If a rung crashes, it returns `REFER` with the error; a crash never counts as a pass. When the stress test fails, the ladder works out a **path to yes**: the highest price that passes, the smallest down payment that passes, the debt payoff needed, the income or co-borrower needed, and whether a 30-year amortization helps. Each option is re-run through the same stress test that failed the file, so an option can't disagree with the decline.
+| Stage | Rung | Computed by (my app) | What it found for Priya |
+|---|---|---|---|
+| Lead | Intake | Nemotron Nano + pattern extractor | 15 fields from her email. Each value quotes the sentence it came from |
+| Documents | Document check | Document reader + **Doc Quest** | Her pay stub, annualized, documents $99,000 of the $185,000 stated. The co-borrower's income still needs documents |
+| Pre-qualification | Affordability | **Canadian Mortgage Suite** + **Affordability Index 1980-2026** | Supports $1,064,600; the price is $1,100,000 |
+| Underwriting | Readiness | **Loan File Pre-Underwriting Check** | Not ready: 20/100, with GDS/TDS flags and missing documents |
+| Underwriting | B-20 stress test | **MortgageLoanOps** | Fails: GDS 39.9%, TDS 45.4% at 6.19% |
+| Underwriting | Cross-check | 5 independent engines | 4 of 4 quantities agree to the cent (see below) |
+| Property | Local prices | **Benchmark Home Value** | Oakville semi benchmark $1,185,000; her price is 7.2% below it |
+| Closing | Cash to close | **Cash to Close** | **Short $19,875** on closing day. Path to close: put $197,500 down, keeping cash for closing costs |
+| Market | Rates | Rate book (**Renewal Radar** data) + **Canada's Rate Cycle** | Policy rate 2.25%; this cycle's peak was 5% (2023-07) |
+| Servicing | Renewal outlook | **Renewal Shock Radar** | At +1 point in 5 years, her payment rises about 10.5% (moderate) |
+| Decision | Verdict | Decision Ladder | **RESTRUCTURE**, with a path to yes: lower the price, add down payment or income, or keep cash for closing |
 
-## Where Nemotron does the work
+Five years later, her renewal goes through **Renewal Radar**: it reads the letter, checks the switch pathway, writes a negotiation script, and computes a lender-exact penalty. A commercial deal goes through the **Private Credit Deal Screener**, which reports DSCR, debt yield, a letter grade, and which assumption moves the grade most.
 
-| Job | Model | How it is kept honest |
+![Priya's journey](docs/screenshots/journey.png)
+
+## The modules (my projects, running inside the OS)
+
+| Module | Stage(s) | Lines | Tools Nemotron can call | Original |
+|---|---|---:|---|---|
+| Renewal Radar | servicing, documents, market | 51,275 | `rr_letter_xray`, `rr_bank_penalty` (lender-exact), `rr_switch_pathway`, `rr_negotiation_script`, `rr_renewal_plan`, `rr_penalty_forecast`, `rr_penalty_helper`, `rr_wait_economics`, `rr_lead_score`, `rr_broker_book_review`, `rr_penalty_accuracy` | [live](https://renewal-radar-nplp.onrender.com) |
+| Canada Home Value | property | 6,401 | `valuation_accuracy` | |
+| Benchmark Home Value | property, pre-qualification | 5,453 | `benchmark_home_price`, `postal_area_home_value`, `index_purchase_to_today` | [live](https://alenzacodes.github.io/benchmark-home-value/) |
+| Canadian Mortgage Calculator Suite | pre-qualification, closing, servicing | 3,035 | `land_transfer_tax`, `closing_costs_estimate`, `affordability_by_income`, `refinance_cash_out`, `down_payment_savings_plan` | [live](https://alenzacodes.github.io/canadian-mortgage-suite/) |
+| MortgageLoanOps | underwriting, servicing | 2,282 | `qualify_purchase`, `insurance_premium`, `penalty_quick`, `lender_match`, `message_guardrail`, `identity_screening` | |
+| Mortgage Decision Lab | pre-qualification, servicing | 1,312 | `rent_vs_buy`, `prepayment_savings` | [live](https://alenzacodes.github.io/mortgage-decision-lab/) |
+| Renewal Check | servicing | 1,264 | `renewal_offer_check` | [live](https://alenzacodes.github.io/renewal-check/) |
+| Private Credit Deal Screener | commercial | 1,039 | `private_credit_deal_screen` | [live](https://alenzacodes.github.io/private-credit-screener/) |
+| Loan File Pre-Underwriting Check | underwriting, documents | 977 | `pre_underwrite_loan_file` | [live](https://alenzacodes.github.io/pre-underwriting-copilot/) |
+| Cash to Close | closing | 964 | `cash_to_close_ontario` | [live](https://alenzacodes.github.io/cash-to-close/) |
+| Renewal Shock Radar | servicing, market | 957 | `renewal_shock_band` | [live](https://alenzacodes.github.io/renewal-shock-radar/) |
+| Doc Quest | documents, lead | 725 | `buyer_document_checklist` | [live](https://alenzacodes.github.io/doc-quest/) |
+| Canada's Rate Cycle 2015-2026 | market | 635 | `rate_cycle_history` | [live](https://alenzacodes.github.io/canada-rate-cycle-dashboard/) |
+| Canada Housing Affordability Index 1980-2026 | market, pre-qualification | data | `housing_affordability_index`, `affordability_rate_sensitivity` | [Kaggle](https://www.kaggle.com/code/johnnykhan1/canada-housing-affordability-index-1980-to-2026) |
+
+The line counts are produced by the code (`python -m decision_ladder os`): `.py`, `.js`, `.mjs`, `.html` and `.css` files in `modules/`, excluding minified vendor files. The OS layer (`decision_ladder/`, tests, evals, scripts) adds about 11,000 lines.
+
+**How the modules are wired:**
+- **Each app opens inside the OS.** The Mortgage OS tab maps all nine lifecycle stages, and every app is served at `/apps/<module>/`.
+- **The JavaScript apps run their own code.** Their calculators run through a small Node bridge (`decision_ladder/modules/bridge.mjs`) that loads each app's own `calc.js` / `engine.js` / `logic.js`, so the agent, the ladder and the app's screen always give the same number. All nine apps' own test suites pass inside the OS, and CI runs them.
+- **Renewal Radar runs in-process.** It's a FastAPI app; its engines are imported in-process for tools, and its full app is proxied at `/apps/renewal-radar/`.
+
+## Cross-checks: my apps check each other
+
+I built several of these calculators separately, in Python and JavaScript, at different times. Where two or more compute the same quantity, the OS runs all of them on the same inputs and shows whether they agree (`decision_ladder/ladder/crosscheck.py`).
+
+On the sample files, **every overlapping quantity agrees to the cent**:
+
+| Quantity | Engines that agree |
+|---|---|
+| Ontario land transfer tax and first-time-buyer refund | Cash to Close, Canadian Mortgage Suite |
+| Default-insurance premium | Decision Ladder engine (Python), Canadian Mortgage Suite (JS) |
+| B-20 qualifying rate | MortgageLoanOps, Canadian Mortgage Suite, Pre-Underwriting Check |
+| Qualifying payment | MortgageLoanOps, Pre-Underwriting Check |
+| Payment at renewal | MortgageLoanOps, Renewal Check |
+| IRD penalty (posted-minus-discount) | Renewal Radar's Decimal engine, MortgageLoanOps, Renewal Check: all three at $17,013.33 |
+
+The cross-check also surfaces real differences instead of hiding them:
+
+- **TD's own calculator method**, reproduced in Renewal Radar, counts the time left day-exact (21.16 months) and gives **$16,363.73**. The three generic engines round up to 22 months. The OS shows this as a labelled known difference and uses the lender-exact figure.
+- **It found a bug in one of my own engines during integration.** MortgageLoanOps qualified insured files on the loan *before* the CMHC premium; the Suite qualified on loan + premium, which is what lenders do. The OS engine now includes the premium, and a test covers it.
+
+## Where Nemotron, Token Factory, Tavily and Nebius Serverless fit
+
+| Job | Model / service | Kept honest by |
 |---|---|---|
-| **Broker copilot**: free-form questions, multi-tool plans (19 calculator/data tools + `web_research`) | Nemotron 3 Super | Must call tools for any number. The verifier checks the answer. One repair turn, then unsupported figures are marked `[unverified]` |
-| **Decision memo** from the ladder results | Nemotron 3 Super | Same verifier against the ladder JSON. Falls back to a deterministic template if the model fails |
-| **Intake**: client email → structured file | Nemotron 3 Nano (JSON mode) | Every value must quote the exact source text. Values with ungrounded quotes are dropped. Disagreements with the pattern extractor are flagged, never silently resolved |
-| **Documents**: pay stub, T4, NOA, employment letter, renewal letter, mortgage statement (pasted text) | Nemotron 3 Nano (JSON mode) + a deterministic reader | Same quote-grounding rule. The Documents rung reconciles documented income per borrower, balance, rate and maturity against the file |
-| **Client message drafts** (file status, renewal outreach) | Nemotron 3 Nano | Outbound guardrail blocks rate quotes, approval promises, guarantees, pressure language and requests for SIN, passwords or cards |
-
-All model calls go through one small client (`decision_ladder/llm/client.py`) that speaks Token Factory's OpenAI-compatible Chat Completions API using only `urllib`. It handles tool calls, JSON mode (with a fallback if the server rejects `response_format`), `<think>` stripping, retries with backoff on 408/429/5xx, and per-model token and cost accounting.
-
-## Tavily
-
-`web_research` searches with Tavily and is restricted by default to official domains: bankofcanada.ca, osfi-bsif.gc.ca, canada.ca, fsrao.ca, cmhc-schl.gc.ca, fcac-acfc.gc.ca, statcan.gc.ca, bcfsa.ca, reca.ca and fin.gc.ca. A `lenders` scope covers the big lenders' own sites instead. Results are truncated and returned with their URLs, so the model can cite them, and the UI lists them under the memo. The ladder can attach research (for example, "Bank of Canada interest rate announcement") to a run, so the memo reflects events newer than the rate book.
-
-## The data and engines (deterministic, tested)
-
-- **Rate book** (`data/rates_5yr.csv`, 13,900+ rows): BoC Valet policy rate, prime, GoC 2/3/5/7/10-year yields, Big-6 typical posted rates, BoC A4 effective rates on new and outstanding loans (insured and uninsured), and each Big-6 bank's own posted and special rates as captured by Renewal Radar. Every value carries its date and source. Gap-fill values are labelled as gap-fill.
-- **Lender-method penalty engine** (`penalty/`, Decimal arithmetic): posted-minus-discount, CIBC discount add-back, present-value and simple-differential methods. It handles comparison-term rules (nearest, round up/down, interpolate), day counts and month rounding, and reports how much each term rule alone would move the result. These methods come from Renewal Radar, where they were checked against lenders' own published calculators.
-- **B-20 qualification**, GDS/TDS, insured-mortgage rules from Dec 15, 2024 ($1.5M cap, 30-year amortization for first-time buyers and new builds), the default-insurance premium schedule, Canadian semi-annual compounding, renewal shock, offer comparison, the switch check (OSFI's Nov 21, 2024 straight-switch rule), refinance break-even and a regional home-value index.
-- **Renewal book scan**: upload a CSV of a broker's book and get a ranked call queue (urgency, payment shock, size), today's penalty by lender method, and guardrailed outreach drafts.
+| **Routing**: which lifecycle stages a question touches | Nemotron 3 Nano (JSON) | Super only sees those apps' tools (e.g. 12 of 52). If routing fails, it falls back to keywords, then to all tools |
+| **Intake**: client email → structured file; documents (pay stub, T4, NOA, employment letter, renewal letter) → figures | Nemotron 3 Nano (JSON) + deterministic readers | Every value must quote its source text; ungrounded values are dropped; disagreements are flagged |
+| **Copilot**: multi-tool plans across the apps | Nemotron 3 Super (tool calling) | The provenance verifier checks every figure; one repair turn, then `[unverified]` |
+| **Credit decision memo** over the whole journey | Nemotron 3 Ultra (falls back to Super if Ultra isn't available to your key) | Same verifier against the ladder results; deterministic template if the model fails |
+| **Client messages** (status, renewal outreach) | Nemotron 3 Nano | Outbound guardrail: no rate quotes, approval promises, pressure, or requests for SIN, passwords or cards |
+| **Research** (Bank of Canada, OSFI, FSRA, CMHC, Canada.ca) | Tavily Search, official domains only | Every source cited by URL |
+| **Is the rate book stale?** | Tavily Extract on each bank's own rate page | The posted 5-year rate is confirmed on the page, or flagged as changed |
+| **Inference** | Nebius Token Factory, OpenAI-compatible API | Standard-library client: tool calls, JSON mode, retries, `<think>` stripping, recovery of inline tool calls (Qwen3-Coder XML / `<TOOLCALL>`), model auto-resolution against `/v1/models`, per-model token and cost accounting |
+| **Hosting** | Nebius Serverless AI endpoint (`deploy/nebius/endpoint.sh`) | CPU only; Nemotron runs on Token Factory |
+| **Nightly renewal-book scan** | Nebius Serverless AI job (`deploy/nebius/job.sh`) | Billed only while it runs; writes a ranked call queue with Nano outreach drafts |
 
 ## Quick start
 
 ```bash
 git clone https://github.com/ALENZACODES/decision-ladder && cd decision-ladder
+# needs Python 3.10+ and Node.js 18+ (Node runs the JavaScript apps' own calculators)
 
-# Fastest: one command that asks for your keys, checks models, runs the smoke test + eval, then opens the app
-#   Windows: double-click "Go Live.cmd"   (or: powershell -ExecutionPolicy Bypass -File scripts\go_live.ps1)
-#   macOS/Linux: bash scripts/go_live.sh
+# No keys: offline demo (scripted stand-in, labelled everywhere, no model calls)
+python -m decision_ladder serve 8000 --offline        # http://localhost:8000
+python -m decision_ladder os                          # the modules, stages and tools
+python -m decision_ladder demo --offline              # every sample file up the ladder
 
-# 1. No keys: offline demo (scripted stand-in, clearly labelled, no model calls)
-python -m decision_ladder demo --offline
-python -m decision_ladder serve 8000 --offline      # http://localhost:8000
-
-# 2. Live on Nebius Token Factory with NVIDIA Nemotron
-export NEBIUS_API_KEY=...          # tokenfactory.nebius.com -> API keys
-export TAVILY_API_KEY=...          # optional, enables live research
-python -m decision_ladder models   # lists the models your key can use (NVIDIA ones are marked)
-python -m decision_ladder smoke    # end-to-end live check, writes smoke_report.json
+# Live: NVIDIA Nemotron on Nebius Token Factory (+ Tavily)
+#   Windows: double-click "Go Live.cmd"     macOS/Linux: bash scripts/go_live.sh
+#   (asks for the keys, lists models, runs the live smoke test and the eval, then opens the app)
+export NEBIUS_API_KEY=...  TAVILY_API_KEY=...
+python -m decision_ladder models      # Nemotron IDs your key can use (Nano / Super / Ultra resolved automatically)
+python -m decision_ladder smoke       # live end-to-end check -> smoke_report.json
+python -m decision_ladder eval        # 17 copilot cases: tool choice, accuracy, provenance -> eval_report.json
 python -m decision_ladder serve 8000
 
-# Other commands
-python -m decision_ladder ask "What is the penalty to break a TD mortgage: balance 640000 at 5.29%, term 2023-08-01 to 2028-08-01, posted at funding 6.84%, payout 2026-10-28?"
-python -m decision_ladder intake client_email.txt
-python -m decision_ladder book my_book.csv 2026-10-28
-python -m decision_ladder eval     # copilot evaluation: tool selection, accuracy, provenance
+# Background job (locally, or as a Nebius Serverless AI job)
+python -m decision_ladder job renewal-book --input book.csv --out out/ --drafts 5
 
-pip install pytest && pytest -q    # the test suite needs no network and no keys
+pip install pytest && pytest -q       # needs no network and no keys
 ```
 
-**Model IDs.** At startup (live mode) the server checks the configured IDs against `/v1/models`. If one isn't listed, it switches to a visible Nemotron model ("super" for the reasoner, "nano" for the fast model) and reports the switch in `/api/health`. To pin a model, set `DL_MODEL_REASONER` / `DL_MODEL_FAST`.
+Renewal Radar's own app and its extra tools need `pip install -r modules/renewal-radar/requirements.txt`. Without them, the rest of the OS still runs, and those tools return a clear error.
 
-**Reasoning mode.** Nemotron 3 reasons by default. Decision Ladder sends `chat_template_kwargs: {"enable_thinking": false}`, because the calculators do the thinking that has to be exact, and that keeps answers fast. Set `DL_THINKING=1` to turn reasoning on for the reasoner. If the endpoint rejects the flag, the client stops sending it and retries the call once. If a server returns Nemotron's raw tool-call markup (Qwen3-Coder XML or `<TOOLCALL>` JSON) as text instead of `tool_calls`, the client parses it back into tool calls.
+**Model IDs.** At startup the server checks the configured IDs against `/v1/models` and picks the visible Nemotron Nano, Super and Ultra models. The choice is reported in `/api/health`. To pin a model, set `DL_MODEL_FAST`, `DL_MODEL_REASONER` or `DL_MODEL_ULTRA`.
 
-**Demo video.** `node scripts/record_demo.mjs` drives the running app through the video script with on-screen captions and writes `demo/decision-ladder-demo.mp4`, plus `narration.srt`/`narration.txt` for a voice-over (needs `npm i playwright` and ffmpeg).
+**Reasoning mode.** Nemotron 3 reasons by default. Decision Ladder sends `chat_template_kwargs: {"enable_thinking": false}`, because the calculators do the thinking that has to be exact. Set `DL_THINKING=1` to turn reasoning on for Super and Ultra. If an endpoint rejects the flag, the client stops sending it and retries the call once.
 
 ## Deploy
 
-**Nebius AI Cloud (VM):** create a small CPU VM in the Nebius console, SSH in, then:
+- **Nebius Serverless AI endpoint:** run `deploy/nebius/endpoint.sh`. It uses the image that the `container image` workflow publishes to `ghcr.io/alenzacodes/decision-ladder`, on the CPU platform `cpu-d3` with preset `4vcpu-16gb` and port 8000.
+- **Nebius Serverless AI job:** run `deploy/nebius/job.sh` for the nightly renewal-book scan.
+- **Nebius AI Cloud VM, or Render:** see [docs/DEPLOY.md](docs/DEPLOY.md). `render.yaml` and the `Dockerfile` (Python, Node and Renewal Radar's dependencies) are included.
 
-```bash
-git clone https://github.com/ALENZACODES/decision-ladder && cd decision-ladder
-docker build -t decision-ladder .
-docker run -d --restart unless-stopped -p 80:8000 \
-  -e NEBIUS_API_KEY=... -e TAVILY_API_KEY=... -e DL_RATE_PER_MIN=12 decision-ladder
-```
-
-**Render:** `render.yaml` is included (Docker, free plan). Add `NEBIUS_API_KEY` and `TAVILY_API_KEY` as secrets.
-
-Model-backed endpoints are rate-limited per IP (`DL_RATE_PER_MIN`), so a public demo URL can't use up your Token Factory credits.
+Model-backed endpoints are rate-limited per IP (`DL_RATE_PER_MIN`), so a public demo can't use up the Token Factory credits.
 
 ## API
 
 | Method | Path | Body | Returns |
 |---|---|---|---|
-| GET | `/api/health` | | mode (live/offline), model IDs, research mode |
-| GET | `/api/samples` | | sample files, a sample client email, a sample renewal book |
-| GET | `/api/tools` | | the tool specs Nemotron sees |
-| GET | `/api/market`, `/api/history` | | rate-book snapshot and series |
-| POST | `/api/ladder` | `{file, research?, memo?, message?}` | rungs, verdict, memo, verification, message, research, usage |
-| POST | `/api/intake` | `{text, documents?, run?}` | extracted file with quotes, conflicts, dropped values, documents read (+ ladder run) |
-| POST | `/api/document` | `{text}` | one document: type, figures, quotes, model agreement |
-| POST | `/api/ask` | `{question, context?, history?}` | answer, verification, tool trace, usage |
-| POST | `/api/book` | `{csv, as_of?, drafts?}` | ranked renewal queue |
-| POST | `/api/tool` | `{name, args}` | direct tool call, no model (for testing tools in CI) |
+| GET | `/api/os` | | stages, modules (lines, tools, UI URL), totals |
+| GET | `/apps/<module>/...` | | the module's own app, served or proxied |
+| GET | `/api/health` | | mode, Nemotron Nano / Super / Ultra IDs and how they were resolved, module load errors |
+| POST | `/api/ladder` | `{file, research?, memo?, message?}` | 17 rungs with stage and engines, verdict, memo (+ memo model), verification, research |
+| POST | `/api/intake` | `{text, documents?, run?}` | extracted file with quotes, document readings, conflicts (+ ladder run) |
+| POST | `/api/document` | `{text}` | one document: type, figures, quotes |
+| POST | `/api/ask` | `{question, context?, history?}` | answer, routing (stages, tools offered), apps used, verification, trace |
+| POST | `/api/book` | `{csv, as_of?, drafts?}` | ranked renewal queue with lender-exact penalties |
+| POST | `/api/tool` | `{name, args}` | direct tool call, no model |
 
 ## Tests and evaluation
 
-- `pytest -q` runs the suite: client wire format and retries, verifier rounding rules, every tool, every rung, sample verdicts, the copilot repair loop with a scripted Nemotron, intake grounding, the book scan, and the HTTP server. Penalty-engine tests come from Renewal Radar.
-- `python -m decision_ladder eval` runs `evals/cases.json` against the live model. It measures tool selection, answer accuracy (expected figures are computed by calling the tools directly, never typed by hand) and provenance. Results go to `eval_report.json`. In `--offline` mode it only tests the plumbing.
+- **OS test suite:** `pytest -q`. It covers the client wire format and retries; the three-tier routing and Ultra fallback; the verifier; every core tool; every rung; the module tools against each app's published figures; all cross-checks agreeing; the Priya journey end to end; Tavily Extract; the renewal-book job; and the HTTP server.
+- **The apps' own suites:** CI runs the test suites of all nine JavaScript apps from inside `modules/`.
+- **Evals:** `python -m decision_ladder eval` runs `evals/cases.json` (17 cases, 10 of them needing module tools) against the live model. It records tool choice, Nano routing, the apps used, answer accuracy (expected figures computed by calling the tools, never typed by hand) and provenance.
 
-## Built on prior work (disclosed)
+## What was built during the submission period
 
-Decision Ladder brings together two of my earlier October 2026 projects and adds a new agentic layer on top:
+The submission period ran from Aug 26 to Oct 30, 2026. All fourteen modules are my own projects from October 2026; their repositories and live demos are linked above.
 
-- **Renewal Radar** (Oct 2026): the lender-method penalty engine (`decision_ladder/penalty/`, with its tests) and the rate-watch data in `decision_ladder/data/`.
-- **MortgageLoanOps** (Oct 2026, MIT): qualification, insured rules, payments, IRD quick estimate, lender categories, screening interface, guardrail and home-value index (`decision_ladder/engines/`).
-
-New for this hackathon: the Token Factory client (tool calling, inline tool-call recovery, model auto-resolution, reasoning control), the offline stand-in, the ladder and its rungs, the path-to-yes solvers, the insurance premium engine, renewal and switch economics, the rate-book API, the copilot tool loop, the provenance verifier and repair loop, grounded intake extraction, document reading, Tavily research, the renewal book scan, the web app, the evals, the smoke test and the deployment files.
+New for this hackathon, in this repository:
+- the Mortgage OS: module registry, embedded apps, Node bridge, Renewal Radar integration, service proxy
+- the staged 17-rung ladder over the apps
+- the cross-checks, plus the qualification fix they led to
+- the three-tier Nemotron design: Nano router, Super tool calling, Ultra decision memo
+- the Token Factory client
+- the provenance verifier and repair loop
+- grounded intake and document reading
+- Tavily Search and Extract
+- the renewal-book job and the Nebius Serverless deployment
+- the web app, evals, smoke test, go-live scripts and CI
 
 ## Limitations
 
-- **Estimates, not advice.** A licensed broker must confirm every figure. The lender's written payout statement decides the actual penalty.
-- **Lender policy** in the lender-fit rung is illustrative and set by category (`panel_verified` is false). It is not any lender's live guidelines.
+- **Estimates, not advice.** A licensed broker must confirm every figure, and the lender's written payout statement is the final word on penalties.
+- **Lender-fit policy** is illustrative and set at category level. It isn't any lender's live guidelines.
 - **Screening** ships with no sanctions or PEP data and never reports anyone as cleared.
-- **Home value** is a regional-index estimate, not an appraisal.
-- **The rate book** is a dated snapshot (latest rows mid-October 2026). Tavily research is how the system sees anything newer.
-- **The verifier** matches numbers, not meaning. It catches invented figures, but it can't tell whether a real figure is attached to the right claim.
-- **Live model behaviour** depends on the model version Token Factory serves. Run `smoke` and `eval` to measure it on your key.
+- **Benchmarks and indexed values** are indicative, not appraisals. Benchmark Home Value's full address search and per-home history stay on its public site (about 236 MB of data not copied into this repo).
+- **The rate book** is a dated snapshot (mid-October 2026). The Tavily rate check is how the OS notices changes.
+- **The verifier** matches numbers, not meaning.
+- **Live model behaviour** depends on the models Token Factory serves to your key. Run `smoke` and `eval` to measure it.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE). The modules keep their own MIT licenses.

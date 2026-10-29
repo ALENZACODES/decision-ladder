@@ -16,8 +16,8 @@
       <rect x="9" y="19" width="14" height="2.4"/><rect class="hi" x="9" y="25" width="14" height="2.4"/>
     </svg>
     <div>
-      <h1>Decision Ladder</h1>
-      <p class="tag">Canadian mortgage decisions, top down. Nemotron reasons, calculators decide.</p>
+      <h1>Decision Ladder <span class="os-sub">Mortgage OS</span></h1>
+      <p class="tag">Every stage of a Canadian mortgage, one system. Nemotron reasons; calculators decide.</p>
     </div>
   </div>
   <div class="badges">
@@ -27,7 +27,8 @@
 </header>
 
 <nav class="tabs" role="tablist">
-  <button class="tab active" data-tab="ladder" role="tab">Ladder</button>
+  <button class="tab active" data-tab="os" role="tab">Mortgage OS</button>
+  <button class="tab" data-tab="ladder" role="tab">Ladder</button>
   <button class="tab" data-tab="intake" role="tab">Intake</button>
   <button class="tab" data-tab="copilot" role="tab">Copilot</button>
   <button class="tab" data-tab="book" role="tab">Renewal Book</button>
@@ -36,8 +37,35 @@
 </nav>
 
 <main>
+  <!-- OS HOME -->
+  <section id="tab-os" class="panel active">
+    <div class="card os-hero">
+      <div>
+        <h2>One operating system for a Canadian mortgage, start to finish</h2>
+        <p class="hint">Every module below is one of John Khan's own projects, running inside the OS. Nemotron reaches each one through its tools; open any module to use its full app.</p>
+        <div class="row os-cta">
+          <button id="osRunPriya" class="btn primary big" type="button">Run Priya's full journey</button>
+          <button id="osRunCommercial" class="btn" type="button">Commercial deal</button>
+        </div>
+      </div>
+      <div id="osStats" class="tiles os-stats"></div>
+    </div>
+    <div id="osStages" class="os-stages"></div>
+    <div id="osViewer" class="card os-viewer" hidden>
+      <div class="row between">
+        <div><h2 id="osViewerTitle"></h2><div id="osViewerMeta" class="hint"></div></div>
+        <div class="row">
+          <button id="osAsk" class="btn">Ask Nemotron about this module</button>
+          <a id="osNewTab" class="btn" target="_blank" rel="noopener">Open in new tab</a>
+          <button id="osClose" class="btn">Close</button>
+        </div>
+      </div>
+      <iframe id="osFrame" title="Module app" loading="lazy"></iframe>
+    </div>
+  </section>
+
   <!-- LADDER -->
-  <section id="tab-ladder" class="panel active">
+  <section id="tab-ladder" class="panel">
     <div class="grid two">
       <div class="card">
         <h2>Mortgage file</h2>
@@ -123,28 +151,31 @@
   <!-- HOW -->
   <section id="tab-how" class="panel">
     <div class="card prose">
-      <h2>How Decision Ladder works</h2>
-      <p>A mortgage file climbs eleven rungs, bottom to top: <b>intake, screening, documents, collateral, insurance, B-20 qualification, lender fit, market, exit cost, compliance, decision</b>. Each rung is a deterministic, tested calculator that returns PASS, REFER, FAIL or SKIP. No language model runs inside a rung, so a decision can always be reproduced.</p>
+      <h2>How the Mortgage OS works</h2>
+      <p>Fourteen of John Khan's own mortgage, housing and rates projects run inside one system as modules. A client file climbs a <b>17-rung ladder</b> across the whole lifecycle (lead, documents, pre-qualification, underwriting, property, closing, market, servicing, commercial, compliance, decision). Each rung is computed by one of those apps' own tested code and returns PASS, REFER, FAIL or SKIP. No language model runs inside a rung, so every decision can be reproduced.</p>
       <div id="archSvg" class="arch"></div>
-      <h3>Where NVIDIA Nemotron does the work</h3>
+      <h3>Three NVIDIA Nemotron tiers on Nebius Token Factory</h3>
       <ul>
-        <li><b>Nemotron 3 Super</b> (reasoner) plans tool calls in the copilot and writes the broker decision memo from the rung results.</li>
-        <li><b>Nemotron 3 Nano</b> (fast) turns client emails into structured files in JSON mode and drafts short borrower messages.</li>
-        <li>Both run on <b>Nebius Token Factory</b> through its OpenAI-compatible API.</li>
+        <li><b>Nemotron 3 Nano</b> routes each copilot question to the lifecycle stages it touches (so Super only sees those apps' tools), extracts files from client emails and documents in JSON mode, and drafts client messages.</li>
+        <li><b>Nemotron 3 Super</b> plans and runs the tool calls across the apps.</li>
+        <li><b>Nemotron 3 Ultra</b> writes the credit decision memo over the whole journey (Super takes over if Ultra is not available to the key).</li>
+        <li>All three are called through Token Factory's OpenAI-compatible API. The OS deploys as a <b>Nebius Serverless AI endpoint</b>; the nightly renewal-book scan runs as a <b>Nebius Serverless AI job</b>.</li>
       </ul>
       <h3>Guarantees</h3>
       <ul>
-        <li><b>Provenance verifier:</b> every dollar figure and rate in a memo or answer is matched to a tool result or the user's own input. Nemotron gets one repair turn; anything still untraced is marked <span class="unv">[unverified]</span>.</li>
-        <li><b>Path to yes:</b> when a file fails the stress test, solvers search for the max price, min down payment, debt payoff and income needed, each re-checked by the same test that failed it.</li>
-        <li><b>Guardrail:</b> borrower messages are blocked if they quote rates, promise approval, apply pressure or ask for SINs, passwords or card numbers.</li>
-        <li><b>Live research:</b> Tavily searches official Canadian sources (Bank of Canada, OSFI, FSRA, CMHC, Canada.ca) for anything newer than the rate book, with URLs.</li>
+        <li><b>Cross-checks:</b> where two or more of the apps compute the same quantity (land transfer tax, insurance premium, qualifying rate and payment, renewal payment, IRD penalty), all of them run and must agree; known method differences are labelled, never hidden.</li>
+        <li><b>Provenance verifier:</b> every figure in a memo or answer is matched to a tool result or the user's own input. Nemotron gets one repair turn; anything still untraced is marked <span class="unv">[unverified]</span>.</li>
+        <li><b>Path to yes:</b> when a file fails the stress test or comes up short on closing day, solvers find the price, down payment, debt payoff or income that works, each re-checked by the same test.</li>
+        <li><b>Grounded extraction:</b> a value from an email or document is kept only if its quoted words appear in the source.</li>
+        <li><b>Guardrail:</b> client messages are blocked if they quote rates, promise approval, apply pressure or ask for SINs, passwords or card numbers.</li>
+        <li><b>Tavily:</b> Search reads official Canadian sources (Bank of Canada, OSFI, FSRA, CMHC, Canada.ca) with URLs; Extract reads each bank's own rate page to confirm the rate book is current.</li>
       </ul>
-      <h3>Engines</h3>
+      <h3>The apps inside</h3>
       <ul>
-        <li>OSFI B-20 stress test with GDS/TDS; Dec 2024 insured-mortgage rules; CMHC-style premium schedule.</li>
-        <li>Lender-method prepayment penalties (posted-minus-discount, CIBC add-back, present value) from Renewal Radar, with comparison-term sensitivity, using each Big-6 bank's own captured posted rates.</li>
-        <li>Rate book: Bank of Canada Valet (policy rate, prime, GoC curve, effective lending rates) plus rates captured from bank websites.</li>
-        <li>Renewal shock, offer comparison, switch check and a renewal-book priority queue.</li>
+        <li>Renewal Radar (letter X-Ray, lender-exact penalties, switch pathway, negotiation script, renewal plan, broker book review), MortgageLoanOps (B-20, insured rules, guardrail).</li>
+        <li>Benchmark Home Value and Canada Home Value (local benchmark prices, postal-area values, purchase indexing), the Canada Housing Affordability Index 1980-2026.</li>
+        <li>Canadian Mortgage Calculator Suite, Cash to Close, Mortgage Decision Lab, Loan File Pre-Underwriting Check, Doc Quest.</li>
+        <li>Renewal Check, Renewal Shock Radar, Canada's Rate Cycle 2015-2026, Private Credit Deal Screener.</li>
       </ul>
       <p class="warn">Not lending, legal or compliance advice. Outputs are estimates for a licensed mortgage broker to confirm. Identity screening is not performed unless a licensed list is connected.</p>
     </div>
