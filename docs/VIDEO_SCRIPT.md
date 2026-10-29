@@ -1,17 +1,22 @@
-# Demo video script (target 2:45, hard limit 3:00)
+# Demo video script (about 2:40; hard limit 3:00)
 
-Record in **live mode** (`NEBIUS_API_KEY` set) so the header shows the green **LIVE · NVIDIA Nemotron** badge. Use 1440×900 and zoom the browser to 110%.
+**Fastest way:** start the app in live mode, then run `node scripts/record_demo.mjs http://localhost:8000`. It drives this exact script with on-screen captions and writes `demo/decision-ladder-demo.mp4`, plus `narration.txt` and `narration.srt`. Record with your own voice over it, or use your voice clone. Check it shows the green **LIVE** badge before uploading.
 
-| Time | Screen | Say (about 150 words a minute) |
+| Time | Screen | Say |
 |---|---|---|
-| 0:00–0:15 | Header with the LIVE badge | "I'm John Khan, a licensed mortgage broker in Ontario. Over the next year, millions of Canadians face renewal payment shock. This is Decision Ladder: Canadian mortgage decisions, top down, running on NVIDIA Nemotron through Nebius Token Factory." |
-| 0:15–0:40 | **Intake** tab → *Extract + run ladder* | "A client emails me. Nemotron Nano reads it and fills in the file. Every value has to quote the sentence it came from, or it's dropped. It also cross-checks a pattern extractor, so disagreements are flagged instead of hidden." |
-| 0:40–1:15 | **Ladder** tab: the ladder, then click rung 6 (FAIL) | "The file climbs eleven rungs. Each one is a tested calculation, with no model inside: intake, screening, insurance, the OSFI B-20 stress test. This file fails. GDS is just over 39%." |
-| 1:15–1:35 | Path-to-yes cards | "Instead of stopping at no, the ladder works out the path to yes: the highest price, the down payment, the income needed. Each option is re-run through the same stress test." |
-| 1:35–1:55 | Memo with the *N/N figures traced* badge | "Nemotron 3 Super writes the broker memo. Then a provenance verifier checks every number in it against the calculators. If the model makes up a figure, it gets one chance to fix it, then the figure is flagged on screen." |
-| 1:55–2:20 | **Copilot**: ask the TD penalty question, open the trace | "As a copilot, Nemotron chooses among 19 tools. Here it calls TD's penalty method with TD's own posted rates from our rate book: about seventeen thousand dollars, plus how much the term rule alone moves it." |
-| 2:20–2:35 | Copilot: ask about the latest Bank of Canada decision | "For anything newer than the rate book, it uses Tavily, restricted to official sources like the Bank of Canada and OSFI, with citations." |
-| 2:35–2:50 | **Renewal Book** → Scan | "And for a whole book: ranked renewals, payment shock, today's penalty, and outreach drafts that pass a compliance guardrail." |
-| 2:50–3:00 | README / repo | "Open source under MIT, zero dependencies, over 230 tests. Nemotron reasons; calculators decide." |
+| 0:00 | Mortgage OS home | "I'm John Khan, a mortgage broker in Ontario. This is Decision Ladder, a Mortgage OS: fourteen of my own mortgage apps in one system, driven by NVIDIA Nemotron on Nebius Token Factory." |
+| 0:10 | Scroll the stage cards | "Every stage of a Canadian mortgage, from the first email to renewal and commercial deals. Each card is one of my apps, running inside the OS." |
+| 0:19 | Intake + pay stub and T4 | "A client emails. Nemotron Nano extracts her file and reads her pay stub and T4. Every value must quote its source." |
+| 0:33 | "Run Priya's full journey" | "Her file climbs a 17-rung ladder, each rung computed by one of my apps: Doc Quest, my Mortgage Suite, my Pre-Underwriting Check, Benchmark Home Value, Cash to Close." |
+| 0:48 | B-20 rung | "The stress test fails. Instead of stopping at no, the ladder computes a path to yes, and re-checks every option against the same test." |
+| 0:58 | Cash to close rung | "Cash to Close finds she's $19,875 short on closing day, and finds the down payment that keeps cash for closing costs." |
+| 1:09 | Cross-check rung | "Five of my engines, in Python and JavaScript, compute the same numbers. They agree to the cent, and differences are labelled, never hidden." |
+| 1:21 | Click the Cash to Close badge | "Every number opens in the app that computed it, with her numbers already filled in." |
+| 1:31 | Memo | "Nemotron 3 Ultra writes the credit decision, and a verifier traces every figure back to a calculator." |
+| 1:41 | Copilot question | "As a copilot, Nemotron Nano routes each question to the right apps, and Nemotron Super calls their tools." |
+| 1:55 | Renewal sample → Exit cost | "Five years later, Renewal Radar reads the letter, checks the switch pathway, drafts the negotiation script and computes the lender-exact penalty." |
+| 2:08 | Commercial sample | "Commercial deals go through my Private Credit Screener: DSCR, debt yield, and the assumption that moves the grade." |
+| 2:18 | Renewal Book | "Overnight, the whole book runs as a Nebius Serverless job: a ranked call queue with lender-exact penalties and guardrailed outreach." |
+| 2:30 | How it works | "Open source. Nemotron Nano, Super and Ultra on Token Factory, Tavily for live sources, and every number from tested code." |
 
-Checklist before uploading: show the LIVE badge, the model name in the usage strip, and at least one Tavily source URL. Make the video public on YouTube and keep it under 3:00.
+**Before you upload:** confirm you see the LIVE badge, the Nemotron model names in the usage strip, and at least one Tavily source (tick "Live research" on the renewal run). Set the video to Public, keep it under 3:00, and upload early.

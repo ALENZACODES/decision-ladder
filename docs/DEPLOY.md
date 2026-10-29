@@ -1,6 +1,18 @@
 # Deploying the demo URL
 
-Devpost requires a **working demo URL**. Two options follow. Either way, the app runs in offline mode until a key is added. Once you add `NEBIUS_API_KEY`, it switches to live Nemotron by itself, with no code change.
+**Nebius Serverless AI (recommended for the "runs on Nebius" story).** The `container image` GitHub Action publishes
+`ghcr.io/alenzacodes/decision-ladder:latest` on every push. Make the package public once (GitHub → your profile →
+Packages → decision-ladder → Package settings → Change visibility). Then:
+
+```bash
+NEBIUS_API_KEY=... TAVILY_API_KEY=... SUBNET_ID=... bash deploy/nebius/endpoint.sh   # CPU endpoint, port 8000
+NEBIUS_API_KEY=... BOOK=./book.csv bash deploy/nebius/job.sh                          # nightly renewal-book job
+```
+
+The endpoint script uses token auth (`--auth token`), as in the Nebius quickstart. Browsers can't send that header,
+so for the judges' click-to-open demo link use Render or a VM (below), and show the Nebius endpoint and job in the video.
+
+Devpost requires a **working demo URL**. The judges' link options follow. Either way, the app runs in offline mode until a key is added. Once you add `NEBIUS_API_KEY`, it switches to live Nemotron by itself, with no code change.
 
 ## Option A: Render (free, about 10 minutes)
 

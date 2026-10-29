@@ -1,73 +1,118 @@
 # Devpost submission text (Nebius × NVIDIA Global AI Hackathon)
 
-**Project name:** Decision Ladder
-**Tagline:** Canadian mortgage decisions, top down. Nemotron reasons; calculators decide.
+**Project name:** Decision Ladder: Mortgage OS
+**Tagline:** Every stage of a Canadian mortgage, one system. Nemotron reasons; calculators decide.
 **Track:** Best Apps and Agents
-**Built with:** NVIDIA Nemotron 3 Super, NVIDIA Nemotron 3 Nano, Nebius Token Factory, Tavily, Python (standard library), vanilla JS
+**Built with:** NVIDIA Nemotron 3 Nano, Super and Ultra; Nebius Token Factory; Nebius Serverless AI (endpoints and jobs); Tavily (Search and Extract); Python; Node.js; vanilla JS
 **Repo:** https://github.com/ALENZACODES/decision-ladder
-**Demo:** (add your deployed URL)
-**Video:** (add your YouTube URL)
+**Demo:** (your deployed URL)
+**Video:** (your YouTube URL)
 
 ---
 
 ## Inspiration
 
-I'm a licensed mortgage broker in Ontario, and I'm also a data scientist. The Bank of Canada says the last of the five-year fixed mortgages taken out during the pandemic renew over the next 12 months. That group is about 12% of all mortgages, and on average their payments rise about 15%. Every one of those files gets the same treatment: someone re-keys the client's email, runs a stress test in one tool and a penalty in another, checks rates on a bank website, and writes a note. When the answer is "no", nobody has time to work out what would turn it into "yes".
+I'm a licensed mortgage broker in Ontario and a data scientist. Over the past year I built separate tools for each part of my job: a land transfer tax and closing-cost suite, a cash-to-close planner, a document checklist, a pre-underwriting checker, a home-value estimator, a renewal-penalty engine checked against the banks' own calculators, a renewal-shock model, a private-credit screener, and more.
 
-General-purpose chatbots are fluent here, but they invent numbers. In mortgages, one made-up penalty or stressed payment can cost a client thousands of dollars or a broker their licence. So I built a system where the model does what language models are good at (reading, planning, choosing tools, explaining) and never does the arithmetic.
+A real client doesn't arrive one tool at a time. One email leads to affordability, documents, the stress test, the property, closing costs, and a renewal five years later. Meanwhile, the last of the pandemic-era five-year fixed mortgages are renewing: the Bank of Canada says that's about 12% of all mortgages, with payments up about 15% on average.
+
+So I put all of my apps inside one system and gave it an agent. The rule is the same as in my practice: the model can read, plan, choose and explain, but it never does the arithmetic.
 
 ## What it does
 
-A mortgage file climbs **eleven rungs**: intake, screening, documents, collateral, insurance, B-20 qualification, lender fit, market, exit cost, compliance and decision. Each rung returns PASS, REFER, FAIL or SKIP from tested, deterministic engines. The verdict is GO, GO WITH CONDITIONS, RESTRUCTURE or DECLINE AS STRUCTURED.
+**One client, start to finish.** Priya emails: a $1.1M semi in Oakville, $220K saved, a 4.19% offer.
+- **Lead and documents.** Nemotron Nano extracts her file; every value must quote her email. It reads her pay stub and T4. **Doc Quest** builds her checklist.
+- **Underwriting.**
+  - The **Canadian Mortgage Suite** says her income supports $1,064,600.
+  - The **Pre-Underwriting Check** scores her file 20/100.
+  - **MortgageLoanOps** fails the B-20 stress test (GDS 39.9%, TDS 45.4%).
+  - The ladder then works out a path to yes, re-checking each option against the same test.
+- **Property.** **Benchmark Home Value** puts her price 7.2% below the Oakville semi benchmark.
+- **Closing.** **Cash to Close** finds she'd be **$19,875 short on closing day**, and finds the down payment that keeps cash for closing costs. One click opens Cash to Close with her numbers, showing the same $19,875.
+- **Servicing.** **Renewal Shock Radar** shows what a rate one point higher would do to her payment at renewal.
+- **Decision.** **Nemotron 3 Ultra** writes the credit decision. A verifier checks that every figure came from a calculator.
 
-When the stress test fails, the ladder works out a **path to yes**: the highest price that passes, the smallest down payment that passes, the debt payoff needed, the income or co-borrower needed, and whether a 30-year amortization helps. Each option is re-run through the same stress test that failed the file.
+**Five years later,** **Renewal Radar** reads her renewal letter and checks whether a straight switch avoids the stress test. It drafts a retention script and computes the penalty with the lender's exact method.
 
-**NVIDIA Nemotron on Nebius Token Factory** does the language and agent work:
+**Commercial deals** go through the **Private Credit Deal Screener**: DSCR, debt yield, a letter grade, and the assumption that moves the grade most.
 
-- **Nemotron 3 Super** is the broker copilot. It plans multi-step tool calls across 19 mortgage tools plus Tavily web research, and it writes the broker's decision memo.
-- **Nemotron 3 Nano** turns a client's email into a structured file in JSON mode. Every value has to quote the exact sentence it came from, or it's dropped. Nano also drafts client messages (file status, renewal outreach).
-
-**Tavily** searches only official Canadian sources (Bank of Canada, OSFI, FSRA, CMHC, Canada.ca) for anything newer than the rate book, and every source is cited.
-
-A **provenance verifier** checks every number in the model's text against the tool results. Any number with no source gets one repair round, and if it still can't be traced it is marked **[unverified]** on screen. An **outbound guardrail** blocks rate quotes, approval promises, pressure language and requests for a client's SIN, passwords or card numbers.
-
-The **Renewal Book** tab scans a broker's whole book from a CSV. It ranks clients by urgency, payment shock and balance, shows today's penalty under each lender's own method, and drafts guardrailed outreach for the top clients.
+**Overnight,** a Nebius Serverless job scans the whole renewal book and ranks who to call, with lender-exact penalties and outreach drafts that pass a compliance guardrail.
 
 ## How we built it
 
-- One client module talks to Token Factory's OpenAI-compatible API using only the Python standard library. It handles tool calling, JSON mode with a fallback, stripping `<think>` blocks, retries with backoff, and per-model token and cost accounting.
-- The deterministic engines include the B-20 stress test, the default-insurance premium schedule, Dec 2024 insured rules, Canadian semi-annual compounding, renewal shock, the Nov 2024 OSFI straight-switch rule, and a Decimal penalty engine with lender-specific IRD methods. The penalty engine reports how far the comparison-term rule alone moves the penalty.
-- A rate book of more than 13,900 dated observations: Bank of Canada Valet series plus each Big-6 bank's own captured posted and special rates. Every figure carries its date and source.
-- A web app, a CLI, an eval harness, a live smoke test, Docker and Render deployment, and over 230 tests that run without any network or keys.
-- Built on my own earlier October 2026 projects (Renewal Radar and MortgageLoanOps). The README says exactly what was reused and what is new.
+- **14 of my projects run as modules: 76,319 lines of their own code.** Each app runs its own screen inside the OS. The JavaScript apps' calculators run through a small Node bridge that loads each app's real `calc.js`, so the agent, the ladder and the app's screen always agree. Renewal Radar's Python engines are imported in-process, and its FastAPI app is proxied.
+- **A 17-rung ladder covers the lifecycle:** lead, documents, pre-qualification, underwriting, property, closing, market, servicing, commercial, compliance, decision. Each rung is computed by one of the apps and returns PASS, REFER, FAIL or SKIP.
+- **Three Nemotron tiers on Token Factory, as the brief recommends:**
+  - **Nano** routes each question to the right lifecycle stages; Super then sees about 8 to 15 of the 52 tools instead of all of them. Nano also does the JSON extraction and drafts.
+  - **Super** runs the tool calls.
+  - **Ultra** writes the credit decision, falling back to Super if Ultra isn't available.
+- **A standard-library Token Factory client.** It handles tool calling, JSON mode with a fallback, retries, `<think>` stripping, recovery of inline tool calls (Qwen3-Coder XML and `<TOOLCALL>` formats), model auto-resolution against `/v1/models`, and token and cost accounting.
+- **Tavily.**
+  - Search runs on official Canadian domains only (Bank of Canada, OSFI, FSRA, CMHC, Canada.ca), and every source is cited.
+  - Extract reads each Big-6 bank's own rate page and confirms whether the rate book's posted 5-year rate is still current.
+- **Nebius Serverless AI.** The OS deploys as a CPU endpoint (a GitHub Action publishes the image), and the renewal-book scan runs as a job billed only while it runs.
+- **Tests.** Over 350 OS tests and every JavaScript app's own test suite run in CI.
+
+## Cross-checks: my apps check each other
+
+Several of my calculators were built separately, in Python and JavaScript. Where they overlap, the OS runs all of them on the same inputs, and **every overlapping quantity agrees to the cent**:
+- land transfer tax and first-time-buyer refunds
+- CMHC premium
+- qualifying rate and payment
+- payment at renewal
+- the IRD penalty: three engines, all at $17,013.33
+
+Differences are labelled, not hidden. TD's own calculator method, reproduced in Renewal Radar, counts the time left day-exact and gives $16,363.73; the OS uses that lender-exact figure.
+
+The cross-check also **caught a real bug** while I was integrating: my MortgageLoanOps stress test qualified insured files without the CMHC premium in the loan. It's fixed and tested.
 
 ## Challenges we ran into
 
-- **Stopping the model from doing arithmetic.** Asking nicely wasn't enough. The fix was structural: tools for every number, a verifier that matches figures with display rounding ($3,343 for 3,343.27, $25.1K for 25,110), and a repair turn.
-- **Grounding extraction.** Model extraction is fluent but can paraphrase into numbers that aren't in the email. Requiring an exact supporting quote, and comparing against a deterministic pattern extractor, turned silent errors into visible flags.
-- **Penalties.** Lenders compute the interest rate differential differently. The term-rule sensitivity shows when a "penalty" is really a range.
+- **Keeping the model away from arithmetic, with 50+ tools across 14 apps.** Nano routing kept tool choice focused, and the provenance verifier, with one repair turn, kept the answers honest.
+- **Making 14 separately built apps agree.** Aligning their inputs for the cross-checks was most of the work. It turned up one real bug and one real method difference.
+- **Grounding extraction.** A value from an email or a pay stub is kept only if its quoted words appear in the source.
 
 ## Accomplishments that we're proud of
 
-- A path to yes that can never contradict the decline, because each option is re-run through the same stress test.
-- Every figure the model writes is either traced to a calculation or visibly flagged.
-- Zero dependencies: it runs anywhere Python 3.10+ runs, and offline mode needs no keys for review.
+- A single client journey that runs through 14 real apps, with every number traceable to the app that computed it, and each app opens with the client's own numbers.
+- A path to yes that can't contradict the decline: for the stress test and for cash to close.
+- Every overlapping calculation in my apps agrees, and the OS proves it on every file.
 
 ## What we learned
 
-The system works best when the model handles intent and language and the code handles numbers. Nemotron is good at choosing the right tool and turning eleven rung results into a memo a broker can act on. The deterministic layer is what makes it safe to put in front of a client.
+Nemotron is very good at the parts of mortgage work that are language: reading, routing, planning and explaining. Its value multiplies when its tools are trusted. The three tiers matter in practice: Nano for the many cheap calls, Super for tool use, Ultra for the one decision that has to be right.
 
 ## What's next for Decision Ladder
 
-Connecting a licensed screening provider and lender policy feeds; OCR for renewal letters and pay stubs, using Renewal Radar's document pipeline; a dedicated Nemotron endpoint for book-scale overnight runs; and a pilot with my brokerage.
+- A licensed screening provider and live lender policy feeds.
+- OCR in front of document reading.
+- A dedicated Nemotron endpoint for book-scale overnight runs.
+- A pilot in my brokerage.
 
 ---
 
+## What was significantly updated during the submission period
+
+The submission period ran from Aug 26 to Oct 30, 2026. All 14 module projects are my own, created in October 2026.
+
+The Mortgage OS itself was built for this hackathon:
+- the module system and embedded apps
+- the staged ladder
+- the cross-checks
+- the three-tier Nemotron design
+- the Token Factory client
+- the verifier
+- grounded intake and document reading
+- Tavily Search and Extract
+- the Serverless job and endpoint
+- the UI, evals and CI
+
 ## Feedback on Nebius and NVIDIA tools (fill in from your own experience; specific beats generic)
 
-- Getting a key and first call: how long did it take? Anything unclear?
-- Model catalogue: were the Nemotron IDs easy to find? Did `/v1/models` list them?
-- Tool calling with Nemotron 3 Super: how reliable were the tool choices and argument JSON across the eval cases (`eval_report.json`)?
-- JSON mode with Nemotron 3 Nano: was `response_format` honoured?
-- Latency and cost per ladder run (from `smoke_report.json`).
-- What you'd want next (e.g. per-key usage dashboards, a structured-output guarantee).
+- Getting a key and first call: how long did it take, and was anything unclear?
+- `/v1/models`: were Nemotron Nano, Super and Ultra all listed, and were the IDs easy to find?
+- Tool calling with Nemotron 3 Super across 50+ tools: how reliable were tool choice and argument JSON (see `eval_report.json`)?
+- JSON mode with Nemotron 3 Nano: was `response_format` honoured? Did `chat_template_kwargs.enable_thinking` work?
+- Nemotron 3 Ultra: latency and quality on the decision memo.
+- Serverless endpoint and job setup: CLI experience, cold start, logs.
+- Latency and cost per ladder run (`smoke_report.json`).

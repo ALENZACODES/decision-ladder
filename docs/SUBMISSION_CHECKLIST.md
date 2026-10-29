@@ -1,27 +1,27 @@
-# Submission checklist: deadline Fri Oct 30, 2026, 10:00 AM PT (1:00 PM Toronto)
+# Submission checklist: deadline Fri Oct 30, 2026, 1:00 PM EDT (10:00 AM PT)
 
 Submissions lock at the deadline. Don't edit the repo, video or Devpost page after it.
 
-## Ready now (no key needed)
-- [x] Public repo with MIT LICENSE and a README with setup and run instructions
-- [x] App, CLI, tests (CI on GitHub Actions), offline demo mode
+## Ready now
+- [x] Public repo, MIT license, README covering setup, Nemotron, Token Factory, Tavily and Nebius Serverless usage
+- [x] 14 modules embedded; a 17-rung journey; cross-checks; Nano / Super / Ultra; Tavily Search and Extract
+- [x] CI green (OS tests + each app's own tests); the container image is published to `ghcr.io/alenzacodes/decision-ladder`
 - [x] Devpost text: `docs/DEVPOST_SUBMISSION.md`
-- [x] Video script: `docs/VIDEO_SCRIPT.md`; automated recorder: `scripts/record_demo.mjs`
-- [ ] Deploy the demo URL now in offline mode (`docs/DEPLOY.md`, Render option A). The URL then exists before the key does.
+- [x] Video script and automatic recorder: `docs/VIDEO_SCRIPT.md`, `scripts/record_demo.mjs`
+- [ ] **Demo URL now, in offline mode** (Render, from `docs/DEPLOY.md`). It switches to live as soon as you add the key.
 - [ ] Devpost draft #1269923: paste the text, choose **Best Apps and Agents**, add the repo link and screenshots from `docs/screenshots/`
 
-## The moment the key arrives (about 30 minutes total)
-1. Double-click **Go Live.cmd** (Windows). It asks for the key (hidden), lists models, runs `smoke`, runs `eval`, then opens the app.
-   - All smoke checks should PASS. If a model-ID check fails, the note at the end gives the `DL_MODEL_*` values to set.
-2. Add `NEBIUS_API_KEY` to the Render service and redeploy. Confirm `/api/health` shows `"mode": "live"`.
-3. Record: start the app (live), then run `node scripts/record_demo.mjs`. Watch `demo/decision-ladder-demo.mp4`, which must be under 3:00 and show the green LIVE badge and Nemotron model names.
-   - Optional voice-over: read `demo/narration.txt`, or generate it with your voice clone, and lay it over the video in CapCut using `narration.srt` for timing.
-4. Upload to YouTube as **Public** (not unlisted) early, because uploads are slow.
-5. Paste real numbers from `eval_report.json` and `smoke_report.json` into the Devpost "Challenges" or "Accomplishments" sections. Only use numbers you actually got.
-6. Write the Nebius/NVIDIA feedback section from your own experience. It's a separate prize.
-7. Submit. Then check that the submission page shows the video, repo link, demo URL and track.
+## When the key arrives (about 45 minutes)
+1. Double-click **Go Live.cmd**. Paste the key (hidden). It lists models, runs `smoke` and `eval`, then opens the app.
+   - Every smoke check should pass. The models check reports whether Nemotron 3 Ultra is available to your key; if not, Super writes the memo, and that is stated in the app.
+2. Add `NEBIUS_API_KEY` (and `TAVILY_API_KEY`) to the demo host, redeploy, and check that `/api/health` shows `"mode": "live"`.
+3. Optional but strong: run `deploy/nebius/endpoint.sh` (Serverless endpoint) and `deploy/nebius/job.sh` (renewal-book job), and screenshot both in the Nebius console for the video or Devpost.
+4. Record: `node scripts/record_demo.mjs http://localhost:8000`, then add the voice-over, then upload to YouTube as **Public**.
+5. Put real numbers from `eval_report.json` and `smoke_report.json` into the Devpost text, and only numbers you actually got.
+6. Write the feedback section from your own experience. It's a separate prize.
+7. Submit, then check the video, repo, demo URL and track on the submission page.
 
-## If the key does NOT arrive in time
-- Claim the activation code **NEBIUS-DEVPOST-GLOBAL26** (Token Factory credit form linked in the "You're in!" Devpost email). That may be faster than the Builder Program review.
-- Ask in the Nebius Discord (linked in the Devpost emails) for help getting hackathon credits.
-- Never submit the offline video as if it were live. The rules require the project to run on Token Factory with an NVIDIA model.
+## If the key is late
+- Use the activation code **NEBIUS-DEVPOST-GLOBAL26** (Token Factory credit form linked in the Devpost "You're in!" email).
+- Ask in the Nebius Discord for help with hackathon credits.
+- Never submit the offline video as if it were live.
