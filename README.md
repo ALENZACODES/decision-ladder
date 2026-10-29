@@ -67,12 +67,26 @@ Five years later, her renewal goes through **Renewal Radar**: it reads the lette
 | Real Interest Rates in Canada Since 2009 (notebook) | market | 150 | `rate_spreads` (CPI) | repo |
 | Bank of Canada Kaggle dataset notebooks (2 of 4) | market | 97 | `rate_spreads` (nowcast) | repo |
 
-The line counts are produced by the code (`python -m decision_ladder os`): `.py`, `.js`, `.mjs`, `.ts`, `.html`, `.css` and `.sql` files in `modules/`, plus only the **code cells** of `.ipynb` notebooks (markdown and notebook JSON are not counted), excluding minified vendor files. Total: **79,503 lines in `modules/`**. The OS layer (`decision_ladder/`, tests, evals, scripts) adds about 11,700 lines, so the repository holds about **91,000 lines of code, not 100,000**. Data files and the Shoebox model weights are not counted.
+The line counts are produced by the code (`python -m decision_ladder os`): `.py`, `.js`, `.mjs`, `.ts`, `.html`, `.css` and `.sql` files in `modules/`, plus only the **code cells** of `.ipynb` notebooks (markdown and notebook JSON are not counted), excluding minified vendor files. Total: **79,503 lines in `modules/`** by that counter (79,639 if shell and PowerShell scripts are included). The OS layer (`decision_ladder/`, tests, evals, scripts, desk pages) adds 20,541 lines, including the five desks below (8,710 lines). The repository holds **100,180 lines of code** (`.py .js .mjs .ts .html .css .sql .sh .ps1` plus notebook code cells, as of this commit). Data files and the Shoebox model weights are not counted.
 
 **How the modules are wired:**
 - **Each app opens inside the OS.** The Mortgage OS tab maps all nine lifecycle stages, and every app is served at `/apps/<module>/`.
 - **The JavaScript apps run their own code.** Their calculators run through a small Node bridge (`decision_ladder/modules/bridge.mjs`) that loads each app's own `calc.js` / `engine.js` / `logic.js`, so the agent, the ladder and the app's screen always give the same number. All nine apps' own test suites pass inside the OS, and CI runs them.
 - **Renewal Radar runs in-process.** It's a FastAPI app; its engines are imported in-process for tools, and its full app is proxied at `/apps/renewal-radar/`.
+
+## Desks: the rest of a broker's day
+
+Five desks written for this submission (not from my earlier repos), each a Python engine with Nemotron tools, tests and its own page at `/static/desks/<name>.html`. Every rule they apply was checked against the official source on 2026-10-29 and is cited in the results; lender-policy figures are labelled as such.
+
+| Desk | What it does | Tools | Lines |
+|---|---|---|---|
+| Commercial Lending | CMHC MLI Select points and MLI Standard sizing, conventional sizing (LTV / DSCR / debt yield, names the binding constraint), construction draws with Ontario's 10% holdback and interest reserve, private / bridge true cost (IRR), rent roll (WALT, rollover) | 6 | 1,715 |
+| Business Lending | CSBFP eligibility, limits and fees; invoice factoring true cost; term loans, lines and merchant cash advances checked against the Criminal Code rate (35% / 48% business tier); business and global DSCR; equipment lease vs buy with CCA | 10 | 1,816 |
+| Income & Rental Qualification | qualifying income by type (2-year averages, declining-income rule, self-employed add-backs or 15% gross-up), rental add-back vs offset vs net-rental compared on one file, investor portfolio, max price and rent needed | 6 | 1,347 |
+| Servicing | dated schedules for all six Canadian payment frequencies, variable-rate trigger rate and trigger point, prepayment privileges with any excess priced by the penalty engine, blend-and-extend vs break, port and increase, HELOC 65% / 80% room, payment deferral | 9 | 1,951 |
+| Disclosure & Compliance | Ontario cost of borrowing and APR (O. Reg. 191/08) with the federal formula for comparison, Interest Act ss. 6, 8 and 10, FSRA and RECA conduct checklists, FINTRAC identity and record-keeping, renewal statement timing (21 days) | 8 | 1,881 |
+
+The ladder uses two of them directly: the commercial rung sizes the take-out loan for a bridge (on the Hamilton sample it comes out $39,715 short of the bridge balance at an assumed 6% take-out rate), and the compliance rung produces the Ontario APR and checks renewal statement timing.
 
 ## Cross-checks: my apps check each other
 
@@ -184,6 +198,7 @@ New for this hackathon, in this repository:
 - Tavily Search and Extract
 - the renewal-book job and the Nebius Serverless deployment
 - the web app, evals, smoke test, go-live scripts and CI
+- the five desks (commercial, business, income and rental, servicing, disclosure) and their wiring into the ladder
 
 ## Limitations
 

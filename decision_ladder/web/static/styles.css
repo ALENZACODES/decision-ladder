@@ -310,3 +310,6 @@ td.nowrap { white-space: nowrap; }
 .os-cta { margin-top: 12px; gap: 10px; }
 .btn.big { padding: 10px 18px; font-size: 15px; }
 @media (max-width: 600px) { .cmp-row { grid-template-columns: 90px 1fr 90px; } }
+
+.desk-links { margin-left: auto; align-self: center; font-size: 13px; color: var(--muted, #667); white-space: nowrap; }
+.desk-links a { margin-left: 10px; color: inherit; text-decoration: underline; text-underline-offset: 2px; }

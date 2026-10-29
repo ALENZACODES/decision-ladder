@@ -40,10 +40,10 @@ So I put all of my apps inside one system and gave it an agent. The rule is the 
 
 ## How we built it
 
-- **21 modules from 20 of my repositories: 79,503 lines of their own code** (about 91,000 with the OS layer). Each app runs its own screen inside the OS. The JavaScript apps' calculators run through a small Node bridge that loads each app's real `calc.js`, so the agent, the ladder and the app's screen always agree. Renewal Radar's Python engines are imported in-process, and its FastAPI app is proxied.
+- **21 modules from 20 of my repositories: 79,503 lines of their own code** Five new desks (commercial, business lending, income and rental, servicing, disclosure) add 8,710 lines; the repository totals 100,180 lines of code. Each app runs its own screen inside the OS. The JavaScript apps' calculators run through a small Node bridge that loads each app's real `calc.js`, so the agent, the ladder and the app's screen always agree. Renewal Radar's Python engines are imported in-process, and its FastAPI app is proxied.
 - **A 17-rung ladder covers the lifecycle:** lead, documents, pre-qualification, underwriting, property, closing, market, servicing, commercial, compliance, decision. Each rung is computed by one of the apps and returns PASS, REFER, FAIL or SKIP.
 - **Three Nemotron tiers on Token Factory, as the brief recommends:**
-  - **Nano** routes each question to the right lifecycle stages; Super then sees about 8 to 15 of the 53 tools instead of all of them. Nano also does the JSON extraction and drafts.
+  - **Nano** routes each question to the right lifecycle stages; Super then sees about 8 to 15 of the 92 tools instead of all of them. Nano also does the JSON extraction and drafts.
   - **Super** runs the tool calls.
   - **Ultra** writes the credit decision, falling back to Super if Ultra isn't available.
 - **A standard-library Token Factory client.** It handles tool calling, JSON mode with a fallback, retries, `<think>` stripping, recovery of inline tool calls (Qwen3-Coder XML and `<TOOLCALL>` formats), model auto-resolution against `/v1/models`, and token and cost accounting.
@@ -68,7 +68,7 @@ The cross-check also **caught a real bug** while I was integrating: my MortgageL
 
 ## Challenges we ran into
 
-- **Keeping the model away from arithmetic, with 53 tools across 21 modules.** Nano routing kept tool choice focused, and the provenance verifier, with one repair turn, kept the answers honest.
+- **Keeping the model away from arithmetic, with 92 tools across 21 modules and 5 desks.** Nano routing kept tool choice focused, and the provenance verifier, with one repair turn, kept the answers honest.
 - **Making separately built apps agree.** Aligning their inputs for the cross-checks was most of the work. It turned up one real bug and one real method difference.
 - **Grounding extraction.** A value from an email or a pay stub is kept only if its quoted words appear in the source.
 

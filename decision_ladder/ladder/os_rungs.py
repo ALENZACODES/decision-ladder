@@ -330,4 +330,24 @@ def rung_commercial(f: dict, ctx: dict) -> RungResult:
     findings = []
     if top:
         findings.append(f"Grade is most sensitive to {top.get('label') or top.get('name') or top.get('key')}.")
-    return RungResult(key, title, status, f"Grade {grade} (score {s.get('total')})", metrics, findings, {"screen": s})
+    ev = {"screen": s}
+    # Commercial Lending Desk: what a term lender would size on this NOI (the exit from a bridge loan).
+    if f.get("noi") and f.get("value"):
+        take_out_rate = f.get("takeout_rate") or 6.0
+        u = T.run("commercial_underwrite", {"noi": f["noi"], "value": f["value"], "contract_rate": take_out_rate,
+                                            "amort_years": f.get("takeout_amort") or 25})
+        if not _err(u):
+            ev["takeout_sizing"] = u
+            mx = u.get("max_loan") or (u.get("sizing") or {}).get("max_loan")
+            binding = u.get("binding_constraint") or (u.get("sizing") or {}).get("binding_constraint")
+            if mx:
+                metrics["takeout_max_loan"] = round(mx)
+                gap = round(mx - float(f.get("loan") or 0))
+                metrics["takeout_gap"] = gap
+                findings.append(f"Commercial Lending Desk: a conventional take-out at {take_out_rate}% (" + ("file" if f.get("takeout_rate") else "assumed") + " rate) sizes to ${mx:,.0f}"
+                                + (f" ({binding} binds)" if binding else "")
+                                + (f", ${gap:,.0f} above this loan: the exit refinances." if gap >= 0
+                                   else f", ${-gap:,.0f} short of this loan: the bridge exit needs equity or a lower balance."))
+                if gap < 0 and status == PASS:
+                    status = REFER
+    return RungResult(key, title, status, f"Grade {grade} (score {s.get('total')})", metrics, findings, ev)

@@ -223,3 +223,36 @@ def test_router_stage_map_covers_every_tool():
     from decision_ladder.agent.router import stage_tools
     covered = set().union(*stage_tools().values())
     assert set(T.TOOLS) <= covered
+
+
+def test_desk_pages_have_no_inline_script():
+    """The server's CSP is script-src 'self': desk pages must load their JavaScript from a file."""
+    import re
+    from pathlib import Path
+    d = Path(__file__).resolve().parent.parent / "decision_ladder" / "web" / "static" / "desks"
+    pages = sorted(d.glob("*.html"))
+    assert len(pages) == 5
+    for p in pages:
+        s = p.read_text(encoding="utf-8")
+        assert not re.search(r"<script>(?!\s*</script>)", s) and not re.search(r"\son[a-z]+=", s), p.name
+        js = re.search(r'<script src="([^"]+)"', s).group(1)
+        assert (d / js).exists() and "/api/tool" in (d / js).read_text(encoding="utf-8")
+
+
+def test_desks_feed_the_ladder():
+    from decision_ladder.ladder.runner import climb
+    from decision_ladder.samples import SAMPLES
+    rungs, _ = climb(dict(SAMPLES["hamilton_commercial"]))
+    com = next(r for r in rungs if r["key"] == "commercial")
+    assert com["metrics"]["takeout_max_loan"] > 0 and "Commercial Lending Desk" in " ".join(com["findings"])
+    rungs, _ = climb(dict(SAMPLES["oakville_stretch"]))
+    comp = next(r for r in rungs if r["key"] == "compliance")
+    assert comp["metrics"]["apr_pct"] > 0 and any("O. Reg. 191/08" in x for x in comp["findings"])
+
+
+def test_late_renewal_statement_is_flagged():
+    from decision_ladder.ladder.rungs import rung_compliance
+    f = {"purpose": "renewal", "province": "ON", "maturity": "2026-12-15", "renewal_statement_date": "2026-12-10",
+         "balance": 400_000, "contract_rate": 4.5, "amort_years": 20, "term_years": 5}
+    r = rung_compliance(f, {"rungs": {}})
+    assert r.status == "REFER" and any("late" in x for x in r.findings)

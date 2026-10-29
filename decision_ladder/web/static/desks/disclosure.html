@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Disclosure &amp; Compliance Desk</title>
+<style>
+  :root { --ink:#0d1726; --bg:#f3f5f8; --card:#fff; --line:#dde3ea; --text:#1b2533; --muted:#5f6b7a;
+          --accent:#4e7b00; --pass:#2f8f46; --pass-bg:#e6f4ea; --fail:#c0392b; --fail-bg:#fbe9e7;
+          --skip-bg:#eef1f4; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; color:var(--text);
+         background:var(--bg); font-variant-numeric:tabular-nums; }
+  header { background:var(--ink); color:#fff; padding:14px 22px; }
+  header h1 { margin:0; font-size:18px; } header p { margin:2px 0 0; color:#aab6c6; font-size:12px; }
+  nav { display:flex; gap:4px; padding:10px 22px 0; flex-wrap:wrap; }
+  nav button { border:1px solid var(--line); border-bottom:none; background:#e7ebf0; padding:7px 14px;
+               border-radius:8px 8px 0 0; cursor:pointer; font:inherit; }
+  nav button.on { background:var(--card); font-weight:600; }
+  main { padding:0 22px 30px; }
+  section.tab { display:none; background:var(--card); border:1px solid var(--line); border-radius:0 10px 10px 10px;
+                padding:16px; } section.tab.on { display:block; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:10px 14px; }
+  label { display:flex; flex-direction:column; font-size:12px; color:var(--muted); }
+  label.chk { flex-direction:row; align-items:center; gap:6px; color:var(--text); }
+  input, select, textarea { font:inherit; padding:6px 8px; border:1px solid var(--line); border-radius:6px; color:var(--text); }
+  textarea { width:100%; min-height:220px; font-family:var(--mono); font-size:12px; }
+  fieldset { border:1px solid var(--line); border-radius:8px; margin:12px 0; } legend { font-size:12px; color:var(--muted); }
+  .row { display:flex; gap:8px; align-items:center; margin-top:12px; }
+  button.go { background:var(--accent); color:#fff; border:0; padding:8px 16px; border-radius:6px; cursor:pointer; font:inherit; }
+  button.alt { background:#fff; border:1px solid var(--line); padding:7px 12px; border-radius:6px; cursor:pointer; font:inherit; }
+  .out { margin-top:16px; }
+  table { border-collapse:collapse; width:100%; margin:8px 0; } th, td { border-bottom:1px solid var(--line);
+  padding:5px 8px; text-align:left; vertical-align:top; } th { font-size:12px; color:var(--muted); font-weight:600; }
+  td.num { text-align:right; font-family:var(--mono); }
+  .pill { display:inline-block; padding:1px 8px; border-radius:10px; font-size:12px; }
+  .ok { background:var(--pass-bg); color:var(--pass); } .bad { background:var(--fail-bg); color:var(--fail); }
+  .na { background:var(--skip-bg); color:var(--muted); }
+  .kpi { display:flex; gap:12px; flex-wrap:wrap; margin:8px 0; }
+  .kpi div { border:1px solid var(--line); border-radius:8px; padding:8px 12px; min-width:150px; }
+  .kpi b { display:block; font-size:18px; } .kpi span { font-size:12px; color:var(--muted); }
+  .cites { font-size:11px; color:var(--muted); margin-top:14px; } .cites a { color:var(--muted); }
+  .note { font-size:12px; color:var(--muted); font-style:italic; } .err { color:var(--fail); }
+  details summary { cursor:pointer; color:var(--muted); }
+  @media print {
+    header, nav, form, .noprint { display:none !important; } body { background:#fff; }
+    section.tab { border:0; padding:0; } section.tab:not(.on) { display:none; } main { padding:0; }
+    details { display:block; } details > * { display:block; }
+  }
+</style>
+</head>
+<body>
+<header><h1>Disclosure &amp; Compliance Desk</h1>
+  <p>O. Reg. 191/08 cost of borrowing &middot; Interest Act &middot; FSRA / RECA conduct &middot; FINTRAC &middot; renewal timing. Not legal advice.</p></header>
+<nav id="tabs">
+  <button data-t="stmt" class="on">Disclosure statement</button><button data-t="ia">Interest Act</button>
+  <button data-t="ren">Renewal timing</button><button data-t="conduct">Suitability &amp; conflicts</button>
+  <button data-t="fin">FINTRAC</button>
+</nav>
+<main>
+<section class="tab on" id="stmt">
+  <form id="f-stmt">
+    <div class="grid">
+      <label>Borrower<input name="borrower"></label><label>Lender<input name="lender"></label>
+      <label>Brokerage<input name="brokerage" value="Uptown Financial Mortgages o/a Dominion Lending Centres"></label>
+      <label>Principal ($)<input name="principal" type="number" step="0.01" value="300000" required></label>
+      <label>Annual rate (%)<input name="annual_rate" type="number" step="0.001" value="4.79" required></label>
+      <label>Compounding<select name="compounding"><option value="semi">half-yearly</option><option value="monthly">monthly</option></select></label>
+      <label>Rate type<select name="rate_type"><option>fixed</option><option>variable</option></select></label>
+      <label>Amortization (years)<input name="amort_years" type="number" step="0.25" value="25" required></label>
+      <label>Term (months)<input name="term_months" type="number" value="60" required></label>
+      <label>Payment frequency<select name="frequency"><option>monthly</option><option>biweekly</option><option>weekly</option></select></label>
+      <label>Advance date<input name="advance_date" type="date"></label>
+      <label>First payment date<input name="first_payment_date" type="date"></label>
+      <label>Statement date<input name="statement_date" type="date"></label>
+      <label>Signing date<input name="signing_date" type="date"></label>
+      <label>Waiver signed<input name="waiver_date" type="date"></label>
+      <label>Property<input name="property"></label>
+      <label>Prepayment rights<input name="prepayment_terms" placeholder="e.g. 15% lump sum yearly"></label>
+      <label>Penalties / default charges<input name="penalties" placeholder="greater of 3 months' interest and IRD"></label>
+      <label>Discharge charge ($)<input name="discharge_charge" type="number" step="0.01"></label>
+      <label>Rate adjustment method (variable)<input name="rate_adjustment_method"></label>
+    </div>
+    <fieldset><legend>Non-interest charges (type decides inclusion under s. 5)</legend>
+      <div id="charges"></div><button type="button" class="alt" id="add-charge">Add charge</button></fieldset>
+    <div class="row"><button class="go">Build statement</button>
+      <button type="button" class="alt" id="print-btn">Print</button></div>
+  </form>
+  <div class="out" id="o-stmt"></div>
+</section>
+
+<section class="tab" id="ia">
+  <form id="f-ia">
+    <div class="grid">
+      <label>Stated rate (%)<input name="stated_rate_pct" type="number" step="0.001" value="5"></label>
+      <label>Stated compounding<select name="stated_compounding"><option>half-yearly</option><option>yearly</option><option>monthly</option><option>in advance</option></select></label>
+      <label>Principal ($)<input name="principal" type="number" step="0.01" value="300000"></label>
+      <label>Payment ($)<input name="payment" type="number" step="0.01" value="1744.81"></label>
+      <label>Amortization (years)<input name="amort_years" type="number" value="25"></label>
+      <label>Payment frequency<select name="frequency"><option>monthly</option><option>biweekly</option><option>weekly</option></select></label>
+      <label>Mortgage date<input name="mortgage_date" type="date"></label>
+      <label>Maturity date<input name="maturity_date" type="date"></label>
+      <label>Term (months)<input name="term_months" type="number" value="60"></label>
+      <label>Borrower<select name="borrower_type"><option>individual</option><option>corporation</option></select></label>
+      <label>Balance at year 5 ($)<input name="balance_at_five_years" type="number" step="0.01"></label>
+      <label>Penalty after year 5 ($)<input name="penalty_after_five_years" type="number" step="0.01"></label>
+      <label>Prepayment clause<select name="prepayment_clause"><option value="">(not given)</option><option>open</option><option>closed</option><option>ird</option><option>greater_of_3m_ird</option><option>three_months_interest</option></select></label>
+      <label>Arrears rate (%)<input name="arrears_rate_pct" type="number" step="0.001"></label>
+      <label>Arrears fine / penalty<input name="arrears_penalty"></label>
+    </div>
+    <div class="row"><label class="chk"><input type="checkbox" name="blended_payments" checked>Blended payments</label>
+      <label class="chk"><input type="checkbox" name="equivalent_rate_stated">Half-yearly/yearly equivalent stated</label>
+      <label class="chk"><input type="checkbox" name="renewal_or_extension">Term set by renewal/extension</label></div>
+    <div class="row"><button class="go">Check</button></div>
+  </form>
+  <div class="out" id="o-ia"></div>
+</section>
+
+<section class="tab" id="ren">
+  <form id="f-ren">
+    <div class="grid">
+      <label>Regime<select name="regime"><option value="federal_bank">Federal bank (FCPF s. 45)</option><option value="ontario_lender">Ontario brokerage lender (191/08 s. 14)</option></select></label>
+      <label>Renewal / maturity date<input name="maturity_date" type="date" required></label>
+      <label>Statement date<input name="statement_date" type="date"></label>
+      <label>Received date<input name="received_date" type="date"></label>
+      <label>Non-renewal notice date<input name="notice_date" type="date"></label>
+    </div>
+    <div class="row"><label class="chk"><input type="checkbox" name="includes_cost_information">Cost information</label>
+      <label class="chk"><input type="checkbox" name="includes_no_increase_statement">No-increase statement</label>
+      <label class="chk"><input type="checkbox" name="includes_rights_statement">Rights-continue statement</label>
+      <label class="chk"><input type="checkbox" name="will_not_renew">Will not renew</label></div>
+    <div class="row"><button class="go">Check timing</button></div>
+  </form>
+  <div class="out" id="o-ren"></div>
+</section>
+
+<section class="tab" id="conduct">
+  <form id="f-conduct">
+    <div class="grid"><label>Jurisdiction<select name="jurisdiction" id="jur"><option>ON</option><option>AB</option></select></label>
+      <label>Principal ($)<input name="principal" type="number" step="0.01"></label>
+      <label>Disclosure date<input name="disclosure_date" type="date"></label>
+      <label>Signing date<input name="signing_date" type="date"></label>
+      <label>Lender type<select name="lender_type"><option>private</option><option>individual</option><option>brokerage</option><option value="financial_institution">financial institution</option></select></label></div>
+    <fieldset><legend>Triggers (leave unticked if not present in this file)</legend>
+      <div class="row" id="triggers"></div></fieldset>
+    <fieldset><legend>Done in this file</legend><div class="grid" id="fields"></div></fieldset>
+    <div class="row"><button class="go">Evaluate</button></div>
+  </form>
+  <div class="out" id="o-conduct"></div>
+</section>
+
+<section class="tab" id="fin">
+  <form id="f-fin">
+    <p class="note">Edit the file as JSON: clients (identity method details), transactions received, and the compliance program.</p>
+    <textarea name="json" id="fin-json"></textarea>
+    <div class="row"><button class="go">Check FINTRAC file</button></div>
+  </form>
+  <div class="out" id="o-fin"></div>
+</section>
+</main>
+<script src="disclosure.js"></script>
+</body>
+</html>

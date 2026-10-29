@@ -6,7 +6,7 @@ import logging
 
 from .registry import MODULES, STAGES, AppModule, add_module, add_tool, catalog  # noqa: F401
 
-INTEGRATIONS = ("core", "jsapps", "homevalue", "renewalradar", "ratedata")
+INTEGRATIONS = ("core", "jsapps", "homevalue", "renewalradar", "ratedata", "commercial", "business", "disclosure", "servicing", "income")
 LOAD_ERRORS: dict[str, str] = {}
 _loaded = False
 

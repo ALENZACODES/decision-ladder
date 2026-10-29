@@ -413,17 +413,65 @@ def rung_exit_cost(f: dict, ctx: dict) -> RungResult:
                       f"{months_left} month(s) to maturity{pen_txt}; priority {pr['score']} ({pr['tier']})", metrics, findings, ev)
 
 
+def _disclosure_checks(f: dict, ctx: dict) -> tuple[list[str], dict, dict, bool]:
+    """Disclosure & Compliance Desk on this file: Ontario cost of borrowing (APR), renewal statement timing and
+    Interest Act s.10. Returns (findings, metrics, evidence, problem_found)."""
+    findings: list[str] = []
+    metrics: dict[str, Any] = {}
+    ev: dict[str, Any] = {}
+    problem = False
+    purpose = _purpose(f)
+    province = str(f.get("province", "ON")).upper()
+    q = ctx.get("rungs", {}).get("qualification", {}).get("metrics", {})
+    principal = q.get("mortgage_amount") or (f.get("price", 0) - f.get("down_payment", 0) if purpose == "purchase" else f.get("balance"))
+    rate = f.get("renewal_rate") if purpose == "renewal" and f.get("renewal_rate") else f.get("contract_rate")
+    if province == "ON" and purpose != "commercial" and principal and rate:
+        cob = T.run("disclosure_cost_of_borrowing", {
+            "principal": float(principal), "annual_rate": float(rate), "amort_years": float(f.get("amort_years") or 25),
+            "term_months": int(round(float(f.get("term_years") or 5) * 12)), "charges": f.get("disclosure_charges") or []})
+        if "error" not in cob:
+            ev["cost_of_borrowing"] = cob
+            metrics.update({"apr_pct": cob.get("apr_pct"), "cost_of_borrowing_term": cob.get("cost_of_borrowing")})
+            findings.append(f"Cost of borrowing disclosure (O. Reg. 191/08): APR {cob['apr_pct']:.3f}%, "
+                            f"${cob['cost_of_borrowing']:,.0f} over the {cob['term_years']:g}-year term; deliver it at least "
+                            "2 business days before the borrower signs.")
+    if purpose == "renewal" and f.get("maturity"):
+        args = {"maturity_date": f["maturity"]}
+        if f.get("renewal_statement_date"):
+            args["statement_date"] = f["renewal_statement_date"]
+        rt = T.run("renewal_disclosure_timing", args)
+        if "error" not in rt:
+            ev["renewal_timing"] = rt
+            t = rt.get("timing") or {}
+            if t.get("latest_compliant_date"):
+                metrics["renewal_statement_latest"] = t["latest_compliant_date"]
+            if f.get("renewal_statement_date"):
+                if not t.get("ok", True):
+                    problem = True
+                    findings.append(f"Renewal statement is late: {rt.get('finding')} (21 days required).")
+                else:
+                    findings.append(f"Renewal statement timing OK: {rt.get('finding')}.")
+            elif t.get("latest_compliant_date"):
+                findings.append(f"Renewal statement must reach the borrower by {t['latest_compliant_date']} (21 days before maturity).")
+    if float(f.get("term_years") or 0) > 5:
+        findings.append("Term over 5 years: Interest Act s.10 lets the borrower prepay after 5 years with 3 months' interest.")
+    return findings, metrics, ev, problem
+
+
 def rung_compliance(f: dict, ctx: dict) -> RungResult:
     msg = f.get("outbound_message") or ctx.get("outbound_message") or ""
     chk = guardrail.check(msg) if msg else {"allowed": True, "violations": []}
     checklist = ["Disclose any conflict of interest and lender compensation before the client commits (FSRA).",
                  "Provide the mortgage cost disclosure / mortgage information to the borrower.",
                  "Keep a record of the suitability assessment for this product."]
-    status = PASS if chk["allowed"] else FAIL
-    return RungResult("compliance", "Compliance & outbound guardrail", status,
-                      "Outbound message clean" if msg and chk["allowed"] else
-                      ("Outbound message blocked: " + ", ".join(chk["violations"]) if msg else "No outbound message yet"),
-                      {"violations": chk["violations"]}, checklist, {"guardrail": chk})
+    extra, metrics, ev, problem = _disclosure_checks(f, ctx)
+    status = FAIL if not chk["allowed"] else REFER if problem else PASS
+    summary = ("Outbound message clean" if msg and chk["allowed"] else
+               ("Outbound message blocked: " + ", ".join(chk["violations"]) if msg else "No outbound message yet"))
+    if metrics.get("apr_pct") is not None:
+        summary += f"; APR {metrics['apr_pct']:.3f}%"
+    return RungResult("compliance", "Compliance & outbound guardrail", status, summary,
+                      {"violations": chk["violations"], **metrics}, extra + checklist, {"guardrail": chk, **ev})
 
 
 def rung_decision(f: dict, ctx: dict) -> RungResult:

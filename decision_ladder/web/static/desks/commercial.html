@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Commercial Lending Desk · Decision Ladder</title>
+<style>
+:root {
+  --ink: #0d1726; --ink2: #16243a; --bg: #f3f5f8; --card: #fff; --line: #dde3ea; --text: #1b2533; --muted: #5f6b7a;
+  --accent: #76b900; --accent-dk: #4e7b00; --pass: #2f8f46; --pass-bg: #e6f4ea; --fail: #c0392b; --fail-bg: #fbe9e7;
+  --warn: #b7791f; --warn-bg: #fdf3e1; --radius: 10px;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: var(--text);
+       background: var(--bg); font-variant-numeric: tabular-nums; }
+header { background: linear-gradient(120deg, var(--ink), var(--ink2)); color: #fff; padding: 16px 24px; }
+header h1 { margin: 0; font-size: 1.25rem; }
+header p { margin: 4px 0 0; color: #b9c4d3; font-size: .9rem; }
+header a { color: #cfe8a0; }
+nav { display: flex; gap: 4px; flex-wrap: wrap; padding: 12px 24px 0; }
+nav button { border: 1px solid var(--line); border-bottom: none; background: #e8ecf1; color: var(--text); padding: 8px 14px;
+             border-radius: 8px 8px 0 0; cursor: pointer; font: inherit; }
+nav button[aria-selected="true"] { background: var(--card); font-weight: 600; box-shadow: inset 0 3px 0 var(--accent); }
+main { padding: 0 24px 32px; }
+section.desk { display: none; background: var(--card); border: 1px solid var(--line); border-radius: 0 var(--radius) var(--radius);
+               padding: 18px; }
+section.desk.on { display: grid; grid-template-columns: minmax(280px, 380px) 1fr; gap: 24px; }
+@media (max-width: 860px) { section.desk.on { grid-template-columns: 1fr; } }
+form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; align-content: start; }
+form h2 { grid-column: 1 / -1; font-size: 1rem; margin: 0; }
+form p.hint { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: .85rem; }
+label { display: flex; flex-direction: column; font-size: .8rem; color: var(--muted); gap: 2px; }
+label.wide, fieldset { grid-column: 1 / -1; }
+label.check { flex-direction: row; align-items: center; gap: 6px; color: var(--text); }
+input, select, textarea { font: inherit; font-size: .9rem; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px;
+                          color: var(--text); background: #fff; }
+textarea { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .8rem; min-height: 110px; resize: vertical; }
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+fieldset { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: grid; grid-template-columns: 1fr 1fr;
+           gap: 8px 12px; }
+legend { font-size: .8rem; color: var(--muted); padding: 0 4px; }
+button.run { grid-column: 1 / -1; background: var(--accent-dk); color: #fff; border: 0; border-radius: 8px; padding: 10px;
+             font: inherit; font-weight: 600; cursor: pointer; }
+button.run:disabled { opacity: .6; cursor: progress; }
+.out { min-width: 0; }
+.out:empty::before { content: "Results appear here."; color: var(--muted); }
+.banner { padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; font-weight: 600; }
+.banner.ok { background: var(--pass-bg); color: var(--pass); }
+.banner.bad { background: var(--fail-bg); color: var(--fail); }
+.banner.warn { background: var(--warn-bg); color: var(--warn); }
+.out h3 { font-size: .9rem; margin: 16px 0 6px; text-transform: capitalize; }
+.scroll { overflow-x: auto; max-height: 420px; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: .85rem; }
+th, td { padding: 5px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+thead th { position: sticky; top: 0; background: #eef1f5; font-weight: 600; text-transform: capitalize; }
+table.kv td:first-child { color: var(--muted); text-transform: capitalize; }
+tr.flag td { background: var(--warn-bg); }
+ul.notes { margin: 4px 0; padding-left: 18px; color: var(--muted); font-size: .82rem; }
+.err { color: var(--fail); font-weight: 600; }
+footer { padding: 0 24px 24px; color: var(--muted); font-size: .8rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Commercial Lending Desk</h1>
+  <p>Size, insure, build and bridge: deterministic calculators with sources and assumptions on every result.
+     Grade a sized deal in the <a href="/apps/private-credit-screener/">Private Credit Deal Screener</a>.</p>
+</header>
+
+<nav role="tablist">
+  <button role="tab" data-desk="uw" aria-selected="true">Conventional sizing</button>
+  <button role="tab" data-desk="mli" aria-selected="false">CMHC MLI Select</button>
+  <button role="tab" data-desk="cons" aria-selected="false">Construction draws</button>
+  <button role="tab" data-desk="bridge" aria-selected="false">Bridge / private</button>
+  <button role="tab" data-desk="rr" aria-selected="false">Rent roll</button>
+</nav>
+
+<main>
+<section class="desk on" id="uw">
+  <form data-tool="commercial_underwrite">
+    <h2>Conventional commercial mortgage</h2>
+    <p class="hint">Max loan = lowest of LTV cap, DSCR loan at the qualifying rate, and NOI / debt yield. Give NOI, or build it.</p>
+    <label>NOI ($/yr, optional)<input type="number" name="noi" step="any"></label>
+    <label>Gross potential rent ($/yr)<input type="number" name="gross_potential_rent" value="600000" step="any"></label>
+    <label>Other income ($/yr)<input type="number" name="other_income" value="12000" step="any"></label>
+    <label>Vacancy (%)<input type="number" name="vacancy_pct" value="3" step="any"></label>
+    <label>Expense ratio (% of EGI)<input type="number" name="expense_ratio_pct" value="35" step="any"></label>
+    <label>Units (for reserves)<input type="number" name="units" step="1"></label>
+    <label class="wide">Itemized expenses, one per line: name, $/yr (replaces the ratio)
+      <textarea name="expenses" data-parse="kv" placeholder="property tax, 62000&#10;insurance, 18000"></textarea></label>
+    <label>Management (% of EGI)<input type="number" name="management_pct" step="any"></label>
+    <label>Reserve ($/unit/yr)<input type="number" name="reserves_per_unit" step="any"></label>
+    <label>Value ($)<input type="number" name="value" value="8000000" step="any"></label>
+    <label>Cap rate (%, if no value)<input type="number" name="cap_rate_pct" step="any"></label>
+    <label>Contract rate (%)<input type="number" name="contract_rate" value="5.25" step="any" required></label>
+    <label>Qualifying rate (%)<input type="number" name="qualifying_rate" step="any"></label>
+    <label>Amortization (yrs)<input type="number" name="amort_years" value="25" step="any"></label>
+    <label>Term (yrs)<input type="number" name="term_years" value="5" step="any"></label>
+    <label>Max LTV (%)<input type="number" name="ltv_max_pct" value="75" step="any"></label>
+    <label>Min DSCR (x)<input type="number" name="dscr_min" value="1.25" step="any"></label>
+    <label>Min debt yield (%)<input type="number" name="debt_yield_min_pct" value="8" step="any"></label>
+    <label>Requested loan ($)<input type="number" name="requested_loan" step="any"></label>
+    <label>Compounding<select name="compounding"><option value="semi">Semi-annual (fixed)</option>
+      <option value="monthly">Monthly (floating)</option></select></label>
+    <label class="check"><input type="checkbox" name="interest_only"> Interest only</label>
+    <button class="run">Size the loan</button>
+  </form>
+  <div class="out"></div>
+</section>
+
+<section class="desk" id="mli">
+  <form data-tool="cmhc_mli_size">
+    <h2>CMHC MLI Standard vs MLI Select</h2>
+    <p class="hint">5+ unit rental. Value is lending value (existing) or total project cost (new construction).</p>
+    <label>Purpose<select name="purpose"><option value="existing">Existing (purchase / refinance)</option>
+      <option value="new_construction">New construction</option></select></label>
+    <label>Units<input type="number" name="units" value="30" step="1" required></label>
+    <label>NOI ($/yr)<input type="number" name="noi" value="400000" step="any" required></label>
+    <label>Value or cost ($)<input type="number" name="value" value="8000000" step="any" required></label>
+    <label>Underwriting rate (%)<input type="number" name="rate" value="4.0" step="any" required></label>
+    <label>Amortization wanted (yrs)<input type="number" name="amort_years" step="any"></label>
+    <fieldset><legend>MLI Select points</legend>
+      <label>Affordable units (%)<input type="number" name="affordable_units_pct" value="40" step="any"></label>
+      <label>Commitment (yrs)<input type="number" name="affordability_years" value="10" step="1"></label>
+      <label>Energy improvement (%)<input type="number" name="energy_reduction_pct" value="25" step="any"></label>
+      <label>Energy baseline (new build)<select name="energy_standard"><option value="necb">NECB Tier 1</option>
+        <option value="nbc">NBC Tier 1</option></select></label>
+      <label class="wide">Accessibility<select name="accessibility"><option value="none">None</option>
+        <option value="level_1">Level 1 (20 pts)</option><option value="level_2">Level 2 (30 pts)</option></select></label>
+    </fieldset>
+    <label>Shelter type<select name="shelter"><option value="standard_rental">Standard rental (DCR 1.10)</option>
+      <option value="other_shelter">Other shelter (DCR 1.20)</option></select></label>
+    <label>Requested base loan ($)<input type="number" name="requested_loan" step="any"></label>
+    <button class="run">Compare programs</button>
+  </form>
+  <div class="out"></div>
+</section>
+
+<section class="desk" id="cons">
+  <form data-tool="construction_draw_schedule">
+    <h2>Construction loan draw schedule</h2>
+    <p class="hint">Ontario Construction Act 10% holdback on hard costs. Equity in first; interest capitalized monthly.</p>
+    <label class="wide">Budget, one line per item: item, cost $, start month, end month, hard (y/n)
+      <textarea name="budget" data-parse="budget">site servicing, 1200000, 1, 4, y
+structure and envelope, 8400000, 3, 16, y
+interior fit-out, 2400000, 12, 20, y
+design, permits, consultants, 1500000, 1, 20, n
+development charges, 900000, 1, 1, n</textarea></label>
+    <label>Land ($)<input type="number" name="land_cost" value="3000000" step="any"></label>
+    <label>Equity available ($)<input type="number" name="equity" value="4500000" step="any" required></label>
+    <label>Rate (%)<input type="number" name="rate_pct" value="7.2" step="any" required></label>
+    <label>Lender fee ($)<input type="number" name="lender_fee" value="150000" step="any"></label>
+    <label>Max LTC (%)<input type="number" name="max_ltc_pct" value="75" step="any"></label>
+    <label>Loan term (months)<input type="number" name="term_months" step="1"></label>
+    <label>Completed value ($)<input type="number" name="completed_value" value="24000000" step="any"></label>
+    <label>Max LTV on completion (%)<input type="number" name="max_ltv_pct" value="65" step="any"></label>
+    <label>Holdback (%)<input type="number" name="holdback_pct" value="10" step="any"></label>
+    <label>Release lag (months)<input type="number" name="release_lag_months" value="2" step="1"></label>
+    <label class="check wide"><input type="checkbox" name="annual_release" checked> Annual holdback release (contracts from 2026-01-01)</label>
+    <button class="run">Build schedule</button>
+  </form>
+  <div class="out"></div>
+</section>
+
+<section class="desk" id="bridge">
+  <form data-tool="private_bridge_cost">
+    <h2>Bridge / private 1st or 2nd</h2>
+    <p class="hint">Interest only. True cost is the IRR of what the borrower actually receives and pays.</p>
+    <label>Loan ($)<input type="number" name="loan" value="400000" step="any" required></label>
+    <label>Rate (%)<input type="number" name="rate_pct" value="10.99" step="any" required></label>
+    <label>Term (months)<input type="number" name="term_months" value="12" step="1" required></label>
+    <label>Compounding<select name="compounding"><option value="monthly">Monthly</option>
+      <option value="semi">Semi-annual</option></select></label>
+    <label>Lender fee (%)<input type="number" name="lender_fee_pct" value="2" step="any"></label>
+    <label>Broker fee (%)<input type="number" name="broker_fee_pct" value="1.5" step="any"></label>
+    <label>Legal, appraisal, admin ($)<input type="number" name="other_costs" value="2500" step="any"></label>
+    <label>Exit / renewal fee (%)<input type="number" name="exit_fee_pct" step="any"></label>
+    <label>Prepaid interest (months)<input type="number" name="prepaid_interest_months" step="1"></label>
+    <label>Minimum interest (months)<input type="number" name="min_interest_months" value="3" step="1"></label>
+    <label>Property value ($)<input type="number" name="value" value="1200000" step="any"></label>
+    <label>Prior mortgages ($)<input type="number" name="prior_balance" value="600000" step="any"></label>
+    <label class="check"><input type="checkbox" name="natural_person"> Borrower is an individual</label>
+    <label class="check"><input type="checkbox" name="business_purpose" checked> Business purpose</label>
+    <button class="run">Cost it</button>
+  </form>
+  <div class="out"></div>
+</section>
+
+<section class="desk" id="rr">
+  <form data-tool="rent_roll_analysis">
+    <h2>Rent roll analysis</h2>
+    <p class="hint">One lease per line: tenant, sf, annual rent, annual market rent, expiry (blank = month-to-month), vacant (y/n).</p>
+    <label class="wide">Leases<textarea name="leases" data-parse="leases">Pharmacy, 5000, 150000, 175000, 2028-06-30, n
+Dental clinic, 3000, 96000, 90000, 2030-12-31, n
+Unit 3, 2000, 0, 60000, , y
+Cafe, 1000, 30000, 33000, , n</textarea></label>
+    <label>As of<input type="date" name="as_of" value="2026-10-29" required></label>
+    <label>Rollover flag (% of rent)<input type="number" name="rollover_flag_pct" value="25" step="any"></label>
+    <button class="run">Analyze</button>
+  </form>
+  <div class="out"></div>
+</section>
+</main>
+
+<footer>Indicative calculations for broker use, not a lender commitment, credit approval or legal advice. CMHC, lender and
+statutory parameters change; each result lists its sources, the date they were checked, and the assumptions it makes.</footer>
+
+<script src="commercial.js"></script>
+</body>
+</html>

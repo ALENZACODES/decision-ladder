@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Servicing Desk - Decision Ladder</title>
+<style>
+  :root { --surface: #fcfcfb; --panel: #ffffff; --line: #e4e3df; --ink: #0b0b0b; --ink-2: #52514e; --muted: #8a8984;
+          --series-1: #2a78d6; --accent: #2a78d6; --flag: #9a5b00; --flag-bg: #fff6e5; --err: #b42318; }
+  @media (prefers-color-scheme: dark) {
+    :root { --surface: #1a1a19; --panel: #222221; --line: #3a3a38; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #8f8e88;
+            --series-1: #3987e5; --accent: #3987e5; --flag: #f3c26b; --flag-bg: #3a2f1a; --err: #ff8a80; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--surface); color: var(--ink); }
+  header { padding: 18px 24px 8px; border-bottom: 1px solid var(--line); }
+  header h1 { margin: 0; font-size: 20px; }
+  header p { margin: 4px 0 0; color: var(--ink-2); }
+  nav { display: flex; flex-wrap: wrap; gap: 4px; padding: 10px 24px; border-bottom: 1px solid var(--line); }
+  nav button { border: 1px solid var(--line); background: var(--panel); color: var(--ink); padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+  nav button[aria-selected="true"] { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  main { display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 20px; padding: 20px 24px; }
+  @media (max-width: 860px) { main { grid-template-columns: 1fr; } }
+  form { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; align-self: start; }
+  form p.help { margin: 0 0 10px; color: var(--ink-2); font-size: 13px; }
+  label { display: block; margin: 0 0 8px; font-size: 12px; color: var(--ink-2); }
+  input, select, textarea { display: block; width: 100%; margin-top: 2px; padding: 6px 8px; border: 1px solid var(--line);
+                            border-radius: 5px; background: var(--surface); color: var(--ink); font: inherit; }
+  textarea { min-height: 56px; font: 12px/1.4 ui-monospace, monospace; }
+  label.check { display: flex; gap: 6px; align-items: center; }
+  label.check input { width: auto; margin: 0; }
+  form button[type=submit] { width: 100%; margin-top: 6px; padding: 8px; border: 0; border-radius: 6px; background: var(--accent);
+                             color: #fff; font-weight: 600; cursor: pointer; }
+  #out { min-width: 0; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+  .card h2 { margin: 0 0 10px; font-size: 15px; }
+  .card h3 { margin: 12px 0 6px; font-size: 13px; color: var(--ink-2); }
+  dl { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px 16px; margin: 0; }
+  dl div { border-bottom: 1px dashed var(--line); padding-bottom: 4px; }
+  dt { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+  dd { margin: 0; font-variant-numeric: tabular-nums; word-break: break-word; }
+  .flags { list-style: none; padding: 0; margin: 0 0 10px; }
+  .flags li { background: var(--flag-bg); color: var(--flag); padding: 6px 10px; border-radius: 5px; margin-bottom: 4px; }
+  .flags li::before { content: "\26A0  "; }
+  .error { color: var(--err); font-weight: 600; }
+  .tablewrap { overflow: auto; max-height: 420px; border: 1px solid var(--line); border-radius: 6px; }
+  table { border-collapse: collapse; width: 100%; font-size: 12px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 4px 8px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { position: sticky; top: 0; background: var(--panel); color: var(--ink-2); font-weight: 600; }
+  td:first-child, th:first-child { text-align: left; }
+  .chart { position: relative; }
+  .chart svg { width: 100%; height: auto; display: block; }
+  .chart .axis text { fill: var(--ink-2); font-size: 11px; }
+  .chart .grid line { stroke: var(--line); }
+  .tip { position: absolute; pointer-events: none; background: var(--panel); border: 1px solid var(--line); border-radius: 5px;
+         padding: 4px 8px; font-size: 12px; color: var(--ink); box-shadow: 0 2px 8px rgba(0,0,0,.12); display: none; }
+  .note { color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Servicing Desk</h1>
+  <p>Schedules at every Canadian payment frequency, prepayment privileges, blends, ports, HELOC room and deferrals.
+     Estimates for planning: the lender's contract and written statements govern.</p>
+</header>
+<nav id="tabs" role="tablist"></nav>
+<main>
+  <form id="form" autocomplete="off"></form>
+  <section id="out"><div class="card note">Fill in the form and run the calculation.</div></section>
+</main>
+<script src="servicing.js"></script>
+</body>
+</html>
