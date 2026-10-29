@@ -3,8 +3,11 @@ name: live (Nemotron on Token Factory)
 # model check -> smoke test -> eval -> live server -> demo video, and uploads everything as artifacts.
 # Needs repository secrets NEBIUS_API_KEY (and optionally TAVILY_API_KEY):
 #   GitHub -> repo -> Settings -> Secrets and variables -> Actions -> New repository secret.
-# Start it from the Actions tab ("Run workflow") or: gh workflow run live.yml
+# Start it from the Actions tab ("Run workflow"), with gh workflow run live.yml, or by pushing to the live-run branch.
+# Text results (and the video) are also pushed to the live-results branch so they can be read without artifact access.
 on:
+  push:
+    branches: [live-run]
   workflow_dispatch:
     inputs:
       record_video:
@@ -12,7 +15,7 @@ on:
         type: boolean
         default: true
 permissions:
-  contents: read
+  contents: write
 jobs:
   live:
     runs-on: ubuntu-latest
@@ -63,7 +66,7 @@ jobs:
           PY
         continue-on-error: true
       - name: record the demo video against the live server
-        if: ${{ inputs.record_video }}
+        if: ${{ github.event_name == 'push' || inputs.record_video }}
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
           npm i --no-save playwright@1 && npx playwright install --with-deps chromium
@@ -89,3 +92,15 @@ jobs:
             demo/narration.txt
             demo/narration.srt
           if-no-files-found: ignore
+      - name: publish results to the live-results branch (no secrets in these files)
+        if: always()
+        run: |
+          mkdir -p /tmp/out && for f in models.txt smoke.txt eval.txt smoke_report.json eval_report.json live_ladder_report.json health.json; do [ -f "$f" ] && cp "$f" /tmp/out/; done
+          [ -f demo/decision-ladder-demo.mp4 ] && cp demo/decision-ladder-demo.mp4 demo/narration.* /tmp/out/ 2>/dev/null || true
+          if grep -rIl -- "$NEBIUS_API_KEY" /tmp/out 2>/dev/null; then echo "key found in output, not publishing"; exit 1; fi
+          git config user.name "live-run" && git config user.email "live-run@users.noreply.github.com"
+          git fetch origin live-results || true
+          git switch --orphan results-tmp
+          git rm -rfq . 2>/dev/null || true
+          cp /tmp/out/* . && echo "run ${{ github.run_id }} at $(date -u +%FT%TZ) on ${{ github.sha }}" > RUN.txt
+          git add -A && git commit -qm "live results ${{ github.run_id }}" && git push -f origin HEAD:live-results

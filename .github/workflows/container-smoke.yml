@@ -12,10 +12,11 @@ jobs:
       - uses: actions/checkout@v4
       - run: docker build -t dl .
       - run: |
+          set -o pipefail
           docker run -d --name dl -p 8000:8000 -e DL_OFFLINE=1 dl
           for i in $(seq 1 40); do curl -sf localhost:8000/api/health && break; sleep 2; done
           echo
-          python3 - <<'PY'
+          (python3 - <<'PY'
           import json, urllib.request as u
           os_ = json.load(u.urlopen("http://localhost:8000/api/os"))
           bad = []
@@ -34,5 +35,14 @@ jobs:
           print("ladder:", run["verdict"], len(run["rungs"]), "rungs")
           assert run["verdict"] == "RESTRUCTURE" and not bad, bad
           PY
+          ) 2>&1 | tee check.txt
+      - name: check output as annotation
+        if: failure()
+        run: echo "::error title=check output::$(tail -30 check.txt | sed ':a;N;$!ba;s/%/%25/g;s/\n/%0A/g')"
       - if: always()
         run: docker logs dl | tail -50
+      - name: failure details as annotations (readable without log access)
+        if: failure()
+        run: |
+          docker logs dl 2>&1 | tail -25 > tail.txt || true
+          echo "::error title=container logs::$(sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g' tail.txt)"
