@@ -598,5 +598,125 @@
   "brief_file": "video/nemotron.png",
   "sha256_original": "8e0c73373fa0bff5a3fdea0f725783d904729c4a9c57e9f46c5b9f01ef4077a9",
   "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H05": {
+  "file": "docs/images/video/crosscheck-bug.jpg",
+  "brief_file": "video/crosscheck-bug.png",
+  "sha256_original": "9d6418b0fdf5fd8d030efef108860bca3dddd17b7caa2dda759ff7d19cece714",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H06": {
+  "file": "docs/images/video/commercial.jpg",
+  "brief_file": "video/commercial.png",
+  "sha256_original": "7be0934c8e23009048cf65d4d9391f8a500a95d61510b2e3450d65f3325b113f",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H07": {
+  "file": "docs/images/video/renewal.jpg",
+  "brief_file": "video/renewal.png",
+  "sha256_original": "98c998cf9274ecb3391fecef9b5cd58cf54445dd049302cdd169d8b5e096601e",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H08": {
+  "file": "docs/images/video/disclosure.jpg",
+  "brief_file": "video/disclosure.png",
+  "sha256_original": "15e788b10979086455d599056a4cdf10ff4aa1aff210c7935363310d7d44f4ab",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H09": {
+  "file": "docs/images/video/serverless.jpg",
+  "brief_file": "video/serverless.png",
+  "sha256_original": "db809e814ce793a566019f8eab4098ce18d220f850a7b96607f16c727df473e9",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H10": {
+  "file": "docs/images/video/end-card.jpg",
+  "brief_file": "video/end-card.png",
+  "sha256_original": "d3ab560ebc65927f06f2cdf3c5fdead88dc411407bd3506f034efd4cef1abdb5",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H11": {
+  "file": "docs/images/video/transition-1.jpg",
+  "brief_file": "video/transition-1.png",
+  "sha256_original": "4e4af36f5cac798bcc7dfdd321e4cb262de99b036603d9ab987178ba7e581af6",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H12": {
+  "file": "docs/images/video/transition-2.jpg",
+  "brief_file": "video/transition-2.png",
+  "sha256_original": "db3a25e4d25ac860aaddb12acc4d43a46772362d4b15039ab8529eb7fcf5d27f",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H13": {
+  "file": "docs/images/video/transition-3.jpg",
+  "brief_file": "video/transition-3.png",
+  "sha256_original": "9c43381958557f291956289224491511effc0f2c4f7d9f0d1e966e7fcef56a97",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H14": {
+  "file": "docs/images/video/transition-4.jpg",
+  "brief_file": "video/transition-4.png",
+  "sha256_original": "0c60b59198e3364f3ced505b4894099acf85d273ca98b98228d47df213371f52",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H15": {
+  "file": "docs/images/video/transition-5.jpg",
+  "brief_file": "video/transition-5.png",
+  "sha256_original": "b5d3183c6177f59a333cc5beb45eb252898425e9ba42b5ea3266de1622876b32",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H16": {
+  "file": "docs/images/video/transition-6.jpg",
+  "brief_file": "video/transition-6.png",
+  "sha256_original": "5d8160b90e67c441f42ae0ad28fe0da47f931acded675ccfc77d7a80083ac982",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "I01": {
+  "file": "docs/images/states/empty-ladder.jpg",
+  "brief_file": "states/empty-ladder.png",
+  "sha256_original": "04cef837fb9186d3c1fc4562ec96b5244efa6e7c862ec1c2f2f26d7830602135",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "I02": {
+  "file": "docs/images/states/empty-book.jpg",
+  "brief_file": "states/empty-book.png",
+  "sha256_original": "2197445ee7b255ba6cf9259454febaea4cac9169b6fadac5b52993ae135e22b0",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "I03": {
+  "file": "docs/images/states/loading.jpg",
+  "brief_file": "states/loading.png",
+  "sha256_original": "571c767cc6035230bf5f3a3853ff0524f3cf75ff5d9dce59388e6e84e834bc02",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "I04": {
+  "file": "docs/images/states/offline.jpg",
+  "brief_file": "states/offline.png",
+  "sha256_original": "df76201e9f6a1a408b2f310a9531d37acc56686d6b125ff52321efa368f11819",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "I05": {
+  "file": "docs/images/states/error.jpg",
+  "brief_file": "states/error.png",
+  "sha256_original": "683b76aacf6420f608c8c8771c49a7fd81f2cff4c469877577dd239fbf99c4e3",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "I06": {
+  "file": "docs/images/states/no-results.jpg",
+  "brief_file": "states/no-results.png",
+  "sha256_original": "6553c9c6364d8e9c0fd01d6c686df5cd36fb97204daf26628c6953c275c787a0",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "I07": {
+  "file": "docs/images/states/success.jpg",
+  "brief_file": "states/success.png",
+  "sha256_original": "b45cb64ebaa9f71fbe92e245e1b2870ebf26261b5f56acd1d0dfca31d70420b3",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "I08": {
+  "file": "docs/images/states/restructure.jpg",
+  "brief_file": "states/restructure.png",
+  "sha256_original": "0262d477ecb7f40d485bcf52facad1a1371d909ff522ac501e626165a715d369",
+  "generated_with": "ChatGPT image generation (author's prompts)"
  }
 }
