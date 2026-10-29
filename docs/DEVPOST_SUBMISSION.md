@@ -3,12 +3,24 @@
 **Project name:** Decision Ladder: Mortgage OS
 **Tagline:** Every stage of a Canadian mortgage, one system. Nemotron reasons; calculators decide.
 **Track:** Best Apps and Agents
-**Built with:** NVIDIA Nemotron 3 Nano, Super and Ultra; Nebius Token Factory; Nebius Serverless AI (endpoints and jobs); Tavily (Search and Extract); Python; Node.js; vanilla JS
+**Built with:** NVIDIA Nemotron 3 Nano, Super and Ultra; Nebius Token Factory; Tavily (Search and Extract); Nebius Serverless AI endpoint and job definitions (scripts in the repo, not yet deployed); Python; Node.js; vanilla JS
 **Repo:** https://github.com/ALENZACODES/decision-ladder
 **Demo:** (your deployed URL)
 **Video:** (your YouTube URL)
 
 ---
+
+## For each judging team
+
+**NVIDIA (Nemotron).** Every tier does the job it is best at, measured live on Token Factory: Nano 30B-A3B routes each question to the right apps (Super then sees 24 to 37 of 92 tools) and extracts client emails in JSON mode; Super 120B-A12B calls the tools (right tool in 15 to 16 of 17 eval cases across two runs); Ultra 550B-A55B writes the one decision that has to be right, and all five Ultra memos traced every figure to a calculator in both runs. The model never does arithmetic, and a provenance verifier gives it one repair turn before any untraced figure is marked `[unverified]` on screen.
+
+**Nebius Token Factory.** One OpenAI-compatible client, models resolved from `/v1/models` at start-up, `chat_template_kwargs.enable_thinking` per tier, retries, and a live workflow that anyone with a key can rerun: `gh workflow run live.yml` produces the smoke test, the 17-case eval and the five Ultra memos (raw reports on the `live-results` branch). A full live run cost about $0.20. The feedback section below is from those runs, not from memory.
+
+**Tavily.** Search is restricted to official Canadian sources (Bank of Canada, OSFI, CMHC, FSRA), and Extract reads each lender's own rate page to check whether a quoted rate is still current before the memo relies on it. It is wired into the ladder and the copilot and tested against recorded fixtures; the live Tavily run is the one check still pending a key.
+
+**Nebius Serverless and AI Cloud.** The same container runs locally, on any host, or as a Nebius Serverless endpoint; the overnight renewal-book scan is written as a stateless job with input and output files so it can run as a Serverless job. The scripts are in the repo; I have not deployed them yet.
+
+**Everyone.** It is built by a licensed Ontario mortgage broker for real broker work, on 20 of my own repositories plus five desks written for this hackathon (556+ tests). Rules are checked against official sources and cited in every result; anything that is an assumption says so.
 
 ## Inspiration
 
@@ -36,7 +48,7 @@ So I put all of my apps inside one system and gave it an agent. The rule is the 
 
 **Commercial deals** go through the **Private Credit Deal Screener**: DSCR, debt yield, a letter grade, and the assumption that moves the grade most.
 
-**Overnight,** a Nebius Serverless job scans the whole renewal book and ranks who to call, with lender-exact penalties and outreach drafts that pass a compliance guardrail.
+**Overnight,** a batch job (packaged to run as a Nebius Serverless job) scans the whole renewal book and ranks who to call, with lender-exact penalties and outreach drafts that pass a compliance guardrail.
 
 ## How we built it
 
@@ -50,7 +62,7 @@ So I put all of my apps inside one system and gave it an agent. The rule is the 
 - **Tavily.**
   - Search runs on official Canadian domains only (Bank of Canada, OSFI, FSRA, CMHC, Canada.ca), and every source is cited.
   - Extract reads each Big-6 bank's own rate page and confirms whether the rate book's posted 5-year rate is still current.
-- **Nebius Serverless AI.** The OS deploys as a CPU endpoint (a GitHub Action publishes the image), and the renewal-book scan runs as a job billed only while it runs.
+- **Nebius Serverless AI (ready, not yet deployed).** A GitHub Action publishes the container image; `deploy/nebius/endpoint.sh` serves the OS as a CPU endpoint and `deploy/nebius/job.sh` runs the renewal-book scan as a job billed only while it runs. I have not run either on Nebius during the submission period.
 - **Tests.** Over 350 OS tests and every JavaScript app's own test suite run in CI.
 
 ## Cross-checks: my apps check each other
@@ -105,7 +117,7 @@ The Mortgage OS itself was built for this hackathon:
 - the verifier
 - grounded intake and document reading
 - Tavily Search and Extract
-- the Serverless job and endpoint
+- the Serverless job and endpoint definitions (container, scripts; not yet deployed)
 - the UI, evals and CI
 - five new desks: commercial lending, business lending, income and rental qualification, servicing, disclosure and compliance
 
