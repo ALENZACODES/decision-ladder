@@ -86,8 +86,12 @@ def evidence_values(*sources) -> list[float]:
     return vals + extra
 
 
+# Thousands written with a thin, narrow no-break or no-break space ("$710 000", seen live) read as "710,000".
+_SPACED_THOUSANDS = re.compile(r"(?<=\d)[\u00a0\u2009\u202f](?=\d{3}(?!\d))")
+
+
 def extract_claims(text: str) -> list[Claim]:
-    t = _DATE.sub(" ", text or "")
+    t = _DATE.sub(" ", _SPACED_THOUSANDS.sub(",", text or ""))
     claims: list[Claim] = []
     for m in _NUM.finditer(t):
         raw = m.group("num")
@@ -152,7 +156,7 @@ def verify(text: str, *evidence) -> Report:
 
 def annotate(text: str, report: Report) -> str:
     """Mark unsupported figures inline so a reader can never mistake them for calculated values."""
-    out = text
+    out = _SPACED_THOUSANDS.sub(",", text)
     for t in dict.fromkeys(c.text for c in report.unsupported):   # each distinct figure once, every occurrence
         out = re.sub(r"(?<![\d.,$])" + re.escape(t) + r"(?![\d])", lambda m: m.group(0) + " [unverified]", out)
     return out

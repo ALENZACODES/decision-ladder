@@ -80,3 +80,9 @@ def test_annotate_marks_each_occurrence_once():
     t = "stressed at 6.84% and again 6.84%; 16.84% elsewhere"
     out = V.annotate(t, V.verify(t, {"x": 16.84}))
     assert out.count("[unverified]") == 2 and "16.84% elsewhere" in out
+
+
+def test_thin_space_thousands():
+    from decision_ladder.agent import verify as V
+    rep = V.verify("maximum price is $710 000 and 1 200 units", {"p": 710000, "u": 1200})
+    assert rep.ok and rep.claims[0].value == 710000

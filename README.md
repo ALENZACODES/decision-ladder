@@ -177,6 +177,28 @@ Model-backed endpoints are rate-limited per IP (`DL_RATE_PER_MIN`), so a public 
 | POST | `/api/book` | `{csv, as_of?, drafts?}` | ranked renewal queue with lender-exact penalties |
 | POST | `/api/tool` | `{name, args}` | direct tool call, no model |
 
+## Live results (Nemotron on Nebius Token Factory)
+
+Measured on 2026-10-29 by the `live` workflow on GitHub's runners with my Token Factory key (run 40894783422; the raw reports are on the [`live-results`](https://github.com/ALENZACODES/decision-ladder/tree/live-results) branch). No offline stand-in is involved in these numbers.
+
+| Check | Result |
+|---|---|
+| Nemotron models visible to the key | 5: Nano 30B-A3B, Super 120B-A12B, **Ultra 550B-A55B**, 3.5 Super VL, 3.5 Lightning |
+| Smoke test (models, Super tool calling, copilot provenance, Nano extraction, Ultra memo, memo provenance) | **8/8** |
+| Eval, 17 cases, Super with Nano routing: right tool | **16/17** |
+| Eval: answer matches the tool-computed figure | **13/14** |
+| Eval: every figure traced to a tool (after at most one repair turn) | **15/17**; the other 2 carry visible `[unverified]` marks |
+| Ultra decision memos, all 5 sample files | **5/5 fully traced** (16 to 29 figures each) |
+| Cost | about $0.18 for the eval and $0.02 for the smoke test (token counts in the reports) |
+
+What the first live run (40892144934) caught and what changed:
+- the verifier read "APR 4.19%" as the date "April 4", flagging correct figures; fixed, with a test;
+- Super once returned an empty reply after long tool results; the client now retries once with an explicit nudge;
+- Nano sometimes routed "break a TD mortgage" or a renewal question away from the servicing tools; keyword stages are now added to Nano's choice (eval tool choice went from 14/17 to 16/17);
+- Ultra once computed an "$86,000 income gap" itself; the verifier flagged it, as designed.
+
+Remaining misses in the latest eval: in one case Super passed slightly different inputs to `max_purchase_price` and quoted $710,000 instead of $689,000 (the figure was traced to its own tool call but not to the expected inputs); for the renewal-letter question it asked for the current payment instead of calling a tool.
+
 ## Tests and evaluation
 
 - **OS test suite:** `pytest -q`. It covers the client wire format and retries; the three-tier routing and Ultra fallback; the verifier; every core tool; every rung; the module tools against each app's published figures; all cross-checks agreeing; the Priya journey end to end; Tavily Extract; the renewal-book job; and the HTTP server.

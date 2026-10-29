@@ -193,7 +193,7 @@ class LadderEngine:
                     bad = ", ".join(c.text for c in rep.unsupported)
                     fix = self.llm.chat([{"role": "system", "content": MEMO_SYSTEM}, {"role": "user", "content": user},
                                          {"role": "assistant", "content": memo},
-                                         {"role": "user", "content": f"These figures are not in the ladder JSON: {bad}. Rewrite without them."}],
+                                         {"role": "user", "content": f"These figures are not in the ladder JSON: {bad}. Rewrite the memo without them. Reply with the memo only; do not mention this check."}],
                                         model=memo_model, max_tokens=1100, purpose="memo-repair")
                     rep2 = verify.verify(fix.content, payload, file)
                     if fix.content and len(rep2.unsupported) <= len(rep.unsupported):

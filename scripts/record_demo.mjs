@@ -88,7 +88,7 @@ const smoothScroll = (page, y) => page.evaluate((yy) => window.scrollTo({ top: y
     await page.waitForTimeout(700);
   };
 
-  await scene(page, "Decision Ladder Mortgage OS: fourteen of my own mortgage apps in one system, driven by NVIDIA Nemotron on Nebius Token Factory.", 10);
+  await scene(page, "Decision Ladder Mortgage OS: twenty-one of my own mortgage apps and five new lending desks in one system, driven by NVIDIA Nemotron on Nebius Token Factory.", 10);
   await scene(page, "Every stage of a Canadian mortgage, from first email to renewal and commercial deals. Each card is one of my apps, running inside the OS.", 9,
     () => smoothScroll(page, 420));
 

@@ -163,7 +163,8 @@ class Copilot:
             msgs.append({"role": "assistant", "content": answer})
             msgs.append({"role": "user", "content":
                          f"These figures do not appear in any tool result or in my message: {bad}. "
-                         "Rewrite the answer. Either call a tool to compute them or remove them."})
+                         "Rewrite the answer. Either call a tool to compute them or remove them. Reply with the corrected answer "
+                         "only, as if it were your first reply: do not mention this check or the removed figures."})
             fix = self.llm.chat(msgs, tools=self._specs(), purpose="copilot-repair")
             if fix.tool_calls:
                 msgs.append(fix.message)

@@ -77,6 +77,7 @@ The cross-check also **caught a real bug** while I was integrating: my MortgageL
 - A single client journey that runs through my real apps, with every number traceable to the app that computed it, and each app opens with the client's own numbers.
 - A path to yes that can't contradict the decline: for the stress test and for cash to close.
 - Every overlapping calculation in my apps agrees, and the OS proves it on every file.
+- Live on Token Factory: 8/8 smoke checks, the right tool in 16/17 eval cases, and all five Nemotron 3 Ultra memos fully traced to calculators.
 
 ## What we learned
 
@@ -106,13 +107,18 @@ The Mortgage OS itself was built for this hackathon:
 - Tavily Search and Extract
 - the Serverless job and endpoint
 - the UI, evals and CI
+- five new desks: commercial lending, business lending, income and rental qualification, servicing, disclosure and compliance
 
-## Feedback on Nebius and NVIDIA tools (fill in from your own experience; specific beats generic)
+## Feedback on Nebius and NVIDIA tools
 
-- Getting a key and first call: how long did it take, and was anything unclear?
-- `/v1/models`: were Nemotron Nano, Super and Ultra all listed, and were the IDs easy to find?
-- Tool calling with Nemotron 3 Super across 50+ tools: how reliable were tool choice and argument JSON (see `eval_report.json`)?
-- JSON mode with Nemotron 3 Nano: was `response_format` honoured? Did `chat_template_kwargs.enable_thinking` work?
-- Nemotron 3 Ultra: latency and quality on the decision memo.
-- Serverless endpoint and job setup: CLI experience, cold start, logs.
-- Latency and cost per ladder run (`smoke_report.json`).
+From two live runs on 2026-10-29 (reports on the repo's `live-results` branch):
+
+- **Getting started.** The AI Builder Program email gives a Token Factory promo code, not a key, and Token Factory asks for full billing details with a card before a key can be created. A hackathon path that issues a key with the credit already applied would remove the biggest blocker I hit.
+- **`/v1/models`.** 29 models were listed, 5 of them Nemotron. The IDs follow three different naming styles (`nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B`, `nvidia/nemotron-3-super-120b-a12b`, `nvidia/Nemotron-3-Ultra-550b-a55b`), so I resolve models from the list at start-up instead of hard-coding them. Consistent IDs, or documented aliases, would help.
+- **Nemotron 3 Super tool calling** was strong: the right tool in 16 of 17 eval cases with 24 to 37 tools offered per question (out of 92). Two rough edges: once it returned no content and no tool calls (`finish_reason=stop`) after long tool results, and once it called a misspelled tool name (`pennalty_by_lender`) before correcting itself. A retry with a short nudge fixed the empty reply every time.
+- **Formatting.** Super sometimes writes thousands with a narrow no-break space ("$710 000"). Anyone parsing model output for numbers should normalise that.
+- **Nemotron 3 Nano JSON mode** (`response_format`) was honoured and fast. It extracted 15 fields from a client email, but sometimes paraphrases when asked to quote the source text, so quote-grounded extraction drops a few fields.
+- **`chat_template_kwargs.enable_thinking`** was accepted on all three models. I ran with thinking off for latency.
+- **Nemotron 3 Ultra** wrote all five decision memos well: structured, cited each app, and after a verifier fix on my side every figure in all five traced to a calculator. Once it computed a new figure itself despite the instruction not to, which the verifier caught.
+- **Latency and cost.** The 17-case eval cost about $0.18 (55 calls, 581k prompt tokens, almost all of it tool schemas and tool results). Median latency per question was 6.3 s in the first run and 14 s in the second the same morning, so I'd welcome published latency targets per model.
+- **Serverless.** The endpoint and job scripts are in `deploy/nebius/`; I did not deploy them during the submission period, so I have no feedback on them yet.
