@@ -1,0 +1,27 @@
+[1.3s] Decision Ladder Mortgage OS: twenty-one of my own mortgage apps and five new lending desks in one system, driven by NVIDIA Nemotron on Nebius Token Factory.
+
+[11.3s] Every stage of a Canadian mortgage, from first email to renewal and commercial deals. Each card is one of my apps, running inside the OS.
+
+[20.3s] A client emails her broker. Nemotron Nano extracts the file and reads her pay stub and T4; every value must quote its source.
+
+[46.3s] Her file climbs a 17-rung ladder. Each rung is computed by one of my apps: Doc Quest, the Mortgage Suite, the Pre-Underwriting Check, Benchmark Home Value, Cash to Close.
+
+[61.3s] The B-20 stress test fails. The ladder computes a path to yes, re-checking every option against the same test.
+
+[71.3s] Cash to Close finds she is $19,875 short on closing day, and finds the down payment that keeps cash for closing costs.
+
+[82.3s] Five independent engines, in Python and JavaScript, compute the same quantities. They agree to the cent; differences are labelled, never hidden.
+
+[94.3s] Every number opens in the app that computed it: here, Cash to Close, embedded in the OS.
+
+[104.3s] Nemotron 3 Ultra writes the credit decision; a provenance verifier traces every figure back to a calculator.
+
+[114.3s] As a copilot, Nemotron Nano routes each question to the right apps, and Nemotron Super calls their tools.
+
+[131.0s] Five years later, renewal: Renewal Radar reads the letter, checks the switch pathway, drafts the negotiation script and computes the lender-exact penalty.
+
+[144.0s] Commercial deals go through the Private Credit Deal Screener: DSCR, debt yield, grade, and which assumption moves it.
+
+[154.0s] Overnight, the whole book runs as a Nebius Serverless job: a ranked renewal queue with lender-exact penalties and guardrailed outreach.
+
+[165.0s] Open source, MIT. Nemotron Nano, Super and Ultra on Token Factory, Tavily for live sources, and every number from tested code.

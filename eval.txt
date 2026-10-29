@@ -1,0 +1,49 @@
+case                  tool  acc   trace       ms  tools
+stress-fail-options   ok    MISS  ok       26291  qualify_purchase,max_purchase_price
+qualifying-rate       ok    ok    FLAG     12513  qualify_purchase,qualify_purchase
+insurance-premium     ok    ok    ok        6819  insurance_premium
+td-penalty            ok    ok    ok       12498  pennalty_by_lender,penalty_by_lender
+renewal-shock         MISS  ok    ok       11728  mortgage_payment,mortgage_payment
+offer-compare         ok    ok    ok        5388  compare_renewal_offers
+market                ok    ok    ok        3818  market_snapshot
+bank-posted           ok    ok    ok        4572  bank_rates
+guardrail             ok    -     ok        5497  message_guardrail
+no-invention          ok    ok    ok        4903  mortgage_payment
+cash-to-close         ok    ok    ok       10749  cash_to_close_ontario,cash_to_close_ontario
+toronto-ltt           ok    ok    ok        6549  land_transfer_tax
+benchmark-oakville    ok    ok    ok        4251  benchmark_home_price
+affordability-index   ok    ok    ok        6692  housing_affordability_index
+commercial-dscr       ok    ok    ok        4209  private_credit_deal_screen
+doc-checklist         ok    -     ok        5258  buyer_document_checklist
+renewal-xray          ok    -     ok        8830  renewal_offer_check
+{
+  "mode": "live",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "cases": 17,
+  "errors": 0,
+  "tool_selection": "16/17",
+  "answer_accuracy": "13/14",
+  "provenance_clean": "16/17",
+  "repairs": 5,
+  "median_ms": 6549,
+  "usage": {
+    "calls": 61,
+    "prompt_tokens": 688536,
+    "completion_tokens": 6468,
+    "latency_ms": 140253.8,
+    "approx_cost_usd": 0.211033,
+    "by_model": {
+      "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": {
+        "calls": 17,
+        "prompt_tokens": 3803,
+        "completion_tokens": 661
+      },
+      "nvidia/nemotron-3-super-120b-a12b": {
+        "calls": 44,
+        "prompt_tokens": 684733,
+        "completion_tokens": 5807
+      }
+    }
+  }
+}
+Wrote eval_report.json

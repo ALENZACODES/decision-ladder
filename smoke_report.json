@@ -1,0 +1,160 @@
+{
+  "started": "2026-10-29T16:16:24",
+  "checks": [
+    {
+      "name": "models visible",
+      "ok": true,
+      "detail": {
+        "count": 30,
+        "nvidia": [
+          "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+          "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "nvidia/Nemotron-3.5-Super-VL",
+          "nvidia/Nemotron-3_5-Lightning",
+          "nvidia/nemotron-3-super-120b-a12b"
+        ]
+      }
+    },
+    {
+      "name": "NVIDIA Nemotron reasoner resolved",
+      "ok": true,
+      "detail": {
+        "reasoner": "nvidia/nemotron-3-super-120b-a12b",
+        "reasoner_reason": "configured",
+        "fast": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+        "fast_reason": "configured",
+        "ultra": "nvidia/Nemotron-3-Ultra-550b-a55b",
+        "ultra_reason": "auto: picked the Nemotron Ultra model listed",
+        "nemotron_models": [
+          "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+          "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "nvidia/Nemotron-3.5-Super-VL",
+          "nvidia/Nemotron-3_5-Lightning",
+          "nvidia/nemotron-3-super-120b-a12b"
+        ]
+      }
+    },
+    {
+      "name": "NVIDIA Nemotron fast model resolved",
+      "ok": true,
+      "detail": {
+        "fast": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+        "reason": "configured"
+      }
+    },
+    {
+      "name": "Nemotron tool calling",
+      "ok": true,
+      "detail": [
+        "qualify_purchase",
+        "find_path_to_yes"
+      ]
+    },
+    {
+      "name": "copilot figures traced",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "checked": 12,
+        "supported": 12,
+        "unsupported": []
+      }
+    },
+    {
+      "name": "Nemotron Nano JSON extraction",
+      "ok": true,
+      "detail": {
+        "model_fields": 15,
+        "conflicts": [],
+        "dropped": [
+          {
+            "field": "down_payment",
+            "value": 220000.0,
+            "quote": "$220k saved for the down payment",
+            "reason": "model quote not found in source text"
+          },
+          {
+            "field": "savings",
+            "value": 220000.0,
+            "quote": "$220k saved for the down payment",
+            "reason": "model quote not found in source text"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ladder memo by Nemotron",
+      "ok": true,
+      "detail": {
+        "source": "nemotron",
+        "verdict": "RESTRUCTURE"
+      }
+    },
+    {
+      "name": "memo figures traced",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "checked": 33,
+        "supported": 33,
+        "unsupported": []
+      }
+    },
+    {
+      "name": "Tavily research",
+      "ok": true,
+      "detail": [
+        "https://www.bankofcanada.ca/2026/07/fad-announcement-release-mpr-2026-07-15",
+        "https://www.bankofcanada.ca/2026/07/bank-canada-publishes-2027-schedule-policy-interest-rate-announcements-other-major-publications",
+        "https://www.bankofcanada.ca/2026/10/fad-announcement-release-mpr-2026-10-28",
+        "https://www.bankofcanada.ca/2026/06/fad-press-release-2026-06-10",
+        "https://www.bankofcanada.ca/2026/03/fad-press-release-2026-03-18"
+      ]
+    }
+  ],
+  "base_url": "https://api.tokenfactory.nebius.com/v1/",
+  "reasoner": "nvidia/nemotron-3-super-120b-a12b",
+  "fast": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+  "resolved_models": {
+    "reasoner": "nvidia/nemotron-3-super-120b-a12b",
+    "reasoner_reason": "configured",
+    "fast": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+    "fast_reason": "configured",
+    "ultra": "nvidia/Nemotron-3-Ultra-550b-a55b",
+    "ultra_reason": "auto: picked the Nemotron Ultra model listed",
+    "nemotron_models": [
+      "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+      "nvidia/Nemotron-3-Ultra-550b-a55b",
+      "nvidia/Nemotron-3.5-Super-VL",
+      "nvidia/Nemotron-3_5-Lightning",
+      "nvidia/nemotron-3-super-120b-a12b"
+    ]
+  },
+  "copilot_answer": "Based on the find_path_to_yes analysis:\n\n- The file does **not** pass the stress test because GDS is 47.9\u202f% (>39\u202f%) and TDS is 55.1\u202f% (>44\u202f%).  \n- To achieve a passing file by adjusting **one lever**:\n\n  * Lower the purchase price while keeping the $90,000 down payment \u2192 max price **$710,000**.  \n  * Increase the down payment while keeping the $900,000 price \u2192 need at least **$276,500** down (an additional **$186,500**).  \n  * Raising income alone requires a minimum gross annual income of **$188,000** (a shortfall of $38,000).  \n  * Paying off the $900/month car and card debt still leaves the file failing due to GDS.  \n  * Extending to a 30\u2011year amortization does not help; the file remains non\u2011qualifying.\n\nPick one of these single\u2011lever changes (or combine them) and let me know which you\u2019d like to pursue.",
+  "memo": "VERDICT: RESTRUCTURE\n\nWHY\n- B-20 stress test (qualification): GDS 39.9% and TDS 45.4% exceed the 39%/44% limits at the 6.19% qualifying rate (MortgageLoanOps, Decision Ladder core).\n- Cash to close (closing): $19,875 shortfall ($239,875 needed vs $220,000 saved) (Cash to Close, Canadian Mortgage Calculator Suite).\n- Affordability (affordability): Maximum supported price $1,064,600 vs $1,100,000 contract price; $35,400 gap (Canadian Mortgage Calculator Suite, Canada Housing Affordability Index 1980-2026).\n- Document check (documents): Documented income $99,000 covers only 53.5% of stated $185,000; 1 discrepancy (Decision Ladder core, Doc Quest).\n- Pre-underwriting readiness (readiness): Score 20/100 with 5 flags (2 high: GDS/TDS exceedance; 3 medium: missing employment letter, NOA, down payment statement) (Loan File Pre-Underwriting Check, Quiet Charges, Shoebox).\n\nPATH TO YES\n1. Lower the price to $1,067,000.\n2. Raise the down payment to $255,500 (+$35,500).\n\nCONDITIONS & RISKS\n- Identity/watch-list screening not performed; manual verification required (MortgageLoanOps).\n- Only B-lenders fit; expect higher rates/fees \u2014 disclose to client (MortgageLoanOps).\n- Oakville semi benchmark $1,185,000; price -7.2% vs benchmark, but benchmarks are indicative, not an appraisal (Benchmark Home Value).\n- Renewal outlook: +1.0% rate scenario drives payment +10.5% to ~$4,727/month (30.7% of income) in 5 years (Renewal Shock Radar).\n- APR disclosure 4.190% ($174,681 over 5-year term) must be delivered \u22652 business days before signing (MortgageLoanOps, Decision Ladder core).\n\nNEXT ACTIONS FOR THE BROKER\n1. Verify client identity and run watch-list checks manually; document the result.\n2. Collect missing documents: employment letter, NOA, down payment statement; reconcile the documented income ($99,000) vs stated income ($185,000) gap.\n3. Present the two restructuring options (price reduction to $1,067,000 or down payment increase to $255,500) and confirm client capacity.\n4. Disclose B-lender terms, fees, and the APR 4.190% cost of borrowing ($174,681) per regulatory timelines.\n5. Advise on renewal risk: payment could rise to ~$4,727/month at renewal; confirm affordability buffer.",
+  "usage": {
+    "calls": 9,
+    "prompt_tokens": 58391,
+    "completion_tokens": 3171,
+    "latency_ms": 27291.2,
+    "approx_cost_usd": 0.015917,
+    "by_model": {
+      "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": {
+        "calls": 3,
+        "prompt_tokens": 818,
+        "completion_tokens": 768
+      },
+      "nvidia/nemotron-3-super-120b-a12b": {
+        "calls": 4,
+        "prompt_tokens": 49285,
+        "completion_tokens": 998
+      },
+      "nvidia/Nemotron-3-Ultra-550b-a55b": {
+        "calls": 2,
+        "prompt_tokens": 8288,
+        "completion_tokens": 1405
+      }
+    }
+  },
+  "finished": "2026-10-29T16:16:59"
+}

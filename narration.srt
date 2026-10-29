@@ -1,0 +1,55 @@
+1
+00:00:01,303 --> 00:00:11,307
+Decision Ladder Mortgage OS: twenty-one of my own mortgage apps and five new lending desks in one system, driven by NVIDIA Nemotron on Nebius Token Factory.
+
+2
+00:00:11,307 --> 00:00:20,309
+Every stage of a Canadian mortgage, from first email to renewal and commercial deals. Each card is one of my apps, running inside the OS.
+
+3
+00:00:20,309 --> 00:00:46,293
+A client emails her broker. Nemotron Nano extracts the file and reads her pay stub and T4; every value must quote its source.
+
+4
+00:00:46,293 --> 00:01:01,293
+Her file climbs a 17-rung ladder. Each rung is computed by one of my apps: Doc Quest, the Mortgage Suite, the Pre-Underwriting Check, Benchmark Home Value, Cash to Close.
+
+5
+00:01:01,293 --> 00:01:11,299
+The B-20 stress test fails. The ladder computes a path to yes, re-checking every option against the same test.
+
+6
+00:01:11,299 --> 00:01:22,307
+Cash to Close finds she is $19,875 short on closing day, and finds the down payment that keeps cash for closing costs.
+
+7
+00:01:22,307 --> 00:01:34,310
+Five independent engines, in Python and JavaScript, compute the same quantities. They agree to the cent; differences are labelled, never hidden.
+
+8
+00:01:34,310 --> 00:01:44,312
+Every number opens in the app that computed it: here, Cash to Close, embedded in the OS.
+
+9
+00:01:44,312 --> 00:01:54,318
+Nemotron 3 Ultra writes the credit decision; a provenance verifier traces every figure back to a calculator.
+
+10
+00:01:54,318 --> 00:02:10,999
+As a copilot, Nemotron Nano routes each question to the right apps, and Nemotron Super calls their tools.
+
+11
+00:02:10,999 --> 00:02:24,004
+Five years later, renewal: Renewal Radar reads the letter, checks the switch pathway, drafts the negotiation script and computes the lender-exact penalty.
+
+12
+00:02:24,004 --> 00:02:34,004
+Commercial deals go through the Private Credit Deal Screener: DSCR, debt yield, grade, and which assumption moves it.
+
+13
+00:02:34,004 --> 00:02:45,008
+Overnight, the whole book runs as a Nebius Serverless job: a ranked renewal queue with lender-exact penalties and guardrailed outreach.
+
+14
+00:02:45,008 --> 00:02:53,012
+Open source, MIT. Nemotron Nano, Super and Ultra on Token Factory, Tavily for live sources, and every number from tested code.

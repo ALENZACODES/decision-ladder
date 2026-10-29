@@ -1,0 +1,553 @@
+{
+  "summary": {
+    "mode": "live",
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "cases": 17,
+    "errors": 0,
+    "tool_selection": "16/17",
+    "answer_accuracy": "13/14",
+    "provenance_clean": "16/17",
+    "repairs": 5,
+    "median_ms": 6549,
+    "usage": {
+      "calls": 61,
+      "prompt_tokens": 688536,
+      "completion_tokens": 6468,
+      "latency_ms": 140253.8,
+      "approx_cost_usd": 0.211033,
+      "by_model": {
+        "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": {
+          "calls": 17,
+          "prompt_tokens": 3803,
+          "completion_tokens": 661
+        },
+        "nvidia/nemotron-3-super-120b-a12b": {
+          "calls": 44,
+          "prompt_tokens": 684733,
+          "completion_tokens": 5807
+        }
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "stress-fail-options",
+      "tool_ok": true,
+      "tools": [
+        "qualify_purchase",
+        "max_purchase_price"
+      ],
+      "accuracy": false,
+      "expected": [
+        [
+          689000.0
+        ]
+      ],
+      "routing": {
+        "stages": [
+          "prequal",
+          "underwriting",
+          "property"
+        ],
+        "by": "nemotron-nano",
+        "tools_offered": 36,
+        "of": 92
+      },
+      "modules_used": [
+        "Decision Ladder core",
+        "MortgageLoanOps"
+      ],
+      "provenance_ok": true,
+      "repaired": true,
+      "ms": 26291,
+      "tokens": 50229,
+      "answer": "The client does **not** pass the stress test \u2013 GDS\u202f47.9% >\u202f39% and TDS\u202f55.1% >\u202f44%.  \n\nUsing the max\u2011purchase\u2011price tool (keeping the $90,000 down payment fixed), the highest price that would qualify under the current income, debts, taxes and contract rate is approximately **$710,000**. At that price the stress\u2011test results are GDS\u202f\u2248\u202f36.8% and TDS\u202f\u2248\u202f44.0%, which meet the B\u201120 limits.  \n\nNext step: discuss with the client whether to look for homes in this price range or explore ways to increase the down payment or income to reach the original target."
+    },
+    {
+      "id": "qualifying-rate",
+      "tool_ok": true,
+      "tools": [
+        "qualify_purchase",
+        "qualify_purchase"
+      ],
+      "accuracy": true,
+      "expected": [
+        [
+          3575.51
+        ]
+      ],
+      "routing": {
+        "stages": [
+          "prequal",
+          "underwriting"
+        ],
+        "by": "nemotron-nano",
+        "tools_offered": 34,
+        "of": 92
+      },
+      "modules_used": [
+        "MortgageLoanOps"
+      ],
+      "provenance_ok": false,
+      "repaired": true,
+      "ms": 12513,
+      "tokens": 48967,
+      "answer": "Based on the tool output:\n\n- The qualifying rate applied under the B\u201120 stress test is **5.25\u202f%**.\n- On a \\$600,000 mortgage amortized over 25 years at that rate, the stressed monthly principal\u2011and\u2011interest payment is **\\$3,575.51**.\n\n(No additional amounts such as \u201c2\u202fpp [unverified]\u201d were used; these figures come directly from the tool.)  \n\nNext step: gather the borrower\u2019s actual income and debt details to confirm whether they meet the GDS/TDS limits."
+    },
+    {
+      "id": "insurance-premium",
+      "tool_ok": true,
+      "tools": [
+        "insurance_premium"
+      ],
+      "accuracy": true,
+      "expected": [
+        [
+          24400.0,
+          1952.0
+        ]
+      ],
+      "routing": {
+        "stages": [
+          "prequal",
+          "documents",
+          "underwriting",
+          "closing"
+        ],
+        "by": "nemotron-nano + keywords",
+        "tools_offered": 52,
+        "of": 92
+      },
+      "modules_used": [
+        "MortgageLoanOps"
+      ],
+      "provenance_ok": true,
+      "repaired": false,
+      "ms": 6819,
+      "tokens": 46901,
+      "answer": "The CMHC default\u2011insurance premium would be **$24,400** (4.0\u202f% of the loan).  \nIn Ontario, PST on that premium is **$1,952**, which is paid in cash at closing.  \n\nThese figures are based on the insurance_premium tool for a $650,000 purchase with a $40,000 down payment, 25\u2011year amortization, in Ontario. Confirm the exact numbers with your lender\u2019s quote."
+    },
+    {
+      "id": "td-penalty",
+      "tool_ok": true,
+      "tools": [
+        "pennalty_by_lender",
+        "penalty_by_lender"
+      ],
+      "accuracy": true,
+      "expected": [
+        [
+          16363.73
+        ],
+        [
+          17013.33
+        ]
+      ],
+      "routing": {
+        "stages": [
+          "commercial",
+          "compliance",
+          "servicing"
+        ],
+        "by": "nemotron-nano + keywords",
+        "tools_offered": 68,
+        "of": 92
+      },
+      "modules_used": [
+        "Decision Ladder core"
+      ],
+      "provenance_ok": true,
+      "repaired": false,
+      "ms": 12498,
+      "tokens": 89538,
+      "answer": "Based on the TD-specific penalty calculation, the estimated prepayment charge to break your fixed mortgage is **$17,013.33**. This is driven by the interest\u2011rate differential (IRD) method, which exceeds the three\u2011months\u2019 interest alternative ($8,464.00).\n\n**Key inputs used**\n- Balance: $640,000  \n- Contract rate: 5.29%  \n- Term: 2023\u201108\u201101 to 2028\u201108\u201101 (5\u202fyears)  \n- Posted rate at funding: 6.84%  \n- Payout date: 2026\u201110\u201128 (\u224822 months remaining)  \n- Discount off posted: 1.55 percentage points (6.84% \u2013 5.29%)\n\n**Result breakdown**\n- Three\u2011months\u2019 interest: $8,464.00  \n- IRD (posted\u2011minus\u2011discount proxy): $17,013.33 \u2192 controlling method  \n- Total estimated penalty: **$17,013.33**\n\n*Note:* This is an estimate based on TD\u2019s posted\u2011rate table and the posted\u2011minus\u2011discount method. For an exact figure, obtain a written payout statement from TD. Next step: request the official payout quote from your lender."
+    },
+    {
+      "id": "renewal-shock",
+      "tool_ok": false,
+      "tools": [
+        "mortgage_payment",
+        "mortgage_payment"
+      ],
+      "accuracy": true,
+      "expected": [
+        [
+          3261.85
+        ]
+      ],
+      "routing": {
+        "stages": [
+          "prequal",
+          "underwriting",
+          "market"
+        ],
+        "by": "nemotron-nano",
+        "tools_offered": 50,
+        "of": 92
+      },
+      "modules_used": [
+        "Decision Ladder core"
+      ],
+      "provenance_ok": true,
+      "repaired": true,
+      "ms": 11728,
+      "tokens": 83069,
+      "answer": "The monthly payment rises from $2,537.81 to $3,261.85. Next step: confirm the exact remaining term matches your lender\u2019s statement and discuss options if the jump is too steep."
+    },
+    {
+      "id": "offer-compare",
+      "tool_ok": true,
+      "tools": [
+        "compare_renewal_offers"
+      ],
+      "accuracy": true,
+      "expected": [
+        [
+          13196.03
+        ]
+      ],
+      "routing": {
+        "stages": [
+          "servicing",
+          "commercial"
+        ],
+        "by": "nemotron-nano",
+        "tools_offered": 62,
+        "of": 92
+      },
+      "modules_used": [
+        "Decision Ladder core"
+      ],
+      "provenance_ok": true,
+      "repaired": false,
+      "ms": 5388,
+      "tokens": 53005,
+      "answer": "Switching saves **$13,196** over the 5\u2011year term ($99,810 vs $113,006).\n\nNext step: verify the exact numbers with your lender\u2019s actual offers and consider any hidden fees or penalties."
+    },
+    {
+      "id": "market",
+      "tool_ok": true,
+      "tools": [
+        "market_snapshot"
+      ],
+      "accuracy": true,
+      "expected": [
+        [
+          2.25,
+          3.55
+        ]
+      ],
+      "routing": {
+        "stages": [
+          "market"
+        ],
+        "by": "nemotron-nano",
+        "tools_offered": 19,
+        "of": 92
+      },
+      "modules_used": [
+        "Decision Ladder core"
+      ],
+      "provenance_ok": true,
+      "repaired": false,
+      "ms": 3818,
+      "tokens": 12957,
+      "answer": "Based on the current rate book:\n\n**Bank of Canada policy rate:** 2.25% (as of October 14, 2026)\n\n**5-year Government of Canada bond yield:** 3.55% (as of October 14, 2026)"
+    },
+    {
+      "id": "bank-posted",
+      "tool_ok": true,
+      "tools": [
+        "bank_rates"
+      ],
+      "accuracy": true,
+      "expected": [
+        [
+          6.19
+        ]
+      ],
+      "routing": {
+        "stages": [
+          "market"
+        ],
+        "by": "nemotron-nano",
+        "tools_offered": 19,
+        "of": 92
+      },
+      "modules_used": [
+        "Decision Ladder core"
+      ],
+      "provenance_ok": true,
+      "repaired": false,
+      "ms": 4572,
+      "tokens": 12395,
+      "answer": "Based on RBC's rate book data captured on October 15, 2026, their posted 5-year fixed rate (60-month term) is **6.19%**. This is the standard posted rate, while their special/discounted 5-year rate is 5.14%."
+    },
+    {
+      "id": "guardrail",
+      "tool_ok": true,
+      "tools": [
+        "message_guardrail"
+      ],
+      "accuracy": null,
+      "expected": [],
+      "routing": {
+        "stages": [
+          "prequal",
+          "compliance",
+          "lead",
+          "market"
+        ],
+        "by": "nemotron-nano + keywords",
+        "tools_offered": 52,
+        "of": 92
+      },
+      "modules_used": [
+        "MortgageLoanOps"
+      ],
+      "provenance_ok": true,
+      "repaired": false,
+      "ms": 5497,
+      "tokens": 45113,
+      "answer": "The message violates our guidelines: it includes a specific rate quote, implies an approval promise, and creates urgency (\"Act now\"). Please revise to avoid quoting exact rates, promising language and time-sensitive pressure. Let me know if you\u2019d like help drafting a compliant version."
+    },
+    {
+      "id": "no-invention",
+      "tool_ok": true,
+      "tools": [
+        "mortgage_payment"
+      ],
+      "accuracy": true,
+      "expected": [
+        [
+          5042.16
+        ]
+      ],
+      "routing": {
+        "stages": [
+          "prequal",
+          "property"
+        ],
+        "by": "nemotron-nano",
+        "tools_offered": 26,
+        "of": 92
+      },
+      "modules_used": [
+        "Decision Ladder core"
+      ],
+      "provenance_ok": true,
+      "repaired": false,
+      "ms": 4903,
+      "tokens": 27008,
+      "answer": "The estimated monthly principal\u2011and\u2011interest payment on a $1,000,000 mortgage at 4.5\u202f% amortized over 30 years is **$5,042**. This figure assumes standard Canadian semi\u2011annual compounding and does not include property tax, heating, condo fees, or other carrying costs. To get a full picture of your monthly housing costs, you\u2019d need to add those items based on the specific property. Let me know if you\u2019d like to run a full qualification or see how changes in rate or down payment affect the payment."
+    },
+    {
+      "id": "cash-to-close",
+      "tool_ok": true,
+      "tools": [
+        "cash_to_close_ontario",
+        "cash_to_close_ontario"
+      ],
+      "accuracy": true,
+      "expected": [
+        [
+          58971.0
+        ]
+      ],
+      "routing": {
+        "stages": [
+          "lead",
+          "prequal",
+          "documents",
+          "underwriting",
+          "property",
+          "closing"
+        ],
+        "by": "nemotron-nano",
+        "tools_offered": 54,
+        "of": 92
+      },
+      "modules_used": [
+        "Cash to Close"
+      ],
+      "provenance_ok": true,
+      "repaired": true,
+      "ms": 10749,
+      "tokens": 73977,
+      "answer": "Based on the calculator:\n\n- Minimum down payment required: **$45,000**\n- Estimated total cash needed on closing day (deposit, rest of down payment, land-transfer tax with first-time rebate, lawyer & title, inspection, moving, adjustments, PST on mortgage insurance): **$58,971**\n\nYou have **$60,000** saved, leaving approximately **$1,029** after covering these costs.\n\nTherefore, you are not short; you have a modest surplus.\n\nNext step: verify your income and debt levels against the lender\u2019s stress test using the pre\u2011underwriting file review tool to confirm the loan amount qualifies."
+    },
+    {
+      "id": "toronto-ltt",
+      "tool_ok": true,
+      "tools": [
+        "land_transfer_tax"
+      ],
+      "accuracy": true,
+      "expected": [
+        [
+          20475.0
+        ]
+      ],
+      "routing": {
+        "stages": [
+          "lead",
+          "prequal",
+          "documents",
+          "underwriting",
+          "property",
+          "closing"
+        ],
+        "by": "nemotron-nano",
+        "tools_offered": 54,
+        "of": 92
+      },
+      "modules_used": [
+        "Canadian Mortgage Calculator Suite"
+      ],
+      "provenance_ok": true,
+      "repaired": false,
+      "ms": 6549,
+      "tokens": 47376,
+      "answer": "The total land transfer tax due on a $900,000 home in Toronto for a first\u2011time buyer, after applying both the provincial and municipal first\u2011time\u2011buyer rebates, is **$20,475**.  \n\nNext step: let me know if you\u2019d like a full closing\u2011cost breakdown or help with any other numbers."
+    },
+    {
+      "id": "benchmark-oakville",
+      "tool_ok": true,
+      "tools": [
+        "benchmark_home_price"
+      ],
+      "accuracy": true,
+      "expected": [
+        [
+          1185000.0
+        ]
+      ],
+      "routing": {
+        "stages": [
+          "market",
+          "property"
+        ],
+        "by": "nemotron-nano + keywords",
+        "tools_offered": 24,
+        "of": 92
+      },
+      "modules_used": [
+        "Benchmark Home Value"
+      ],
+      "provenance_ok": true,
+      "repaired": false,
+      "ms": 4251,
+      "tokens": 13979,
+      "answer": "The benchmark price for a semi\u2011detached home in Oakville is **$1,185,000** (September\u202f2026).  \nOver the past 12 months it has fallen **\u20132.23%** (from $1,212,000 a year ago).\n\nNext step: let me know if you\u2019d like a deeper dive\u2014e.g., detached/condo benchmarks, affordability metrics, or a renewal\u2011shock analysis for a specific mortgage."
+    },
+    {
+      "id": "affordability-index",
+      "tool_ok": true,
+      "tools": [
+        "housing_affordability_index"
+      ],
+      "accuracy": true,
+      "expected": [
+        [
+          41.3,
+          37.4
+        ]
+      ],
+      "routing": {
+        "stages": [
+          "market"
+        ],
+        "by": "nemotron-nano",
+        "tools_offered": 19,
+        "of": 92
+      },
+      "modules_used": [
+        "Canada Housing Affordability Index 1980-2026"
+      ],
+      "provenance_ok": true,
+      "repaired": true,
+      "ms": 6692,
+      "tokens": 18820,
+      "answer": "The Bank of Canada\u2019s housing\u2011affordability index for Q2\u202f2026 shows that 41.3\u202f% of average disposable income is needed to carry an average\u2011priced home, versus a long\u2011run average of 37.4\u202f%. This indicates current affordability is weaker than the historical norm."
+    },
+    {
+      "id": "commercial-dscr",
+      "tool_ok": true,
+      "tools": [
+        "private_credit_deal_screen"
+      ],
+      "accuracy": true,
+      "expected": [
+        [
+          1.1221719457013575
+        ]
+      ],
+      "routing": {
+        "stages": [
+          "commercial"
+        ],
+        "by": "nemotron-nano",
+        "tools_offered": 18,
+        "of": 92
+      },
+      "modules_used": [
+        "Private Credit Deal Screener"
+      ],
+      "provenance_ok": true,
+      "repaired": false,
+      "ms": 4209,
+      "tokens": 19743,
+      "answer": "DSCR \u2248 **1.12**  \nGrade: **C**\n\nNext step: Review any covenant requirements or consider improving NOI or reducing loan size to boost the score."
+    },
+    {
+      "id": "doc-checklist",
+      "tool_ok": true,
+      "tools": [
+        "buyer_document_checklist"
+      ],
+      "accuracy": null,
+      "expected": [],
+      "routing": {
+        "stages": [
+          "documents"
+        ],
+        "by": "nemotron-nano",
+        "tools_offered": 18,
+        "of": 92
+      },
+      "modules_used": [
+        "Doc Quest"
+      ],
+      "provenance_ok": true,
+      "repaired": false,
+      "ms": 5258,
+      "tokens": 14157,
+      "answer": "For a salaried first-time buyer with gifted down payment, prioritize these three documents first:\n\n**First to request:**\n1. **Credit** \u2013 Proof you pay your bills (rent/phone bills or foreign credit report) \u2013 needed if Canadian credit history is short  \n2. **Job letter** \u2013 Recent employment letter (within 30 days) confirming title, start date, pay, hours, permanence  \n3. **Gift letter** \u2013 Signed gift letter from parents + proof the funds are deposited in your Canadian account  \n\nAfter these, gather: photo ID, proof of status in Canada, latest pay stubs, debt statements, and 90-day bank statements showing the down payment.  \nNext step: Request the credit references/job letter/gift letter package today."
+    },
+    {
+      "id": "renewal-xray",
+      "tool_ok": true,
+      "tools": [
+        "renewal_offer_check"
+      ],
+      "accuracy": null,
+      "expected": [],
+      "routing": {
+        "stages": [
+          "servicing"
+        ],
+        "by": "nemotron-nano",
+        "tools_offered": 45,
+        "of": 92
+      },
+      "modules_used": [
+        "Renewal Check"
+      ],
+      "provenance_ok": true,
+      "repaired": false,
+      "ms": 8830,
+      "tokens": 37770,
+      "answer": "Based on the renewal analysis, if your client continues making their current monthly payment of **$2,546.32** at the 1.99% rate on the $504,200 balance:\n\n**The mortgage will take exactly 20 more years to pay off** (240 months).\n\nThis assumes a standard 25-year amortization where 5 years have already elapsed (leaving 20 years remaining). If the actual amortization remaining differs from 20 years, the payoff time would adjust proportionally.\n\n**Next step:** Confirm the exact years remaining on the amortization from your client's mortgage documents for a precise calculation. Would you like me to check any other renewal scenarios or compare alternative rates?"
+    }
+  ]
+}

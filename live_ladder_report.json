@@ -1,0 +1,409 @@
+{
+  "oakville_stretch": {
+    "verdict": "RESTRUCTURE",
+    "memo": "VERDICT: RESTRUCTURE\n\nWHY\n- B-20 stress test (qualification): GDS 39.9% and TDS 45.4% exceed 39%/44% limits at 6.19% qualifying rate (MortgageLoanOps, Decision Ladder core).\n- Cash to close (closing): $19,875 shortfall ($239,875 needed vs $220,000 saved) (Cash to Close, Canadian Mortgage Calculator Suite).\n- Affordability (affordability): Max supported price $1,064,600 vs $1,100,000 contract (-$35,400) (Canadian Mortgage Calculator Suite, Canada Housing Affordability Index).\n- Document check (documents): Documented income $99,000 covers only 53.5% of stated $185,000 (Decision Ladder core, Doc Quest).\n- Pre-underwriting readiness (readiness): Score 20/100 with 5 flags including high GDS/TDS and missing employment letter, NOA, down payment statement (Loan File Pre-Underwriting Check, Quiet Charges, Shoebox).\n\nPATH TO YES\n1. Lower the price to $1,067,000.\n2. Raise the down payment to $255,500 (+$35,500).\n\nCONDITIONS & RISKS\n- Identity/watch-list screening not performed; broker must verify ID manually (MortgageLoanOps).\n- Only B-lenders fit; expect higher rates/fees \u2014 disclose to client (MortgageLoanOps).\n- Oakville semi benchmark $1,185,000 (-7.2% vs price); benchmarks indicative, not an appraisal (Benchmark Home Value).\n- Renewal shock moderate: +1.0% rate at 5-year renewal raises payment ~10.5% to $4,727 (Renewal Shock Radar).\n- APR disclosure 4.190% ($174,681 over term) required 2+ days before signing (MortgageLoanOps, Decision Ladder core).\n\nNEXT ACTIONS FOR THE BROKER\n1. Complete manual identity and watch-list verification before proceeding.\n2. Collect missing documents: employment letter, NOA, down payment statement; reconcile the income gap.\n3. Present the two restructuring options (price reduction or larger down payment) with updated stress-test results.\n4. Disclose B-lender pricing, fees, and APR 4.190% cost-of-borrowing at least two business days before signing.\n5. Advise client on $19,875 closing-cost gap; confirm source of funds if restructuring proceeds.",
+    "memo_model": "nvidia/Nemotron-3-Ultra-550b-a55b",
+    "memo_source": "nemotron",
+    "memo_verification": {
+      "ok": true,
+      "checked": 27,
+      "supported": 27,
+      "unsupported": []
+    },
+    "message": {
+      "draft": "Hi Priya, just checking in to let you know we\u2019d love to review your purchase options together whenever you\u2019re ready. No rush\u2014just here to help. Book a call at your convenience: [booking link]",
+      "guardrail": {
+        "allowed": true,
+        "violations": []
+      },
+      "send_text": "Hi Priya, just checking in to let you know we\u2019d love to review your purchase options together whenever you\u2019re ready. No rush\u2014just here to help. Book a call at your convenience: [booking link]",
+      "blocked": false
+    },
+    "usage": {
+      "calls": 3,
+      "prompt_tokens": 11884,
+      "completion_tokens": 1280,
+      "latency_ms": 7702.5,
+      "approx_cost_usd": 1.8e-05,
+      "by_model": {
+        "nvidia/Nemotron-3-Ultra-550b-a55b": {
+          "calls": 2,
+          "prompt_tokens": 11766,
+          "completion_tokens": 1235
+        },
+        "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": {
+          "calls": 1,
+          "prompt_tokens": 118,
+          "completion_tokens": 45
+        }
+      }
+    },
+    "timings_ms": {
+      "ladder": 1235.7,
+      "research": 7184.1,
+      "memo": 6303.3,
+      "message": 1416.4,
+      "total": 16139.5
+    },
+    "research": [
+      {
+        "query": "Bank of Canada interest rate announcement",
+        "rate_check": null,
+        "sources": [
+          "https://www.bankofcanada.ca/2026/07/fad-announcement-release-mpr-2026-07-15",
+          "https://www.bankofcanada.ca/2026/07/bank-canada-publishes-2027-schedule-policy-interest-rate-announcements-other-major-publications",
+          "https://www.bankofcanada.ca/2026/10/fad-announcement-release-mpr-2026-10-28",
+          "https://www.bankofcanada.ca/2026/06/fad-press-release-2026-06-10",
+          "https://www.bankofcanada.ca/2026/03/fad-press-release-2026-03-18"
+        ]
+      },
+      {
+        "query": "OSFI mortgage underwriting update",
+        "rate_check": null,
+        "sources": [
+          "https://www.osfi-bsif.gc.ca/en/about-osfi/reports-publications/osfis-annual-risk-outlook-fiscal-year-2026-2027",
+          "https://www.osfi-bsif.gc.ca/en/guidance/guidance-library/consultative-document-credit-risk-management",
+          "https://www.osfi-bsif.gc.ca/en/news/osfis-quarterly-release-continuing-advance-smart-well-calibrated-risk-taking",
+          "https://www.osfi-bsif.gc.ca/en/news/backgrounder-consultative-document-credit-risk-management",
+          "https://www.osfi-bsif.gc.ca/en/news/osfis-quarterly-release-smart-oversight-support-economic-growth"
+        ]
+      }
+    ]
+  },
+  "brampton_first_home": {
+    "verdict": "GO WITH CONDITIONS",
+    "memo": "VERDICT: GO WITH CONDITIONS\n\nWHY\n- Screening: Not screened \u2014 no licensed list connected; a person must verify ID (MortgageLoanOps).\n- Affordability: Max price $750,000 (GDS limit) vs purchase $725,000; $25,000 headroom; qualifying rate 6.24% (Canadian Mortgage Calculator Suite / Canada Housing Affordability Index).\n- B-20 qualification: GDS 35.0%, TDS 37.9% at 6.24% qualifying rate; passes (MortgageLoanOps / Decision Ladder core).\n- Cross-check: 5/5 quantities agree across 6 engines (premium $28,350, qualifying rate 6.24%, base payment $4,116.83, LTT $10,975, LTT refund $4,000) (MortgageLoanOps, Canadian Mortgage Calculator Suite, Loan File Pre-Underwriting Check, Cash to Close, Renewal Check, Renewal Radar).\n- Cash to close: $64,643 needed; $72,000 savings leave $7,357 spare (Cash to Close / Canadian Mortgage Calculator Suite).\n\nPATH TO YES\nNot needed\n\nCONDITIONS & RISKS\n- Identity & watch-list screening must be completed by a person before submission.\n- Property price is 9.4% above Brampton town benchmark ($663,000); benchmark down 2.2% YoY and 18% over 5 years \u2014 confirm appraisal supports value.\n- Renewal outlook: if rates rise 1.0 pp in 5 years, payment increases ~10.4% (moderate); share of income ~27% at renewal.\n- Compliance: deliver APR 4.240% / cost of borrowing $141,320 disclosure \u22652 business days before signing; record suitability assessment; disclose conflicts and lender compensation (FSRA).\n\nNEXT ACTIONS FOR THE BROKER\n1. Complete identity and watch-list verification manually and document the result in the file.\n2. Order or confirm an appraisal to support the $725,000 purchase price relative to the $663,000 benchmark.\n3. Prepare and deliver the mortgage cost disclosure (APR 4.240%, $141,320 over 5 years) at least two business days before the client signs.\n4. Confirm lender-specific guidelines for the 16 eligible lenders (6 big banks, 4 monolines, 6 credit unions) and select the best fit.\n5. Ensure the client has the $64,643 cash to close (including $2,268 PST on premium) available on closing day.",
+    "memo_model": "nvidia/Nemotron-3-Ultra-550b-a55b",
+    "memo_source": "nemotron",
+    "memo_verification": {
+      "ok": true,
+      "checked": 30,
+      "supported": 30,
+      "unsupported": []
+    },
+    "message": {
+      "draft": "Hi Daniel,  \nJust checking in on your purchase mortgage file\u2014we\u2019re gathering a few items to keep things moving smoothly. No rush at all; just let us know when you\u2019re ready to share what\u2019s needed.  \nWe\u2019d love to chat when it suits you. Book a call here: [booking link]  \nWarmly,  \nYour Team",
+      "guardrail": {
+        "allowed": true,
+        "violations": []
+      },
+      "send_text": "Hi Daniel,  \nJust checking in on your purchase mortgage file\u2014we\u2019re gathering a few items to keep things moving smoothly. No rush at all; just let us know when you\u2019re ready to share what\u2019s needed.  \nWe\u2019d love to chat when it suits you. Book a call here: [booking link]  \nWarmly,  \nYour Team",
+      "blocked": false
+    },
+    "usage": {
+      "calls": 2,
+      "prompt_tokens": 5086,
+      "completion_tokens": 702,
+      "latency_ms": 4650.3,
+      "approx_cost_usd": 2.5e-05,
+      "by_model": {
+        "nvidia/Nemotron-3-Ultra-550b-a55b": {
+          "calls": 1,
+          "prompt_tokens": 4970,
+          "completion_tokens": 625
+        },
+        "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": {
+          "calls": 1,
+          "prompt_tokens": 116,
+          "completion_tokens": 77
+        }
+      }
+    },
+    "timings_ms": {
+      "ladder": 425.6,
+      "research": 577.5,
+      "memo": 3155.9,
+      "message": 1499.1,
+      "total": 5658.2
+    },
+    "research": [
+      {
+        "query": "Bank of Canada interest rate announcement",
+        "rate_check": null,
+        "sources": [
+          "https://www.bankofcanada.ca/2026/07/fad-announcement-release-mpr-2026-07-15",
+          "https://www.bankofcanada.ca/2026/07/bank-canada-publishes-2027-schedule-policy-interest-rate-announcements-other-major-publications",
+          "https://www.bankofcanada.ca/2026/10/fad-announcement-release-mpr-2026-10-28",
+          "https://www.bankofcanada.ca/2026/06/fad-press-release-2026-06-10",
+          "https://www.bankofcanada.ca/2026/03/fad-press-release-2026-03-18"
+        ]
+      },
+      {
+        "query": "OSFI mortgage underwriting update",
+        "rate_check": null,
+        "sources": [
+          "https://www.osfi-bsif.gc.ca/en/about-osfi/reports-publications/osfis-annual-risk-outlook-fiscal-year-2026-2027",
+          "https://www.osfi-bsif.gc.ca/en/guidance/guidance-library/consultative-document-credit-risk-management",
+          "https://www.osfi-bsif.gc.ca/en/news/osfis-quarterly-release-continuing-advance-smart-well-calibrated-risk-taking",
+          "https://www.osfi-bsif.gc.ca/en/news/backgrounder-consultative-document-credit-risk-management",
+          "https://www.osfi-bsif.gc.ca/en/news/osfis-quarterly-release-smart-oversight-support-economic-growth"
+        ]
+      }
+    ]
+  },
+  "pandemic_renewal_rbc": {
+    "verdict": "GO WITH CONDITIONS",
+    "memo": "VERDICT: GO WITH CONDITIONS\n\nWHY\n- Identity & watch-list screening: NOT_SCREENED \u2014 no licensed list connected; a person must verify ID (MortgageLoanOps).\n- Stress test at switch/refinance: PASS \u2014 stressed at 6.84% yields GDS 37.5% / TDS 42.5%; straight switch does not require re-stress-test per OSFI Nov 21, 2024 rule (MortgageLoanOps, Decision Ladder core).\n- Property value & local prices: PASS \u2014 value basis $615,000 (purchase indexed to 2026-09); LTV 82.0%; estimated value -21.0% below purchase price (Benchmark Home Value).\n- Exit cost & renewal economics: PASS \u2014 1 month to maturity; priority 77.5 (call this week); payment rises 28.5% from $2,538 to $3,262; max saving vs worst offer $12,985 (Renewal Radar, Renewal Check, MortgageLoanOps).\n- Cross-check across independent engines: PASS \u2014 1/1 quantities agree across 2 engines; payment at renewal rate $3,269.81 confirmed (MortgageLoanOps, Canadian Mortgage Calculator Suite, Loan File Pre-Underwriting Check, Cash to Close, Renewal Check, Renewal Radar).\n\nPATH TO YES\nNot needed\n\nCONDITIONS & RISKS\n- Identity and watch-list screening must be completed manually before any commitment.\n- LTV 82% exceeds the 80% uninsured-switch threshold at many lenders; straight switch with current lender is unaffected, but alternative lender options may be limited.\n- Property value estimated 21% below original purchase price ($780,000), reducing equity cushion.\n- Payment shock: renewal at 4.84% increases payment ~28.5% ($724 [unverified]/month); keeping current payment would extend amortization ~12.7 years.\n- APR disclosure 4.840% ($114,126 cost of borrowing over 5-year term) must be delivered \u22652 business days before signing (O. Reg. 191/08).\n\nNEXT ACTIONS FOR THE BROKER\n1. Complete manual identity and watch-list verification; document the outcome in the file.\n2. Contact the current lender this week (priority 77.5) using the Renewal Radar retention script to request a rate match or improved offer.\n3. Present the client with the payment-impact comparison (current vs. renewal vs. switch) and the equity/value gap (-21% vs purchase price).\n4. Deliver the APR 4.840% / $114,126 cost-of-borrowing disclosure and all FSRA-required disclosures (conflicts, lender compensation, suitability record) at least 2 business days before signing.\n5. Confirm the chosen lender\u2019s live straight-switch policy for LTV >80% and document the client\u2019s informed choice.",
+    "memo_model": "nvidia/Nemotron-3-Ultra-550b-a55b",
+    "memo_source": "nemotron",
+    "memo_verification": {
+      "ok": false,
+      "checked": 28,
+      "supported": 27,
+      "unsupported": [
+        {
+          "text": "$724",
+          "value": 724.0,
+          "kind": "money"
+        }
+      ]
+    },
+    "message": {
+      "draft": "Hi Wei,  \nJust a quick update on your renewal\u2014we\u2019re all set to move forward, but we\u2019ll need a few items from you to complete the file.  \nWhenever you\u2019re ready, just reply to this email or book a call with us at your convenience.  \nWe\u2019re here to help whenever you\u2019d like to connect.  \nBest regards,  \n",
+      "guardrail": {
+        "allowed": true,
+        "violations": []
+      },
+      "send_text": "Hi Wei,  \nJust a quick update on your renewal\u2014we\u2019re all set to move forward, but we\u2019ll need a few items from you to complete the file.  \nWhenever you\u2019re ready, just reply to this email or book a call with us at your convenience.  \nWe\u2019re here to help whenever you\u2019d like to connect.  \nBest regards,  \n",
+      "blocked": false
+    },
+    "usage": {
+      "calls": 3,
+      "prompt_tokens": 10329,
+      "completion_tokens": 1484,
+      "latency_ms": 9197.4,
+      "approx_cost_usd": 3.3e-05,
+      "by_model": {
+        "nvidia/Nemotron-3-Ultra-550b-a55b": {
+          "calls": 2,
+          "prompt_tokens": 10212,
+          "completion_tokens": 1376
+        },
+        "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": {
+          "calls": 1,
+          "prompt_tokens": 117,
+          "completion_tokens": 108
+        }
+      }
+    },
+    "timings_ms": {
+      "ladder": 377.3,
+      "research": 888.0,
+      "memo": 7194.8,
+      "message": 2012.0,
+      "total": 10472.2
+    },
+    "research": [
+      {
+        "query": "Bank of Canada interest rate announcement",
+        "rate_check": null,
+        "sources": [
+          "https://www.bankofcanada.ca/2026/07/fad-announcement-release-mpr-2026-07-15",
+          "https://www.bankofcanada.ca/2026/07/bank-canada-publishes-2027-schedule-policy-interest-rate-announcements-other-major-publications",
+          "https://www.bankofcanada.ca/2026/10/fad-announcement-release-mpr-2026-10-28",
+          "https://www.bankofcanada.ca/2026/06/fad-press-release-2026-06-10",
+          "https://www.bankofcanada.ca/2026/03/fad-press-release-2026-03-18"
+        ]
+      },
+      {
+        "query": "OSFI mortgage underwriting update",
+        "rate_check": null,
+        "sources": [
+          "https://www.osfi-bsif.gc.ca/en/about-osfi/reports-publications/osfis-annual-risk-outlook-fiscal-year-2026-2027",
+          "https://www.osfi-bsif.gc.ca/en/guidance/guidance-library/consultative-document-credit-risk-management",
+          "https://www.osfi-bsif.gc.ca/en/news/osfis-quarterly-release-continuing-advance-smart-well-calibrated-risk-taking",
+          "https://www.osfi-bsif.gc.ca/en/news/backgrounder-consultative-document-credit-risk-management",
+          "https://www.osfi-bsif.gc.ca/en/news/osfis-quarterly-release-smart-oversight-support-economic-growth"
+        ]
+      },
+      {
+        "query": "RBC posted 5-year rate on its own page (Tavily Extract)",
+        "rate_check": {
+          "bank": "RBC",
+          "url": "https://www.rbcroyalbank.com/mortgages/mortgage-rates.html",
+          "status": "changed_or_not_shown",
+          "rate_book_5y_posted": 6.19,
+          "rate_book_captured": "2026-10-15",
+          "rate_book_kind": "captured",
+          "five_year_rates_on_page": [
+            5.14,
+            4.84,
+            0.6,
+            5.24,
+            3.3
+          ],
+          "failed": [],
+          "offline": false,
+          "method": "Tavily Extract of the lender's own rate page; rates beside a 5-year label are compared with the rate book"
+        },
+        "sources": [
+          "https://www.rbcroyalbank.com/mortgages/mortgage-rates.html"
+        ]
+      }
+    ]
+  },
+  "td_break_early": {
+    "verdict": "GO WITH CONDITIONS",
+    "memo": "VERDICT: GO WITH CONDITIONS\n\nWHY\n- Qualification (MortgageLoanOps, Decision Ladder core): Stress test at 6.39% passes with GDS 31.6% and TDS 37.9%; OSFI rule since Nov 21, 2024 does not require re-stress-test for a straight switch if amount and amortization do not increase.\n- Cross-check (MortgageLoanOps, Canadian Mortgage Calculator Suite, Loan File Pre-Underwriting Check, Cash to Close, Renewal Check, Renewal Radar): 2/2 key quantities agree across 5 engines \u2014 payment at renewal rate $3,673.12 and IRD penalty $17,013.33 (posted-minus-discount); TD exact method $16,363.73.\n- Property (Benchmark Home Value): Stated value $1,150,000; LTV 60.9% against Toronto benchmark $908,000 (composite, Sep 2026).\n- Market (Renewal Radar, Canada's Rate Cycle 2015-2026, Who Sets Canada's 5 Year Mortgage Rate?): File rate 5.29% is 0.80 points above BoC average 4.49% (Jul 2026); posted 5-year is 1.70 points above effective rates.\n- Exit cost (Renewal Radar, Renewal Check, MortgageLoanOps): 21 months to maturity; IRD penalty ~$16,364 (TD exact); net cost to refinance $11,166 over remaining term after penalty and $1,500 closing costs; break-even 56 months; priority 9.6 (watch).\n- Compliance (MortgageLoanOps, Decision Ladder core): APR 5.290%, cost of borrowing $158,714 over 5-year term; disclosures required before signing.\n\nPATH TO YES\nNot needed\n\nCONDITIONS & RISKS\n- Identity & watch-list screening not performed; no licensed list connected \u2014 a person must verify ID (MortgageLoanOps).\n- No documents attached; all stated figures are unverified \u2014 request income documents (T4/NOA or pay stub + employment letter) (Decision Ladder core, Doc Quest).\n- Exit cost priority 9.6 (watch): penalty ~$16,364 makes refinance uneconomic over 21 months left; net cost $11,166; break-even 56 months (Renewal Radar, Renewal Check).\n- File rate 0.80 points above market average; client may qualify for better pricing (Renewal Radar, Canada's Rate Cycle).\n- OSFI stress-test exemption applies to straight switches; lender policy may still require re-qualification (MortgageLoanOps).\n\nNEXT ACTIONS FOR THE BROKER\n1. Complete identity and watch-list screening manually; document the verification.\n2. Collect and verify income documents (T4/NOA or recent pay stub plus employment letter) before proceeding.\n3. Present the exit-cost analysis: $16,364 penalty, $11,166 net cost over 21 months, 56-month break-even; confirm client understands refinance is uneconomic at current rates.\n4. Shop the file against the 21 lenders (6 Big Bank, 4 Monoline, 5 B-Lender, 6 Credit Union) to seek a rate below 5.29% \u2014 file rate is 0.80 points above the BoC average of 4.49%.\n5. Prepare and deliver APR disclosure (5.290%, $158,714 cost of borrowing) at least 2 business days before signing; record suitability assessment; disclose any conflicts and lender compensation per FSRA.",
+    "memo_model": "nvidia/Nemotron-3-Ultra-550b-a55b",
+    "memo_source": "nemotron",
+    "memo_verification": {
+      "ok": true,
+      "checked": 30,
+      "supported": 30,
+      "unsupported": []
+    },
+    "message": {
+      "draft": "Hi Marco,  \nJust checking in on your refinance file\u2014we need a few items to move forward. When you have a moment, let\u2019s connect to discuss next steps.  \nBook a call at your convenience: [booking link]  \nWarm regards,  \n[Your Name]  \n[Company Name]  \n[Contact Info]  \n\n(298 characters)",
+      "guardrail": {
+        "allowed": true,
+        "violations": []
+      },
+      "send_text": "Hi Marco,  \nJust checking in on your refinance file\u2014we need a few items to move forward. When you have a moment, let\u2019s connect to discuss next steps.  \nBook a call at your convenience: [booking link]  \nWarm regards,  \n[Your Name]  \n[Company Name]  \n[Contact Info]  \n\n(298 characters)",
+      "blocked": false
+    },
+    "usage": {
+      "calls": 2,
+      "prompt_tokens": 4961,
+      "completion_tokens": 950,
+      "latency_ms": 6688.7,
+      "approx_cost_usd": 2.7e-05,
+      "by_model": {
+        "nvidia/Nemotron-3-Ultra-550b-a55b": {
+          "calls": 1,
+          "prompt_tokens": 4845,
+          "completion_tokens": 867
+        },
+        "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": {
+          "calls": 1,
+          "prompt_tokens": 116,
+          "completion_tokens": 83
+        }
+      }
+    },
+    "timings_ms": {
+      "ladder": 187.7,
+      "research": 803.6,
+      "memo": 5004.9,
+      "message": 1688.3,
+      "total": 7684.5
+    },
+    "research": [
+      {
+        "query": "Bank of Canada interest rate announcement",
+        "rate_check": null,
+        "sources": [
+          "https://www.bankofcanada.ca/2026/07/fad-announcement-release-mpr-2026-07-15",
+          "https://www.bankofcanada.ca/2026/07/bank-canada-publishes-2027-schedule-policy-interest-rate-announcements-other-major-publications",
+          "https://www.bankofcanada.ca/2026/10/fad-announcement-release-mpr-2026-10-28",
+          "https://www.bankofcanada.ca/2026/06/fad-press-release-2026-06-10",
+          "https://www.bankofcanada.ca/2026/03/fad-press-release-2026-03-18"
+        ]
+      },
+      {
+        "query": "OSFI mortgage underwriting update",
+        "rate_check": null,
+        "sources": [
+          "https://www.osfi-bsif.gc.ca/en/about-osfi/reports-publications/osfis-annual-risk-outlook-fiscal-year-2026-2027",
+          "https://www.osfi-bsif.gc.ca/en/guidance/guidance-library/consultative-document-credit-risk-management",
+          "https://www.osfi-bsif.gc.ca/en/news/osfis-quarterly-release-continuing-advance-smart-well-calibrated-risk-taking",
+          "https://www.osfi-bsif.gc.ca/en/news/backgrounder-consultative-document-credit-risk-management",
+          "https://www.osfi-bsif.gc.ca/en/news/osfis-quarterly-release-smart-oversight-support-economic-growth"
+        ]
+      },
+      {
+        "query": "TD posted 5-year rate on its own page (Tavily Extract)",
+        "rate_check": {
+          "bank": "TD",
+          "url": "https://www.td.com/ca/en/personal-banking/products/mortgages/mortgage-rates",
+          "status": "changed_or_not_shown",
+          "rate_book_5y_posted": 6.14,
+          "rate_book_captured": "2026-10-15",
+          "rate_book_kind": "captured",
+          "five_year_rates_on_page": [
+            4.84,
+            4.24,
+            6.09
+          ],
+          "failed": [],
+          "offline": false,
+          "method": "Tavily Extract of the lender's own rate page; rates beside a 5-year label are compared with the rate book"
+        },
+        "sources": [
+          "https://www.td.com/ca/en/personal-banking/products/mortgages/mortgage-rates"
+        ]
+      }
+    ]
+  },
+  "hamilton_commercial": {
+    "verdict": "GO WITH CONDITIONS",
+    "memo": "VERDICT: GO WITH CONDITIONS\n\nWHY\n- Identity & watch-list screening: NOT_SCREENED \u2014 no licensed list connected; a person must verify ID (MortgageLoanOps).\n- Document check: 0 documents attached; stated figures unverified (Decision Ladder core, Doc Quest).\n- Commercial / private credit screen: Grade C (score 49); LTV 65%, DSCR 1.12, debt yield 9.54%, balloon $6.5M, exit value $10M, exit LTV 65%, breakeven value drop 35%, all-in yield 8.5%, take-out max loan $6,460,285, take-out gap -$39,715 (Private Credit Deal Screener, Decision Ladder core).\n\nPATH TO YES\nNot needed\n\nCONDITIONS & RISKS\n- Identity and watch-list screening must be completed manually before funding.\n- Full income and property documentation (NOI verification, rent roll, environmental, appraisal) required to verify stated figures.\n- Commercial grade C reflects sensitivity to NOI; any NOI shortfall degrades DSCR below 1.12 and widens the $39,715 take-out gap.\n- Balloon risk: $6.5M balance due at maturity requires confirmed take-out capacity or equity cure.\n- Rate risk: policy rate 2.25%, prime 4.45%, GoC 5y 3.55%; posted 5-year is 1.70 pts above effective rate (Renewal Radar, Canada's Rate Cycle 2015-2026, Who Sets Canada's 5 Year Mortgage Rate?).\n\nNEXT ACTIONS FOR THE BROKER\n1. Conduct manual identity and watch-list screening; document results in file.\n2. Collect and verify all required documents: T4/NOA or pay stub plus employment letter, current rent roll, NOI statement, environmental report, and full appraisal.\n3. Confirm take-out strategy: secure commitment for conventional refinancing at or below 6.0% or identify equity source to cover the $39,715 gap.\n4. Provide FSRA disclosures: conflict of interest, lender compensation, mortgage cost disclosure, and suitability assessment record (MortgageLoanOps, Decision Ladder core).\n5. Update file with verified figures and re-run commercial screen before submitting to lender.",
+    "memo_model": "nvidia/Nemotron-3-Ultra-550b-a55b",
+    "memo_source": "nemotron",
+    "memo_verification": {
+      "ok": true,
+      "checked": 19,
+      "supported": 19,
+      "unsupported": []
+    },
+    "message": {
+      "draft": "Hi Harbourview,  \nWe\u2019re reviewing your commercial mortgage file and need a few items from you to move forward.  \nPlease reply to this email with the requested documents at your convenience.  \nWe\u2019ll be in touch to confirm next steps once received.  \nNo rush\u2014just let us know when you\u2019re ready.  \nBook ",
+      "guardrail": {
+        "allowed": true,
+        "violations": []
+      },
+      "send_text": "Hi Harbourview,  \nWe\u2019re reviewing your commercial mortgage file and need a few items from you to move forward.  \nPlease reply to this email with the requested documents at your convenience.  \nWe\u2019ll be in touch to confirm next steps once received.  \nNo rush\u2014just let us know when you\u2019re ready.  \nBook ",
+      "blocked": false
+    },
+    "usage": {
+      "calls": 2,
+      "prompt_tokens": 4085,
+      "completion_tokens": 620,
+      "latency_ms": 4223.4,
+      "approx_cost_usd": 3e-05,
+      "by_model": {
+        "nvidia/Nemotron-3-Ultra-550b-a55b": {
+          "calls": 1,
+          "prompt_tokens": 3967,
+          "completion_tokens": 526
+        },
+        "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": {
+          "calls": 1,
+          "prompt_tokens": 118,
+          "completion_tokens": 94
+        }
+      }
+    },
+    "timings_ms": {
+      "ladder": 84.9,
+      "research": 472.5,
+      "memo": 2549.5,
+      "message": 1676.6,
+      "total": 4783.5
+    },
+    "research": [
+      {
+        "query": "Bank of Canada interest rate announcement",
+        "rate_check": null,
+        "sources": [
+          "https://www.bankofcanada.ca/2026/07/fad-announcement-release-mpr-2026-07-15",
+          "https://www.bankofcanada.ca/2026/07/bank-canada-publishes-2027-schedule-policy-interest-rate-announcements-other-major-publications",
+          "https://www.bankofcanada.ca/2026/10/fad-announcement-release-mpr-2026-10-28",
+          "https://www.bankofcanada.ca/2026/06/fad-press-release-2026-06-10",
+          "https://www.bankofcanada.ca/2026/03/fad-press-release-2026-03-18"
+        ]
+      },
+      {
+        "query": "OSFI mortgage underwriting update",
+        "rate_check": null,
+        "sources": [
+          "https://www.osfi-bsif.gc.ca/en/about-osfi/reports-publications/osfis-annual-risk-outlook-fiscal-year-2026-2027",
+          "https://www.osfi-bsif.gc.ca/en/guidance/guidance-library/consultative-document-credit-risk-management",
+          "https://www.osfi-bsif.gc.ca/en/news/osfis-quarterly-release-continuing-advance-smart-well-calibrated-risk-taking",
+          "https://www.osfi-bsif.gc.ca/en/news/backgrounder-consultative-document-credit-risk-management",
+          "https://www.osfi-bsif.gc.ca/en/news/osfis-quarterly-release-smart-oversight-support-economic-growth"
+        ]
+      }
+    ]
+  }
+}

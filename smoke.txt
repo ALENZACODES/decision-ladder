@@ -1,0 +1,12 @@
+[PASS] models visible: {"count": 30, "nvidia": ["nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B", "nvidia/Nemotron-3-Ultra-550b-a55b", "nvidia/Nemotron-3.5-Super-VL", "nvidia/Nemotron-3_5-Lightning", "nvidia/nemotron-3-super-120b-a12b"]}
+[PASS] NVIDIA Nemotron reasoner resolved: {"reasoner": "nvidia/nemotron-3-super-120b-a12b", "reasoner_reason": "configured", "fast": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B", "fast_reason": "configured", "ultra": "nvidia/Nemotron-3-Ultra-550b-a55b", "ultra_reason": "auto: picked the Nemotron Ultra model listed", "nemotron_models": ["nvidia/N
+[PASS] NVIDIA Nemotron fast model resolved: {"fast": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B", "reason": "configured"}
+[PASS] Nemotron tool calling: ["qualify_purchase", "find_path_to_yes"]
+[PASS] copilot figures traced: {"ok": true, "checked": 12, "supported": 12, "unsupported": []}
+[PASS] Nemotron Nano JSON extraction: {"model_fields": 15, "conflicts": [], "dropped": [{"field": "down_payment", "value": 220000.0, "quote": "$220k saved for the down payment", "reason": "model quote not found in source text"}, {"field": "savings", "value": 220000.0, "quote": "$220k saved for the down payment", "reason": "model quote n
+[PASS] ladder memo by Nemotron: {"source": "nemotron", "verdict": "RESTRUCTURE"}
+[PASS] memo figures traced: {"ok": true, "checked": 33, "supported": 33, "unsupported": []}
+[PASS] Tavily research: ["https://www.bankofcanada.ca/2026/07/fad-announcement-release-mpr-2026-07-15", "https://www.bankofcanada.ca/2026/07/bank-canada-publishes-2027-schedule-policy-interest-rate-announcements-other-major-publications", "https://www.bankofcanada.ca/2026/10/fad-announcement-release-mpr-2026-10-28", "https
+
+9/9 checks passed. Usage: {'calls': 9, 'prompt_tokens': 58391, 'completion_tokens': 3171, 'latency_ms': 27291.2, 'approx_cost_usd': 0.015917, 'by_model': {'nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B': {'calls': 3, 'prompt_tokens': 818, 'completion_tokens': 768}, 'nvidia/nemotron-3-super-120b-a12b': {'calls': 4, 'prompt_tokens': 49285, 'completion_tokens': 998}, 'nvidia/Nemotron-3-Ultra-550b-a55b': {'calls': 2, 'prompt_tokens': 8288, 'completion_tokens': 1405}}}
+Wrote smoke_report.json
