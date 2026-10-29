@@ -10,6 +10,14 @@ Decision Ladder takes a mortgage file and moves it up eleven rungs, from intake 
 > **NVIDIA open models:** Nemotron 3 Super (reasoner) and Nemotron 3 Nano (fast extraction and drafting), both called through Nebius Token Factory's OpenAI-compatible API.
 > **Runs with zero dependencies:** Python 3.10+ standard library only. `python -m decision_ladder serve --offline` works with no keys.
 
+![Decision Ladder: a purchase that fails the stress test, with the path to yes](docs/screenshots/ladder.png)
+
+| Renewal book scan | Market (rate book) |
+|---|---|
+| ![Renewal book](docs/screenshots/renewal-book.png) | ![Market](docs/screenshots/market.png) |
+
+*Screenshots are from offline demo mode (labelled in the header). In live mode the badge reads "LIVE · NVIDIA Nemotron … on Nebius Token Factory".*
+
 ---
 
 ## The ladder

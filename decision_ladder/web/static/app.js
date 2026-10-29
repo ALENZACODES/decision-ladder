@@ -34,7 +34,8 @@
     "$" + (+v).toLocaleString("en-CA", { maximumFractionDigits: Math.abs(+v) >= 1000 ? 0 : 2 });
   const fmtNum = (v, d = 2) => (v === null || v === undefined || isNaN(+v)) ? "—" : (+v).toLocaleString("en-CA", { maximumFractionDigits: d });
   const fmtPct = (v) => (v === null || v === undefined || isNaN(+v)) ? "—" : (+v).toFixed(2) + "%";
-  const label = (k) => String(k).replace(/_/g, " ").replace(/\bpct\b/, "%").replace(/^\w/, (c) => c.toUpperCase());
+  const ACR = /\b(gds|tds|ltv|ird|pst|goc|boc|ltv|cmhc)\b/gi;
+  const label = (k) => String(k).replace(/_/g, " ").replace(/\bpct\b/, "%").replace(ACR, (m) => m.toUpperCase()).replace(/^\w/, (c) => c.toUpperCase());
 
   function fmtVal(k, v) {
     if (v === null || v === undefined) return "—";
