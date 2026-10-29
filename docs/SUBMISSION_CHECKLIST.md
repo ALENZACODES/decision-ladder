@@ -4,7 +4,7 @@ Submissions lock at the deadline. Don't edit the repo, video or Devpost page aft
 
 ## Ready now
 - [x] Public repo, MIT license, README covering setup, Nemotron, Token Factory, Tavily and Nebius Serverless usage
-- [x] 14 modules embedded; a 17-rung journey; cross-checks; Nano / Super / Ultra; Tavily Search and Extract
+- [x] 21 modules embedded; a 17-rung journey; cross-checks; Nano / Super / Ultra; Tavily Search and Extract
 - [x] CI green (OS tests + each app's own tests); the container image is published to `ghcr.io/alenzacodes/decision-ladder`
 - [x] Devpost text: `docs/DEVPOST_SUBMISSION.md`
 - [x] Video script and automatic recorder: `docs/VIDEO_SCRIPT.md`, `scripts/record_demo.mjs`

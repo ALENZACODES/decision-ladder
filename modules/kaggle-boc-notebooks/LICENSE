@@ -1,0 +1,13 @@
+Copyright (c) 2026 John Khan. All rights reserved.
+
+The notebooks in this repository and this repository's text are the work of John Khan. No licence is granted to copy, modify or redistribute them without written permission, except as allowed by GitHub's Terms of Service (viewing and forking on GitHub).
+
+Exceptions, where a file's own licence or terms apply instead:
+
+data/bank-of-canada-policy-rate-daily/V39079.csv
+  Source: Bank of Canada, Valet API series V39079, unchanged.
+  Bank of Canada terms of use: https://www.bankofcanada.ca/terms/
+
+data/canada-mortgage-rate-nowcast-output/
+  Published by John Khan on Kaggle under the Apache License, Version 2.0:
+  https://www.apache.org/licenses/LICENSE-2.0

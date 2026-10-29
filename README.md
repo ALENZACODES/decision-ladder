@@ -4,7 +4,7 @@
 
 **Every stage of a Canadian mortgage, one system. Nemotron reasons; calculators decide.**
 
-Decision Ladder is an operating system for a Canadian mortgage file, from the first email to closing day, then to renewal five years later, and on to commercial deals. It runs **fourteen of my own projects as modules** inside one app: 76,319 lines of their code, each with its own screen, calculators and tests. An agent built on **NVIDIA Nemotron**, served by **Nebius Token Factory**, drives all of them.
+Decision Ladder is an operating system for a Canadian mortgage file, from the first email to closing day, then to renewal five years later, and on to commercial deals. It runs **21 modules built from 20 of my own repositories** inside one app: 79,503 lines of their code (counted by the code itself, below), each with its own screen, calculators, notebooks or tests. An agent built on **NVIDIA Nemotron**, served by **Nebius Token Factory**, drives all of them.
 
 - **Nemotron 3 Nano** routes every question to the right apps, reads client emails and documents, and drafts client messages.
 - **Nemotron 3 Super** plans and runs tool calls across the apps' 50 tools.
@@ -59,8 +59,15 @@ Five years later, her renewal goes through **Renewal Radar**: it reads the lette
 | Doc Quest | documents, lead | 725 | `buyer_document_checklist` | [live](https://alenzacodes.github.io/doc-quest/) |
 | Canada's Rate Cycle 2015-2026 | market | 635 | `rate_cycle_history` | [live](https://alenzacodes.github.io/canada-rate-cycle-dashboard/) |
 | Canada Housing Affordability Index 1980-2026 | market, pre-qualification | data | `housing_affordability_index`, `affordability_rate_sensitivity` | [Kaggle](https://www.kaggle.com/code/johnnykhan1/canada-housing-affordability-index-1980-to-2026) |
+| Quiet Charges | documents, underwriting | 957 | `recurring_charges_scan` | [live](https://alenzacodes.github.io/quiet-charges/) |
+| Shoebox | documents, underwriting | 750 | `self_employed_expense_lines` | [live](https://alenzacodes.github.io/shoebox/) |
+| RenewalCheck pitch deck | lead, servicing | 713 | (presentation) | [live](https://alenzacodes.github.io/renewal-check-pitch/) |
+| Who Sets Canada's 5 Year Mortgage Rate? (notebook) | market | 180 | `rate_spreads` | repo |
+| Canada's Renewal Wave: 2020 and 2021 Fixed Rates (notebook) | market, servicing | 171 | (data) | repo |
+| Real Interest Rates in Canada Since 2009 (notebook) | market | 150 | `rate_spreads` (CPI) | repo |
+| Bank of Canada Kaggle dataset notebooks (2 of 4) | market | 97 | `rate_spreads` (nowcast) | repo |
 
-The line counts are produced by the code (`python -m decision_ladder os`): `.py`, `.js`, `.mjs`, `.html` and `.css` files in `modules/`, excluding minified vendor files. The OS layer (`decision_ladder/`, tests, evals, scripts) adds about 11,000 lines.
+The line counts are produced by the code (`python -m decision_ladder os`): `.py`, `.js`, `.mjs`, `.ts`, `.html`, `.css` and `.sql` files in `modules/`, plus only the **code cells** of `.ipynb` notebooks (markdown and notebook JSON are not counted), excluding minified vendor files. Total: **79,503 lines in `modules/`**. The OS layer (`decision_ladder/`, tests, evals, scripts) adds about 11,700 lines, so the repository holds about **91,000 lines of code, not 100,000**. Data files and the Shoebox model weights are not counted.
 
 **How the modules are wired:**
 - **Each app opens inside the OS.** The Mortgage OS tab maps all nine lifecycle stages, and every app is served at `/apps/<module>/`.
@@ -164,7 +171,7 @@ Model-backed endpoints are rate-limited per IP (`DL_RATE_PER_MIN`), so a public 
 
 ## What was built during the submission period
 
-The submission period ran from Aug 26 to Oct 30, 2026. All fourteen modules are my own projects from October 2026; their repositories and live demos are linked above.
+The submission period ran from Aug 26 to Oct 30, 2026. All 21 modules are my own projects from October 2026; their repositories and live demos are linked above.
 
 New for this hackathon, in this repository:
 - the Mortgage OS: module registry, embedded apps, Node bridge, Renewal Radar integration, service proxy

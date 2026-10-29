@@ -4,7 +4,7 @@
 
 | Time | Screen | Say |
 |---|---|---|
-| 0:00 | Mortgage OS home | "I'm John Khan, a mortgage broker in Ontario. This is Decision Ladder, a Mortgage OS: fourteen of my own mortgage apps in one system, driven by NVIDIA Nemotron on Nebius Token Factory." |
+| 0:00 | Mortgage OS home | "I'm John Khan, a mortgage broker in Ontario. This is Decision Ladder, a Mortgage OS: twenty-one of my own mortgage apps and notebooks in one system, driven by NVIDIA Nemotron on Nebius Token Factory." |
 | 0:10 | Scroll the stage cards | "Every stage of a Canadian mortgage, from the first email to renewal and commercial deals. Each card is one of my apps, running inside the OS." |
 | 0:19 | Intake + pay stub and T4 | "A client emails. Nemotron Nano extracts her file and reads her pay stub and T4. Every value must quote its source." |
 | 0:33 | "Run Priya's full journey" | "Her file climbs a 17-rung ladder, each rung computed by one of my apps: Doc Quest, my Mortgage Suite, my Pre-Underwriting Check, Benchmark Home Value, Cash to Close." |

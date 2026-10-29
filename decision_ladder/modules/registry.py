@@ -96,7 +96,19 @@ def count_lines(path: Path) -> int:
                 n += sum(1 for _ in p.open(encoding="utf-8", errors="ignore"))
             except OSError:
                 pass
+        elif p.suffix == ".ipynb" and p.is_file():
+            n += notebook_code_lines(p)
     return n
+
+
+def notebook_code_lines(p: Path) -> int:
+    """Lines of code in a Jupyter notebook's code cells (markdown and JSON structure are not counted)."""
+    import json
+    try:
+        nb = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return 0
+    return sum(len("".join(c.get("source", [])).splitlines()) for c in nb.get("cells", []) if c.get("cell_type") == "code")
 
 
 def catalog() -> dict:

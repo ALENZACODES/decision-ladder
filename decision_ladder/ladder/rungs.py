@@ -284,6 +284,16 @@ def rung_market(f: dict, ctx: dict) -> RungResult:
                             "mortgage_5y_peak": mtg["max"]["value"], "mortgage_5y_peak_month": mtg["max"]["month"]})
             findings.append(f"Rate cycle (Canada's Rate Cycle dashboard): policy rate peaked at {pol['max']['value']}% "
                             f"({pol['max']['month']}); the 5-year conventional rate peaked at {mtg['max']['value']}% ({mtg['max']['month']}).")
+    sp = T.run("rate_spreads", {"as_of": f.get("as_of")} if f.get("as_of") else {})
+    if isinstance(sp, dict) and "error" not in sp and sp.get("spreads"):
+        ev["rate_spreads"] = sp
+        s_ = sp["spreads"]
+        if "posted_minus_effective_pts" in s_:
+            metrics["posted_minus_effective_pts"] = s_["posted_minus_effective_pts"]
+            findings.append(f"Posted 5-year is {s_['posted_minus_effective_pts']:.2f} points above what borrowers actually got "
+                            f"(Bank of Canada notebooks): quote against the effective rate, not the posted one.")
+        if "real_policy_rate_pts" in s_:
+            metrics["real_policy_rate_pts"] = s_["real_policy_rate_pts"]
     return RungResult("market", "Market & rate check", status,
                       f"Policy {metrics['policy_rate']}% / prime {metrics['prime']}% / GoC 5y {metrics['goc_5y']}%",
                       metrics, findings, ev)
@@ -458,7 +468,7 @@ def _staged_ladder():
         ("screening", rung_screening, "documents", ["mortgageloanops"]),
         ("documents", rung_documents, "documents", ["decision-ladder", "doc-quest"]),
         ("affordability", O.rung_affordability, "prequal", ["canadian-mortgage-suite", "canada-housing-affordability-index-1980-2026"]),
-        ("readiness", O.rung_readiness, "underwriting", ["pre-underwriting-copilot"]),
+        ("readiness", O.rung_readiness, "underwriting", ["pre-underwriting-copilot", "quiet-charges", "shoebox"]),
         ("insurance", rung_insurance, "underwriting", ["decision-ladder"]),
         ("qualification", rung_qualification, "underwriting", ["mortgageloanops", "decision-ladder"]),
         ("crosscheck", O.rung_crosscheck, "underwriting", ["mortgageloanops", "canadian-mortgage-suite", "pre-underwriting-copilot",
@@ -466,7 +476,7 @@ def _staged_ladder():
         ("lender", rung_lender, "underwriting", ["mortgageloanops"]),
         ("property", O.rung_property, "property", ["benchmark-home-value"]),
         ("closing", O.rung_closing, "closing", ["cash-to-close", "canadian-mortgage-suite"]),
-        ("market", rung_market, "market", ["renewal-radar", "canada-rate-cycle-dashboard"]),
+        ("market", rung_market, "market", ["renewal-radar", "canada-rate-cycle-dashboard", "canada-policy-rate-bond-yield-mortgage-rate"]),
         ("exit_cost", rung_exit_cost, "servicing", ["renewal-radar", "renewal-check", "mortgageloanops"]),
         ("renewal_outlook", O.rung_renewal_outlook, "servicing", ["renewal-shock-radar"]),
         ("commercial", O.rung_commercial, "commercial", ["private-credit-screener"]),

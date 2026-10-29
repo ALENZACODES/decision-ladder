@@ -90,10 +90,28 @@ def rung_readiness(f: dict, ctx: dict) -> RungResult:
     status_txt = "Not ready" if hi else "Conditional" if me else "Ready for lender review"
     status = PASS if status_txt.startswith("Ready") else REFER
     findings = [f"[{x['level']}] {x['msg']}" for x in flags[:8]] + ([note] if note else [])
+    metrics = {"readiness_score": score, "status": status_txt, "flags_high": hi, "flags_medium": me,
+               "documents_checked": len(r.get("checks") or [])}
+    ev = {"review": {k: r.get(k) for k in ("ratios", "checks", "flags", "memo")}, "loan_file_text": text}
+    stmt = f.get("bank_statement_csv")
+    if stmt:
+        # Quiet Charges on the borrower's statement: recurring obligations a lender reading the statements will see.
+        q = T.run("recurring_charges_scan", {"csv": stmt, "today": f.get("as_of")})
+        if not _err(q):
+            ev["recurring_charges"] = q
+            metrics["recurring_monthly"] = q["monthly"]
+            findings.append(f"Quiet Charges: {q['active_recurring']} active recurring charge(s) on the statement, "
+                            f"${q['monthly']:,.2f}/month; declared other debts ${float(f.get('other_debt_monthly') or 0):,.2f}/month. "
+                            "Check none is an undisclosed loan or lease payment.")
+        if "self" in str(f.get("employment", "")).lower():
+            sb = T.run("self_employed_expense_lines", {"csv": stmt})
+            if not _err(sb):
+                ev["t2125_lines"] = sb
+                metrics["t2125_deductible"] = sb["deductible"]
+                findings.append(f"Shoebox: statement sorts to ${sb['deductible']:,.2f} of T2125 expense lines "
+                                "(keyword baseline); compare with the expenses on the borrower's T1 General.")
     return RungResult(key, title, status, f"{status_txt}: readiness {score}/100, {len(flags)} flag(s)",
-                      {"readiness_score": score, "status": status_txt, "flags_high": hi, "flags_medium": me,
-                       "documents_checked": len(r.get("checks") or [])},
-                      findings, {"review": {k: r.get(k) for k in ("ratios", "checks", "flags", "memo")}, "loan_file_text": text})
+                      metrics, findings, ev)
 
 
 # ------------------------------------------------------------------ underwriting: cross-checks across engines

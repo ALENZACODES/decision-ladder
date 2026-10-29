@@ -1,0 +1,38 @@
+{
+  "target": "rate_new_uninsured_fixed_5yplus",
+  "features": [
+    "d_goc_5y_yield_avg",
+    "d_goc_2y_yield_avg",
+    "d_policy_rate_target",
+    "d_posted_5y_conventional_mortgage",
+    "d_prime_rate",
+    "d_goc_5y_prev_month",
+    "last_spread_to_5y"
+  ],
+  "drivers": [
+    "goc_5y_yield_avg",
+    "goc_2y_yield_avg",
+    "policy_rate_target",
+    "posted_5y_conventional_mortgage",
+    "prime_rate"
+  ],
+  "trained_through": "2026-07-01",
+  "sklearn_version": "1.6.1",
+  "units": "percentage points; models predict the change in the target over h months",
+  "variation": "gradient-boosting",
+  "horizons": [
+    1,
+    2,
+    3
+  ],
+  "cv_mae": {
+    "1": 0.082,
+    "2": 0.124,
+    "3": 0.161
+  },
+  "baseline_cv_mae": {
+    "1": 0.11,
+    "2": 0.204,
+    "3": 0.29
+  }
+}

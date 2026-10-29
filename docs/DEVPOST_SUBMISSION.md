@@ -40,10 +40,10 @@ So I put all of my apps inside one system and gave it an agent. The rule is the 
 
 ## How we built it
 
-- **14 of my projects run as modules: 76,319 lines of their own code.** Each app runs its own screen inside the OS. The JavaScript apps' calculators run through a small Node bridge that loads each app's real `calc.js`, so the agent, the ladder and the app's screen always agree. Renewal Radar's Python engines are imported in-process, and its FastAPI app is proxied.
+- **21 modules from 20 of my repositories: 79,503 lines of their own code** (about 91,000 with the OS layer). Each app runs its own screen inside the OS. The JavaScript apps' calculators run through a small Node bridge that loads each app's real `calc.js`, so the agent, the ladder and the app's screen always agree. Renewal Radar's Python engines are imported in-process, and its FastAPI app is proxied.
 - **A 17-rung ladder covers the lifecycle:** lead, documents, pre-qualification, underwriting, property, closing, market, servicing, commercial, compliance, decision. Each rung is computed by one of the apps and returns PASS, REFER, FAIL or SKIP.
 - **Three Nemotron tiers on Token Factory, as the brief recommends:**
-  - **Nano** routes each question to the right lifecycle stages; Super then sees about 8 to 15 of the 52 tools instead of all of them. Nano also does the JSON extraction and drafts.
+  - **Nano** routes each question to the right lifecycle stages; Super then sees about 8 to 15 of the 53 tools instead of all of them. Nano also does the JSON extraction and drafts.
   - **Super** runs the tool calls.
   - **Ultra** writes the credit decision, falling back to Super if Ultra isn't available.
 - **A standard-library Token Factory client.** It handles tool calling, JSON mode with a fallback, retries, `<think>` stripping, recovery of inline tool calls (Qwen3-Coder XML and `<TOOLCALL>` formats), model auto-resolution against `/v1/models`, and token and cost accounting.
@@ -68,13 +68,13 @@ The cross-check also **caught a real bug** while I was integrating: my MortgageL
 
 ## Challenges we ran into
 
-- **Keeping the model away from arithmetic, with 50+ tools across 14 apps.** Nano routing kept tool choice focused, and the provenance verifier, with one repair turn, kept the answers honest.
-- **Making 14 separately built apps agree.** Aligning their inputs for the cross-checks was most of the work. It turned up one real bug and one real method difference.
+- **Keeping the model away from arithmetic, with 53 tools across 21 modules.** Nano routing kept tool choice focused, and the provenance verifier, with one repair turn, kept the answers honest.
+- **Making separately built apps agree.** Aligning their inputs for the cross-checks was most of the work. It turned up one real bug and one real method difference.
 - **Grounding extraction.** A value from an email or a pay stub is kept only if its quoted words appear in the source.
 
 ## Accomplishments that we're proud of
 
-- A single client journey that runs through 14 real apps, with every number traceable to the app that computed it, and each app opens with the client's own numbers.
+- A single client journey that runs through my real apps, with every number traceable to the app that computed it, and each app opens with the client's own numbers.
 - A path to yes that can't contradict the decline: for the stress test and for cash to close.
 - Every overlapping calculation in my apps agrees, and the OS proves it on every file.
 
@@ -93,7 +93,7 @@ Nemotron is very good at the parts of mortgage work that are language: reading, 
 
 ## What was significantly updated during the submission period
 
-The submission period ran from Aug 26 to Oct 30, 2026. All 14 module projects are my own, created in October 2026.
+The submission period ran from Aug 26 to Oct 30, 2026. All 21 module projects are my own, created in October 2026.
 
 The Mortgage OS itself was built for this hackathon:
 - the module system and embedded apps

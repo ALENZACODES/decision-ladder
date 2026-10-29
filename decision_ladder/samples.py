@@ -3,6 +3,15 @@ from __future__ import annotations
 
 from .intake.documents import read as _read_doc
 from .samples_docs import EMPLOYMENT_LETTER, PAY_STUB, RENEWAL_LETTER, T4_SLIP
+from .modules.registry import MODULES_DIR
+
+
+def _statement() -> str:
+    """Quiet Charges' own fictional sample statement (12 months of invented transactions)."""
+    try:
+        return (MODULES_DIR / "quiet-charges" / "src" / "sample.csv").read_text(encoding="utf-8")
+    except OSError:
+        return ""
 
 
 def _doc(text: str, **extra) -> dict:
@@ -22,6 +31,7 @@ SAMPLES: dict[str, dict] = {
         "documents": [_doc(PAY_STUB, borrower="Priya Raman", name="Priya Raman", date="2026-10-17"),
                       _doc(T4_SLIP, borrower="Priya Raman", name="Priya Raman", date="2026-02-20")],
         "documents_on_file": ["ID", "Purchase agreement"],
+        "bank_statement_csv": _statement(),
     },
     "brampton_first_home": {
         "label": "Daniel's insured first home: Brampton town, $725K",

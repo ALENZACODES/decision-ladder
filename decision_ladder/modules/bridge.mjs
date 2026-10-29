@@ -151,6 +151,43 @@ const FUNCS = {
     return { from, to, months: win.length, summary, rows: a.rows ? win : undefined,
              source: "Bank of Canada Valet (policy rate, CPI, 5-year conventional mortgage, USD/CAD), monthly" };
   },
+  // ---------------------------------------------------------------- quiet-charges (bank statement recurring charges)
+  "quiet-charges.scan": async (a) => {
+    const Q = await loadEsm("quiet-charges", "src/engine.js");
+    const text = a.csv ?? readFileSync(path.join(MODS, "quiet-charges", "src", "sample.csv"), "utf8");
+    const txns = Q.toTransactions(Q.parseCSV(text));
+    const today = a.today ? new Date(a.today) : new Date();
+    const subs = Q.findRecurring(txns, { today });
+    const s = Q.summarize(subs);
+    const r2 = (x) => Math.round(x * 100) / 100;
+    return {
+      transactions: txns.length, sample: a.csv == null,
+      active_recurring: s.count, monthly: r2(s.monthly), annual: r2(s.annual), raised: s.raised, raised_cost_per_year: r2(s.raisedCost),
+      recurring: subs.map((x) => ({ name: x.name, cadence: x.cadence, count: x.count, last: x.last, monthly: r2(x.annual / 12),
+        annual: r2(x.annual), active: x.active, price_increases: x.increases.length, confidence: x.confidence,
+        last_date: x.lastDate.toISOString().slice(0, 10) })),
+    };
+  },
+
+  // ---------------------------------------------------------------- shoebox (T2125 expense lines, keyword baseline)
+  "shoebox.lines": (a) => {
+    const L = load("shoebox", "logic.js");
+    const LINES = load("shoebox", "lines.js");
+    const text = a.csv ?? readFileSync(path.join(MODS, "shoebox", "sample.csv"), "utf8");
+    const txs = L.parseCSV(text);
+    let income = 0, unmatched = 0;
+    for (const t of txs) {
+      if (t.inflow) { if (L.isRefund(t.desc)) { t.refund = true; t.line = L.keyword(t.desc, LINES) || "8810"; } else { t.line = "income"; income += t.amount; } continue; }
+      t.line = L.keyword(t.desc, LINES);
+      if (!t.line) { t.line = "9270"; unmatched++; }
+    }
+    const tot = L.totals(txs, LINES, a.pct || {});
+    return {
+      transactions: txs.length, sample: a.csv == null, classifier: "keyword baseline (the app's in-browser MiniLM classifier is not run server-side)",
+      income_in: Math.round(income * 100) / 100, unmatched_to_other: unmatched, deductible: tot.deductible, needs_business_use_pct: tot.missing,
+      by_line: tot.byLine.filter((o) => o.n).map((o) => ({ line: o.id, name: o.name, spent: o.spent, claim: o.claim, n: o.n })),
+    };
+  },
 };
 
 async function main() {
