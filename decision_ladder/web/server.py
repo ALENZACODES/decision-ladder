@@ -223,6 +223,8 @@ def make_handler(svc: Services, limiter: RateLimiter):
                                        "hint": "install its requirements (modules/renewal-radar/requirements.txt)"}, 503)
             import urllib.request as ur
             qs = urlparse(self.path).query
+            if rest == mod.entry:
+                rest = ""   # the service serves its home page at "/", not "/index.html"
             url = rr_service.base_url().rstrip("/") + "/" + rest + (("?" + qs) if qs else "")
             data = None
             if method == "POST":
