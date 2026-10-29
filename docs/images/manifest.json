@@ -1,0 +1,602 @@
+{
+ "A01": {
+  "file": "docs/images/hero/readme-banner.jpg",
+  "brief_file": "hero/readme-banner.png",
+  "sha256_original": "f08d142cfae18a2e60b675d0c10aa8e238cc034f577ed71686eab08a61fcf1ca",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "A02": {
+  "file": "docs/images/hero/os-home.jpg",
+  "brief_file": "hero/os-home.png",
+  "sha256_original": "a53b30912d54a41663ce795f5944d42dab1d1a1477357d748ec2367529d36f4a",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "A03": {
+  "file": "docs/images/hero/journey-path.jpg",
+  "brief_file": "hero/journey-path.png",
+  "sha256_original": "5fb17b986ef8b85b6d2fa341cf8d67dad5dc8f50938fdfaf1fb3152528180253",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "A04": {
+  "file": "docs/images/hero/devpost-thumbnail.jpg",
+  "brief_file": "hero/devpost-thumbnail.png",
+  "sha256_original": "aaf235f32fb7378ca509b351b374adefac6aaeb7be6f1317added7fe1ac5e21f",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "A05": {
+  "file": "docs/images/hero/youtube-thumbnail.jpg",
+  "brief_file": "hero/youtube-thumbnail.png",
+  "sha256_original": "7ccf2c439291ab69d54a6c31bc49c29894ef9c946601bd12af1f06ecbf4c8cfb",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "A06": {
+  "file": "docs/images/hero/social-og.jpg",
+  "brief_file": "hero/social-og.png",
+  "sha256_original": "f9534ad4d8b56b81d8d5463ca19c3fa592bc7ea9a51c662b75ca4d6d669218a4",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "A07": {
+  "file": "docs/images/hero/three-tier-models.jpg",
+  "brief_file": "hero/three-tier-models.png",
+  "sha256_original": "b9f145acaaef05982c8d5f958a516564c5ea8f9b3202cf5667052601907790c9",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "A08": {
+  "file": "docs/images/hero/crosscheck.jpg",
+  "brief_file": "hero/crosscheck.png",
+  "sha256_original": "c623fa893f12744e171a48eee20dcb33cbca135fe43c5bfba50e9dd610deec42",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "A09": {
+  "file": "docs/images/hero/provenance.jpg",
+  "brief_file": "hero/provenance.png",
+  "sha256_original": "cf1de5ba3dea5858801a138a2db1794f636be77a33ea03a1886dd61ea52a38e4",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "A10": {
+  "file": "docs/images/hero/tavily-research.jpg",
+  "brief_file": "hero/tavily-research.png",
+  "sha256_original": "f214c7a15051fa186622b2563e0ef23f90a99e8cbd2790ac40e1660e0630525d",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "A11": {
+  "file": "docs/images/hero/serverless.jpg",
+  "brief_file": "hero/serverless.png",
+  "sha256_original": "36fb262e500b34ea3568d950861fcc703a68e299d146a1bd7952b18c5bed0a67",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "A12": {
+  "file": "docs/images/hero/renewal-book.jpg",
+  "brief_file": "hero/renewal-book.png",
+  "sha256_original": "815da37ade70bf390fff88bf891bba0c71fab0bba9e3afc539fbbf7424ce2cd2",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "B01": {
+  "file": "docs/images/stages/lead.jpg",
+  "brief_file": "stages/lead.png",
+  "sha256_original": "2a9dd03662896614841443225831906b500445ab95ecbfdd40414d376061152d",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "B02": {
+  "file": "docs/images/stages/prequal.jpg",
+  "brief_file": "stages/prequal.png",
+  "sha256_original": "40a3de4cade4cb75bd8b30290245b7906b4566495afeb176e5662265357e774b",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "B03": {
+  "file": "docs/images/stages/documents.jpg",
+  "brief_file": "stages/documents.png",
+  "sha256_original": "6f9345a4f41561dd72c011b7af2a08c51c5b4d3ef2b3d608bb4fda02f0de399c",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "B04": {
+  "file": "docs/images/stages/underwriting.jpg",
+  "brief_file": "stages/underwriting.png",
+  "sha256_original": "eb8c09c56c8c2d90365aee0f6faac27b5402df6a9293375bf5b01d3cd215c348",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "B05": {
+  "file": "docs/images/stages/property.jpg",
+  "brief_file": "stages/property.png",
+  "sha256_original": "b89608134b9a388f6890765aaf2c9b707bf7100cf92eb596d667d81d3339ee39",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "B06": {
+  "file": "docs/images/stages/closing.jpg",
+  "brief_file": "stages/closing.png",
+  "sha256_original": "c8408fc947f98fe4fe106b49310f1315760f9eb5ff0fa6b15b4a6cc5199e03d7",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "B07": {
+  "file": "docs/images/stages/servicing.jpg",
+  "brief_file": "stages/servicing.png",
+  "sha256_original": "34d41706b30719b321fb84c7a97fa896dca493ab1a65f0ebd7759a5ab0cc367b",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "B08": {
+  "file": "docs/images/stages/market.jpg",
+  "brief_file": "stages/market.png",
+  "sha256_original": "665474b6fba0a69c630c676f71dbf2ad9f717d7f4559d24b1af5c7b1b598542e",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "B09": {
+  "file": "docs/images/stages/commercial.jpg",
+  "brief_file": "stages/commercial.png",
+  "sha256_original": "d60a394229b9769437699f7b4af34dc9c17cdce11248981173e91f383ca9be87",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "B10": {
+  "file": "docs/images/stages/compliance.jpg",
+  "brief_file": "stages/compliance.png",
+  "sha256_original": "fec313c0d599b146070e8d62b1802d3913d730a2af86194e18a09e04ba2782ae",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "C01": {
+  "file": "docs/images/icons/stage-lead.jpg",
+  "brief_file": "icons/stage-lead.png",
+  "sha256_original": "0eb706c882549ba375926e2a1ba540b9a215c4e7bbdbe19b0d9940c7167c15ee",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "C02": {
+  "file": "docs/images/icons/stage-prequal.jpg",
+  "brief_file": "icons/stage-prequal.png",
+  "sha256_original": "0df65cc0d608178f12e3d6ce4c966a30609f98f3ec64ef090e54335d2065c1ef",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "C03": {
+  "file": "docs/images/icons/stage-documents.jpg",
+  "brief_file": "icons/stage-documents.png",
+  "sha256_original": "996af38593bf1da5f269b6753268585f7243de042d4da47ec1687074c4f3139c",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "C04": {
+  "file": "docs/images/icons/stage-underwriting.jpg",
+  "brief_file": "icons/stage-underwriting.png",
+  "sha256_original": "9b4c13e7c778dfb65ecf032487f54e3c6e7b1d4f0efc1eb2d80a790255168d06",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "C05": {
+  "file": "docs/images/icons/stage-property.jpg",
+  "brief_file": "icons/stage-property.png",
+  "sha256_original": "e77c30ecd46e223aad8774419740df46fa977c97eaf4b2e2a37929b298ba43f6",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "C06": {
+  "file": "docs/images/icons/stage-closing.jpg",
+  "brief_file": "icons/stage-closing.png",
+  "sha256_original": "ddfe3f73e8b1341111d20b70515707ac04168ad0a065e8971cd26cd5a094e44b",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "C07": {
+  "file": "docs/images/icons/stage-servicing.jpg",
+  "brief_file": "icons/stage-servicing.png",
+  "sha256_original": "8d6cccd42846ca05732ecc9d7f050a50864627e36f9836a47649cb3df9959c3b",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "C08": {
+  "file": "docs/images/icons/stage-market.jpg",
+  "brief_file": "icons/stage-market.png",
+  "sha256_original": "803a7d0bf5ea022bf6c70537c1eae5e19b84e661550b27ca7279dce73d61709d",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "C09": {
+  "file": "docs/images/icons/stage-commercial.jpg",
+  "brief_file": "icons/stage-commercial.png",
+  "sha256_original": "4a594b900f0839d5686d6a98079d1679fa495c27c5abc8b7951696675eab7e7d",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "C10": {
+  "file": "docs/images/icons/stage-compliance.jpg",
+  "brief_file": "icons/stage-compliance.png",
+  "sha256_original": "f6059468540c9a87b024ec9d5804591b51ef705c3073747089725bb877ff6cf6",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D01": {
+  "file": "docs/images/modules/mortgageloanops.jpg",
+  "brief_file": "modules/mortgageloanops.png",
+  "sha256_original": "cea609182d30479da78e505f41a5fc0894611fbc3d30f89097e99b72ce07ee53",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D02": {
+  "file": "docs/images/modules/canadian-mortgage-suite.jpg",
+  "brief_file": "modules/canadian-mortgage-suite.png",
+  "sha256_original": "41b489db1e2758175c0e1f59a2b23d7573b2325779fbefff54bca4066f421878",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D03": {
+  "file": "docs/images/modules/cash-to-close.jpg",
+  "brief_file": "modules/cash-to-close.png",
+  "sha256_original": "667d2bee93674dce0d80d5e00ccb560bff8744f3f82a4e7a55e971d82b92c9eb",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D04": {
+  "file": "docs/images/modules/mortgage-decision-lab.jpg",
+  "brief_file": "modules/mortgage-decision-lab.png",
+  "sha256_original": "727e3016e62db82ee13c46cc7a0649a99b6d95fd75ab29ccbcc5653ac0f3008c",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D05": {
+  "file": "docs/images/modules/pre-underwriting-copilot.jpg",
+  "brief_file": "modules/pre-underwriting-copilot.png",
+  "sha256_original": "fc78f3b168cfcd9354c9eba499626068a70b5b02412893b2213467530eae888c",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D06": {
+  "file": "docs/images/modules/private-credit-screener.jpg",
+  "brief_file": "modules/private-credit-screener.png",
+  "sha256_original": "106bb1b6679347ce59b24d10e191d88200b33ab4e79a647c38ddbf431783e9f2",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D07": {
+  "file": "docs/images/modules/renewal-check.jpg",
+  "brief_file": "modules/renewal-check.png",
+  "sha256_original": "32312a0fdc8d68c1b3010454e84dd54eb3718db6130104cbea5f387267d1a7e3",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D08": {
+  "file": "docs/images/modules/renewal-shock-radar.jpg",
+  "brief_file": "modules/renewal-shock-radar.png",
+  "sha256_original": "84766aa241bfaf8fc67576af3a39397d33530196993475a6ebbb93b2ebd92fab",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D09": {
+  "file": "docs/images/modules/canada-rate-cycle-dashboard.jpg",
+  "brief_file": "modules/canada-rate-cycle-dashboard.png",
+  "sha256_original": "c83d22d3ed11a29ed908cbcd0fde317e6f3259599d4411d333236df70fad35f8",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D10": {
+  "file": "docs/images/modules/doc-quest.jpg",
+  "brief_file": "modules/doc-quest.png",
+  "sha256_original": "ef248d95af0423e91819bf0bdf3ca0e165c476b9ba0960626d9954d916248759",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D11": {
+  "file": "docs/images/modules/benchmark-home-value.jpg",
+  "brief_file": "modules/benchmark-home-value.png",
+  "sha256_original": "3f2ed2c8f93f976395985e209a2cf2c9c34fce9ba1c526bea0a9568b10ec98e5",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D12": {
+  "file": "docs/images/modules/canada-home-value.jpg",
+  "brief_file": "modules/canada-home-value.png",
+  "sha256_original": "416bfadb28ac83a7d6e9b2bfd7ed4070a933b5f05bbca135d520d71ed09883f2",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D13": {
+  "file": "docs/images/modules/canada-housing-affordability-index-1980-2026.jpg",
+  "brief_file": "modules/canada-housing-affordability-index-1980-2026.png",
+  "sha256_original": "7c0cf5b7bb669de9e44ae8f7977c305ea35dca1d472712e54d6c47dbed3d37b5",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D14": {
+  "file": "docs/images/modules/renewal-radar.jpg",
+  "brief_file": "modules/renewal-radar.png",
+  "sha256_original": "bc8c0285d29a6c7e0715122107cf8622aad0524ee1998be7feb6e2f917ee950a",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D15": {
+  "file": "docs/images/modules/canada-policy-rate-bond-yield-mortgage-rate.jpg",
+  "brief_file": "modules/canada-policy-rate-bond-yield-mortgage-rate.png",
+  "sha256_original": "ed57fef5c51f30c8c34803e2c94c5792637dbe2a4857dc24d299cc14155b4400",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D16": {
+  "file": "docs/images/modules/canada-real-interest-rates-cpi-vs-policy-rate.jpg",
+  "brief_file": "modules/canada-real-interest-rates-cpi-vs-policy-rate.png",
+  "sha256_original": "190bedf177aeb7b166b59e5ad2c51e387ea22123e401291d2cacefd64e801938",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D17": {
+  "file": "docs/images/modules/canada-renewal-shock-2020-2021-five-year-fixed.jpg",
+  "brief_file": "modules/canada-renewal-shock-2020-2021-five-year-fixed.png",
+  "sha256_original": "defb09d734a52150fc3b7a61c655912e6a5c3909963fba5061d707ee977bf534",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D18": {
+  "file": "docs/images/modules/kaggle-boc-notebooks.jpg",
+  "brief_file": "modules/kaggle-boc-notebooks.png",
+  "sha256_original": "e36f2a2ce4594974c9a907d43ade1152857e19dba0fb5cd80d3e6d7b138c28e6",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D19": {
+  "file": "docs/images/modules/quiet-charges.jpg",
+  "brief_file": "modules/quiet-charges.png",
+  "sha256_original": "76794fa041a1ac0a9887711a39f792484d9f40a3708659f16ed4ff847208f89a",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D20": {
+  "file": "docs/images/modules/shoebox.jpg",
+  "brief_file": "modules/shoebox.png",
+  "sha256_original": "74414a73bd9db8430fcfda6d420a6dbfb554c5a0c7f34c157ea8f9ca6cd20926",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "D21": {
+  "file": "docs/images/modules/renewal-check-pitch.jpg",
+  "brief_file": "modules/renewal-check-pitch.png",
+  "sha256_original": "8a7758c7179e7cce9912cb0abfd8b77baf5a5f9d523468d03c5195a16766e942",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "E01": {
+  "file": "docs/images/desks/commercial-cover.jpg",
+  "brief_file": "desks/commercial-cover.png",
+  "sha256_original": "223081c2d5775b6a0b816229bf272c90aa5da81cebc10aa4db78920ff1ef0e1a",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "E02": {
+  "file": "docs/images/desks/commercial-icon.jpg",
+  "brief_file": "desks/commercial-icon.png",
+  "sha256_original": "5c915f428cd8f523e333bd79df7b65270bd3bd58fbc58a077d2a727b0ee7753e",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "E03": {
+  "file": "docs/images/desks/business-cover.jpg",
+  "brief_file": "desks/business-cover.png",
+  "sha256_original": "8b035fc5ed5779b4d569b8380890b08f3ce2133c1055242f4b57542f868d7dd8",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "E04": {
+  "file": "docs/images/desks/business-icon.jpg",
+  "brief_file": "desks/business-icon.png",
+  "sha256_original": "b9a2cb0e8b2d5471098ec707e29058084bff60bd495859e21bb421a18b95e7bf",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "E05": {
+  "file": "docs/images/desks/income-cover.jpg",
+  "brief_file": "desks/income-cover.png",
+  "sha256_original": "f4ab80e248ab428ef0a3ecada85f47241f0d1c6818f763599d3c731c787b7e41",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "E06": {
+  "file": "docs/images/desks/income-icon.jpg",
+  "brief_file": "desks/income-icon.png",
+  "sha256_original": "627610dc94bfc50790986b7b978a0bc662bd2318a00387e4f905441033789478",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "E07": {
+  "file": "docs/images/desks/servicing-cover.jpg",
+  "brief_file": "desks/servicing-cover.png",
+  "sha256_original": "bcf0859050f13a434ed1691da930fd0eb4870d25a185af62dddd8d0b1b063f55",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "E08": {
+  "file": "docs/images/desks/servicing-icon.jpg",
+  "brief_file": "desks/servicing-icon.png",
+  "sha256_original": "355deaf8e5be630f47bab313128ffbf992517e8c70c99fc3118f76ef9580571c",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "E09": {
+  "file": "docs/images/desks/disclosure-cover.jpg",
+  "brief_file": "desks/disclosure-cover.png",
+  "sha256_original": "03b7f37f73d05567b15852509a5d5a4914595a4a175fcd1827c5e4a0371ff813",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "E10": {
+  "file": "docs/images/desks/disclosure-icon.jpg",
+  "brief_file": "desks/disclosure-icon.png",
+  "sha256_original": "5001b05d32dd4267a3b1efb808793ca7a5da014596a1c46e0bb6110266e3cb74",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F01": {
+  "file": "docs/images/icons/rung-intake.jpg",
+  "brief_file": "icons/rung-intake.png",
+  "sha256_original": "62048beaa7ff382bb48c64edf1fb355c971a21e9b0ac4360815448255e92b9e7",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F02": {
+  "file": "docs/images/icons/rung-screening.jpg",
+  "brief_file": "icons/rung-screening.png",
+  "sha256_original": "3d7c27e2e698d4905f94a9daa492c5f1c63a381059cb9ec227000648916586a9",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F03": {
+  "file": "docs/images/icons/rung-documents.jpg",
+  "brief_file": "icons/rung-documents.png",
+  "sha256_original": "83b55927c6d0a03503093ccfe9de6da2f6d68a2ca0c3c722cd48a7bad2043c82",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F04": {
+  "file": "docs/images/icons/rung-affordability.jpg",
+  "brief_file": "icons/rung-affordability.png",
+  "sha256_original": "74eb47173c0b7d6cdc8395b33ac285e7163e5d825a21ecc2b66825fef55a0222",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F05": {
+  "file": "docs/images/icons/rung-readiness.jpg",
+  "brief_file": "icons/rung-readiness.png",
+  "sha256_original": "2ff856e5d36cc3c5c307b15e2a23f10d68c9bed25b524c96be69dc792954ae60",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F06": {
+  "file": "docs/images/icons/rung-insurance.jpg",
+  "brief_file": "icons/rung-insurance.png",
+  "sha256_original": "fcd2a33dff39be7bf45c967a8c139eaa2299694a19191bf071ea0f5589039d82",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F07": {
+  "file": "docs/images/icons/rung-qualification.jpg",
+  "brief_file": "icons/rung-qualification.png",
+  "sha256_original": "bb328e140504df4fc01d64c202b129c855d192fa9e7313b59d8b20edebe3ddad",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F08": {
+  "file": "docs/images/icons/rung-crosscheck.jpg",
+  "brief_file": "icons/rung-crosscheck.png",
+  "sha256_original": "12cfba3678ed09268a29686f2dadd77d5e6c83331dbbbbe264ad4dc9cb2f8119",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F09": {
+  "file": "docs/images/icons/rung-lender.jpg",
+  "brief_file": "icons/rung-lender.png",
+  "sha256_original": "8b0dad45cfe5af7a58a300c7cc3421966d8b750497bbd6b3d05cb76cdce587dc",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F10": {
+  "file": "docs/images/icons/rung-property.jpg",
+  "brief_file": "icons/rung-property.png",
+  "sha256_original": "9ae908190676e8b07d79b96fbdd7833636393afd126b8ddea886137d3b011ba8",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F11": {
+  "file": "docs/images/icons/rung-closing.jpg",
+  "brief_file": "icons/rung-closing.png",
+  "sha256_original": "07a16a9b06c197ac3946dfd0bc51e6f1489d3242855b3bc740eae64519b96a57",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F12": {
+  "file": "docs/images/icons/rung-market.jpg",
+  "brief_file": "icons/rung-market.png",
+  "sha256_original": "5a350450ab5993fe31e2f51799f2e44aced66aba5785feb61996d69273652c30",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F13": {
+  "file": "docs/images/icons/rung-exit_cost.jpg",
+  "brief_file": "icons/rung-exit_cost.png",
+  "sha256_original": "78fe6f1a615367e409e30ccd483bb640e2758aa3dcb2a2f9b30a1e3eef75f997",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F14": {
+  "file": "docs/images/icons/rung-renewal_outlook.jpg",
+  "brief_file": "icons/rung-renewal_outlook.png",
+  "sha256_original": "785847b540d1d184a7cddf4e2c306ead0638584861354f8a984cb90ba47f47ec",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F15": {
+  "file": "docs/images/icons/rung-commercial.jpg",
+  "brief_file": "icons/rung-commercial.png",
+  "sha256_original": "b9ddfed6953bbcb483c41963366995c77af2243951076bbeefe737115fd19794",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F16": {
+  "file": "docs/images/icons/rung-compliance.jpg",
+  "brief_file": "icons/rung-compliance.png",
+  "sha256_original": "12026482bc395491aa6943d8daa472274023479b66084cc8d1d2bc93659c22b2",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "F17": {
+  "file": "docs/images/icons/rung-decision.jpg",
+  "brief_file": "icons/rung-decision.png",
+  "sha256_original": "e5a8dcbd8efe8a760e45d78857e34235585e2bc5879b995cc433f0bde36990d0",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G01": {
+  "file": "docs/images/samples/oakville-semi.jpg",
+  "brief_file": "samples/oakville-semi.png",
+  "sha256_original": "e8c2cf65c6d904d87ee3d297cee81429aaaabb80f02beaddea7034fdbb14ac03",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G02": {
+  "file": "docs/images/samples/brampton-town.jpg",
+  "brief_file": "samples/brampton-town.png",
+  "sha256_original": "20003e1f4d4f2309cc7c98de1cfa20589b2b3a55852544a3a2457eaee4c70fe5",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G03": {
+  "file": "docs/images/samples/markham-house.jpg",
+  "brief_file": "samples/markham-house.png",
+  "sha256_original": "e28606e5a07912170961470c6c9bb318335a43dcbfcbd72c113b8ce207a0213b",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G04": {
+  "file": "docs/images/samples/toronto-refi.jpg",
+  "brief_file": "samples/toronto-refi.png",
+  "sha256_original": "8748a49bcab0316a88d438349da06f6f623e349dbc193213ce124664677b86b0",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G05": {
+  "file": "docs/images/samples/hamilton-24-unit.jpg",
+  "brief_file": "samples/hamilton-24-unit.png",
+  "sha256_original": "f2e27a27720133c2dbd8b9f677fac6fd9de5d39dbeea727ee145abc54252db62",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G06": {
+  "file": "docs/images/samples/persona-priya.jpg",
+  "brief_file": "samples/persona-priya.png",
+  "sha256_original": "0315c4f40b928b8d30326656e3a70142834bc1d3dbc526b86a833cb26bc0bc3d",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G07": {
+  "file": "docs/images/samples/persona-daniel.jpg",
+  "brief_file": "samples/persona-daniel.png",
+  "sha256_original": "0bbc0321d1c712759d3b115587849329b73530a85c5da53a8b57e9f08719e034",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G08": {
+  "file": "docs/images/samples/persona-wei.jpg",
+  "brief_file": "samples/persona-wei.png",
+  "sha256_original": "dbcf3945675b13759358d971c1f1faa133b68c78c28f79ddb6aa0f2145c27317",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G09": {
+  "file": "docs/images/samples/persona-marco.jpg",
+  "brief_file": "samples/persona-marco.png",
+  "sha256_original": "39774db132c3d1d6aef1f70e51d0325b5cde1b08ff6c2b58c93d2c78b68549b3",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G10": {
+  "file": "docs/images/samples/persona-harbourview.jpg",
+  "brief_file": "samples/persona-harbourview.png",
+  "sha256_original": "01fe094da8244a93cb86a4b2a437c192dc1d0af202f18567dee6ebfde1e79941",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G11": {
+  "file": "docs/images/docs/pay-stub.jpg",
+  "brief_file": "docs/pay-stub.png",
+  "sha256_original": "15ad1d84ff860fcbf86c5c78b25318f0b036c10b3cf026edbdabdb675ebd68fa",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G12": {
+  "file": "docs/images/docs/t4.jpg",
+  "brief_file": "docs/t4.png",
+  "sha256_original": "cb290c5fc2d404aae5d49efead9217c29262e94f342496eb6e735688b7e34c84",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G13": {
+  "file": "docs/images/docs/renewal-letter.jpg",
+  "brief_file": "docs/renewal-letter.png",
+  "sha256_original": "d613d8a40fcbeb2c585ad8af3d2b3fde3190f273d778580e4d77f97b020f5f0f",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G14": {
+  "file": "docs/images/docs/bank-statement.jpg",
+  "brief_file": "docs/bank-statement.png",
+  "sha256_original": "b0b2a38dec5a8e34513dfb18733deb9280bdd18bdc88b07c4e01d360faaece42",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G15": {
+  "file": "docs/images/docs/purchase-agreement.jpg",
+  "brief_file": "docs/purchase-agreement.png",
+  "sha256_original": "dc24f64b683a23eaa2a05c5dcc9f41d5b6d28ba4d6c427c480870cfae9bf64fa",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "G16": {
+  "file": "docs/images/docs/discharge-statement.jpg",
+  "brief_file": "docs/discharge-statement.png",
+  "sha256_original": "ad801f4e0e075135e26d5fbe4d1f4aa36ca1711bc090d238c4d432fd2fe9c07b",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H01": {
+  "file": "docs/images/video/title.jpg",
+  "brief_file": "video/title.png",
+  "sha256_original": "8d9005d2a5fde247b021532ec0d8a48ded1960b617f9ec9f9b1c0404b9701c3d",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H02": {
+  "file": "docs/images/video/problem.jpg",
+  "brief_file": "video/problem.png",
+  "sha256_original": "006884837191aae6657ba8ee581895025e8e713e299a9c6649aca90d7c6de0f5",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H03": {
+  "file": "docs/images/video/one-system.jpg",
+  "brief_file": "video/one-system.png",
+  "sha256_original": "509af33aac19c821bc325f5af2e57e114d3d23ab6c1a5b707751f518ad6c1826",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ },
+ "H04": {
+  "file": "docs/images/video/nemotron.jpg",
+  "brief_file": "video/nemotron.png",
+  "sha256_original": "8e0c73373fa0bff5a3fdea0f725783d904729c4a9c57e9f46c5b9f01ef4077a9",
+  "generated_with": "ChatGPT image generation (author's prompts)"
+ }
+}

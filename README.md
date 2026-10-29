@@ -1,5 +1,7 @@
 # Decision Ladder: Mortgage OS
 
+![Decision Ladder](docs/images/hero/readme-banner.jpg)
+
 [![tests](https://github.com/ALENZACODES/decision-ladder/actions/workflows/tests.yml/badge.svg)](https://github.com/ALENZACODES/decision-ladder/actions/workflows/tests.yml)
 
 **Every stage of a Canadian mortgage, one system. Nemotron reasons; calculators decide.**
@@ -76,6 +78,8 @@ The line counts are produced by the code (`python -m decision_ladder os`): `.py`
 
 ## Desks: the rest of a broker's day
 
+![The desks](docs/images/hero/os-home.jpg)
+
 Five desks written for this submission (not from my earlier repos), each a Python engine with Nemotron tools, tests and its own page at `/static/desks/<name>.html`. Every rule they apply was checked against the official source on 2026-10-29 and is cited in the results; lender-policy figures are labelled as such.
 
 | Desk | What it does | Tools | Lines |
@@ -89,6 +93,8 @@ Five desks written for this submission (not from my earlier repos), each a Pytho
 The ladder uses two of them directly: the commercial rung sizes the take-out loan for a bridge (on the Hamilton sample it comes out $39,715 short of the bridge balance at an assumed 6% take-out rate), and the compliance rung produces the Ontario APR and checks renewal statement timing.
 
 ## Cross-checks: my apps check each other
+
+![Independent engines meeting at one figure](docs/images/hero/crosscheck.jpg)
 
 I built several of these calculators separately, in Python and JavaScript, at different times. Where two or more compute the same quantity, the OS runs all of them on the same inputs and shows whether they agree (`decision_ladder/ladder/crosscheck.py`).
 
@@ -109,6 +115,8 @@ The cross-check also surfaces real differences instead of hiding them:
 - **It found a bug in one of my own engines during integration.** MortgageLoanOps qualified insured files on the loan *before* the CMHC premium; the Suite qualified on loan + premium, which is what lenders do. The OS engine now includes the premium, and a test covers it.
 
 ## Where Nemotron, Token Factory, Tavily and Nebius Serverless fit
+
+![Nano, Super and Ultra](docs/images/hero/three-tier-models.jpg)
 
 | Job | Model / service | Kept honest by |
 |---|---|---|
@@ -179,6 +187,8 @@ Model-backed endpoints are rate-limited per IP (`DL_RATE_PER_MIN`), so a public 
 
 ## Live results (Nemotron on Nebius Token Factory)
 
+![Every figure traced to a calculator](docs/images/hero/provenance.jpg)
+
 Measured on 2026-10-29 by the `live` workflow on GitHub's runners with my Token Factory key; the raw reports of the latest run are on the [`live-results`](https://github.com/ALENZACODES/decision-ladder/tree/live-results) branch. No offline stand-in is involved in these numbers. Two runs after the fixes below, same code apart from the last commit, to show the run-to-run spread:
 
 | Check | Run 40894783422 | Run 40897388836 |
@@ -232,6 +242,10 @@ New for this hackathon, in this repository:
 - **The rate book** is a dated snapshot (mid-October 2026). The Tavily rate check is how the OS notices changes.
 - **The verifier** matches numbers, not meaning.
 - **Live model behaviour** depends on the models Token Factory serves to your key. Run `smoke` and `eval` to measure it.
+
+## Image credits
+
+The illustrations in `docs/images/` and the app were generated with ChatGPT image generation from my own prompts (`docs/image-prompts/`); they contain no text, logos or real people. App screenshots are real.
 
 ## License
 

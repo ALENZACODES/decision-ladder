@@ -250,6 +250,7 @@
       const badges = (r.engines || []).map((e) => h("span", { class: "eng", title: "Computed by " + e.name }, e.name));
       const b = h("button", { class: `rung ${r.status}` + (r.status === "SKIP" ? " skipped" : ""), role: "listitem", type: "button" },
         h("span", { class: "num" }, idx),
+        img(`/static/img/icons/rung-${r.key}.jpg`, "rung-icon"),
         h("span", { class: "t" }, r.title, h("span", { class: "s" }, r.summary),
           badges.length ? h("span", { class: "engs" }, badges) : null),
         h("span", { class: "pill " + r.status }, STATUS_TEXT[r.status] || r.status));
@@ -785,14 +786,22 @@
     (cat.stages || []).forEach((st, i) => {
       const mods = st.modules.map((k) => byKey[k]).filter(Boolean);
       wrap.appendChild(h("div", { class: "os-stage" },
-        h("div", { class: "os-stage-head" }, h("span", { class: "os-step" }, String(i + 1)), h("span", {}, st.name)),
+        img(`/static/img/stages/${st.key}.jpg`, "os-stage-art"),
+        h("div", { class: "os-stage-head" }, img(`/static/img/icons/stage-${st.key}.jpg`, "os-stage-icon"),
+          h("span", { class: "os-step" }, String(i + 1)), h("span", {}, st.name)),
         mods.length ? mods.map((m) => moduleCard(m)) : h("div", { class: "empty small" }, "Covered by the Decision Ladder rungs")));
     });
+  }
+
+  // Decorative art (generated, no text); removed quietly if a file is not there yet.
+  function img(src, cls) {
+    return h("img", { src, class: cls, alt: "", loading: "lazy", decoding: "async", onerror: (e) => e.target.remove() });
   }
 
   function moduleCard(m) {
     const open = () => openModule(m);
     return h("div", { class: "os-mod" + (m.present ? "" : " missing") },
+      img(`/static/img/modules/${m.key}.jpg`, "os-mod-cover"),
       h("div", { class: "os-mod-name" }, m.name),
       h("div", { class: "os-mod-desc" }, m.description || ""),
       h("div", { class: "os-mod-meta" },
