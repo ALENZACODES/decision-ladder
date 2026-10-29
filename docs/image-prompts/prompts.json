@@ -1,0 +1,1018 @@
+[
+ {
+  "id": "A01",
+  "group": "A-hero",
+  "file": "hero/readme-banner.png",
+  "use": "Top of README and Devpost cover",
+  "size": "1792x1024, will be cropped to 1280x400 (keep the subject in the middle third, leave the left 40% calm for overlaid title text)",
+  "prompt": "A tall ladder of seventeen glowing rungs rising from a quiet suburban Canadian street at dusk into a night sky; each rung is a thin bar of light, the lower rungs warm amber and the upper rungs lime green; small translucent document cards, a house outline and a key float beside the ladder. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1280x400 (keep the subject in the middle third, leave the left 40% calm for overlaid title text)."
+ },
+ {
+  "id": "A02",
+  "group": "A-hero",
+  "file": "hero/os-home.png",
+  "use": "Mortgage OS home tab header",
+  "size": "1792x1024, will be cropped to 1280x400 (keep the subject in the middle third, leave the left 40% calm for overlaid title text)",
+  "prompt": "An isometric control room seen from above: a long desk with twenty-one small glowing app tiles arranged along a curved path from a house key at the left to a set of signed papers at the right, thin light trails linking them. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1280x400 (keep the subject in the middle third, leave the left 40% calm for overlaid title text)."
+ },
+ {
+  "id": "A03",
+  "group": "A-hero",
+  "file": "hero/journey-path.png",
+  "use": "'One client, start to finish' section",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "A winding path through a miniature Ontario neighbourhood seen in isometric view, marked by ten softly glowing waypoints: a mailbox, a calculator, a folder, a magnifying glass, a house, a key, a calendar, a rising line chart, an office tower, a shield; the path ends at a front door with warm light. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "A04",
+  "group": "A-hero",
+  "file": "hero/devpost-thumbnail.png",
+  "use": "Devpost project thumbnail and gallery image 1",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "A single elegant ladder made of light leaning against a stylized Canadian house silhouette, the house built from stacked translucent financial documents, lime green glow at the top rung, deep navy night background. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "A05",
+  "group": "A-hero",
+  "file": "hero/youtube-thumbnail.png",
+  "use": "YouTube video thumbnail (title text added afterwards)",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Dramatic close-up of a glowing ladder rung in the foreground with a blurred house and floating charts behind it, strong lime green rim light, high contrast, the right half calm and dark for overlaid title text. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "A06",
+  "group": "A-hero",
+  "file": "hero/social-og.png",
+  "use": "Open Graph / link preview image",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Minimal composition: a small house outline drawn in a single lime green line sits on the top rung of a minimalist ladder, everything else deep navy with faint grid lines like a blueprint. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "A07",
+  "group": "A-hero",
+  "file": "hero/three-tier-models.png",
+  "use": "'Nano / Super / Ultra' explainer",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Three abstract glowing processor-like crystals of increasing size from left to right (small, medium, large), connected by beams of light to a single mortgage document in the centre; the small one is quick and bright, the large one deep and slow-glowing. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "A08",
+  "group": "A-hero",
+  "file": "hero/crosscheck.png",
+  "use": "'Cross-checks: my apps check each other' section",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Three separate calculators on a dark desk, each projecting a beam of light that meets at one exact point above them, forming a small bright star where they agree; one faint beam slightly off target in amber. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "A09",
+  "group": "A-hero",
+  "file": "hero/provenance.png",
+  "use": "Provenance verifier explainer",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "A magnifying glass held over a paragraph of abstract unreadable lines, with thin lime green threads running from specific spots in the paragraph down to small glowing calculator tiles below, showing every figure is traced to its source. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "A10",
+  "group": "A-hero",
+  "file": "hero/tavily-research.png",
+  "use": "Research / Tavily section",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "A lantern of light moving across a dark library of official-looking binders and government-style folders (no text, no crests), picking out two pages that glow; a thin line connects them to a rate chart. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "A11",
+  "group": "A-hero",
+  "file": "hero/serverless.png",
+  "use": "Nebius Serverless deploy section",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "A row of small glowing containers floating above clouds at night, one of them opening to release a stream of tiny documents and envelopes toward houses far below; clean, technical, no logos. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "A12",
+  "group": "A-hero",
+  "file": "hero/renewal-book.png",
+  "use": "Renewal Book job section",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "A tall stack of mortgage files on a desk, a beam of light scanning down the stack and lifting out three files that glow amber, a calendar page and an alarm clock nearby. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "B01",
+  "group": "B-stages",
+  "file": "stages/lead.png",
+  "use": "Stage header art: Lead & first conversation",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Wide atmospheric illustration for the mortgage lifecycle stage 'Lead & first conversation': an open email envelope with a speech bubble and a small house rising out of it, set in a quiet scene with plenty of dark negative space. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "B02",
+  "group": "B-stages",
+  "file": "stages/prequal.png",
+  "use": "Stage header art: Affordability & pre-qualification",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Wide atmospheric illustration for the mortgage lifecycle stage 'Affordability & pre-qualification': a balance scale weighing a stack of coins against a small house, set in a quiet scene with plenty of dark negative space. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "B03",
+  "group": "B-stages",
+  "file": "stages/documents.png",
+  "use": "Stage header art: Documents & intake",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Wide atmospheric illustration for the mortgage lifecycle stage 'Documents & intake': a neat fan of documents being sorted into labelled folders by thin beams of light, set in a quiet scene with plenty of dark negative space. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "B04",
+  "group": "B-stages",
+  "file": "stages/underwriting.png",
+  "use": "Stage header art: Pre-underwriting & qualification",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Wide atmospheric illustration for the mortgage lifecycle stage 'Pre-underwriting & qualification': a magnifying glass over a document with a checkmark shield, set in a quiet scene with plenty of dark negative space. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "B05",
+  "group": "B-stages",
+  "file": "stages/property.png",
+  "use": "Stage header art: Property value & house prices",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Wide atmospheric illustration for the mortgage lifecycle stage 'Property value & house prices': a house on a pedestal with a rising line chart behind it, set in a quiet scene with plenty of dark negative space. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "B06",
+  "group": "B-stages",
+  "file": "stages/closing.png",
+  "use": "Stage header art: Cash to close & closing",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Wide atmospheric illustration for the mortgage lifecycle stage 'Cash to close & closing': a key on a ring resting on signed papers next to a small pile of coins, set in a quiet scene with plenty of dark negative space. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "B07",
+  "group": "B-stages",
+  "file": "stages/servicing.png",
+  "use": "Stage header art: Servicing, renewal & refinance",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Wide atmospheric illustration for the mortgage lifecycle stage 'Servicing, renewal & refinance': a circular arrow wrapped around a house with a calendar page, set in a quiet scene with plenty of dark negative space. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "B08",
+  "group": "B-stages",
+  "file": "stages/market.png",
+  "use": "Stage header art: Market, rates & research",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Wide atmospheric illustration for the mortgage lifecycle stage 'Market, rates & research': three overlapping rate lines on a chart with a compass, set in a quiet scene with plenty of dark negative space. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "B09",
+  "group": "B-stages",
+  "file": "stages/commercial.png",
+  "use": "Stage header art: Commercial & private credit",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Wide atmospheric illustration for the mortgage lifecycle stage 'Commercial & private credit': a mid-rise apartment building with a briefcase and a bar chart, set in a quiet scene with plenty of dark negative space. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "B10",
+  "group": "B-stages",
+  "file": "stages/compliance.png",
+  "use": "Stage header art: Compliance & client messages",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Wide atmospheric illustration for the mortgage lifecycle stage 'Compliance & client messages': a shield with a document and a speech bubble, set in a quiet scene with plenty of dark negative space. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "C01",
+  "group": "C-stage-icons",
+  "file": "icons/stage-lead.png",
+  "use": "Stage chip icon: Lead & first conversation",
+  "size": "1024x1024",
+  "prompt": "Icon of an open email envelope with a speech bubble and a small house rising out of it. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "C02",
+  "group": "C-stage-icons",
+  "file": "icons/stage-prequal.png",
+  "use": "Stage chip icon: Affordability & pre-qualification",
+  "size": "1024x1024",
+  "prompt": "Icon of a balance scale weighing a stack of coins against a small house. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "C03",
+  "group": "C-stage-icons",
+  "file": "icons/stage-documents.png",
+  "use": "Stage chip icon: Documents & intake",
+  "size": "1024x1024",
+  "prompt": "Icon of a neat fan of documents being sorted into labelled folders by thin beams of light. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "C04",
+  "group": "C-stage-icons",
+  "file": "icons/stage-underwriting.png",
+  "use": "Stage chip icon: Pre-underwriting & qualification",
+  "size": "1024x1024",
+  "prompt": "Icon of a magnifying glass over a document with a checkmark shield. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "C05",
+  "group": "C-stage-icons",
+  "file": "icons/stage-property.png",
+  "use": "Stage chip icon: Property value & house prices",
+  "size": "1024x1024",
+  "prompt": "Icon of a house on a pedestal with a rising line chart behind it. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "C06",
+  "group": "C-stage-icons",
+  "file": "icons/stage-closing.png",
+  "use": "Stage chip icon: Cash to close & closing",
+  "size": "1024x1024",
+  "prompt": "Icon of a key on a ring resting on signed papers next to a small pile of coins. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "C07",
+  "group": "C-stage-icons",
+  "file": "icons/stage-servicing.png",
+  "use": "Stage chip icon: Servicing, renewal & refinance",
+  "size": "1024x1024",
+  "prompt": "Icon of a circular arrow wrapped around a house with a calendar page. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "C08",
+  "group": "C-stage-icons",
+  "file": "icons/stage-market.png",
+  "use": "Stage chip icon: Market, rates & research",
+  "size": "1024x1024",
+  "prompt": "Icon of three overlapping rate lines on a chart with a compass. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "C09",
+  "group": "C-stage-icons",
+  "file": "icons/stage-commercial.png",
+  "use": "Stage chip icon: Commercial & private credit",
+  "size": "1024x1024",
+  "prompt": "Icon of a mid-rise apartment building with a briefcase and a bar chart. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "C10",
+  "group": "C-stage-icons",
+  "file": "icons/stage-compliance.png",
+  "use": "Stage chip icon: Compliance & client messages",
+  "size": "1024x1024",
+  "prompt": "Icon of a shield with a document and a speech bubble. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "D01",
+  "group": "D-modules",
+  "file": "modules/mortgageloanops.png",
+  "use": "Module card cover in the OS: MortgageLoanOps",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'MortgageLoanOps': a loan file moving along a small conveyor through a stress-test gauge. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D02",
+  "group": "D-modules",
+  "file": "modules/canadian-mortgage-suite.png",
+  "use": "Module card cover in the OS: Canadian Mortgage Calculator Suite",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Canadian Mortgage Calculator Suite': fourteen small calculator tiles arranged in a neat grid like a toolbox. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D03",
+  "group": "D-modules",
+  "file": "modules/cash-to-close.png",
+  "use": "Module card cover in the OS: Cash to Close",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Cash to Close': a house key beside neatly stacked envelopes of cash and a closing-day calendar. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D04",
+  "group": "D-modules",
+  "file": "modules/mortgage-decision-lab.png",
+  "use": "Module card cover in the OS: Mortgage Decision Lab",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Mortgage Decision Lab': laboratory glassware filled with glowing liquid shaped like small houses and coins. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D05",
+  "group": "D-modules",
+  "file": "modules/pre-underwriting-copilot.png",
+  "use": "Module card cover in the OS: Loan File Pre-Underwriting Check",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Loan File Pre-Underwriting Check': a clipboard checklist with some items glowing green and one amber. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D06",
+  "group": "D-modules",
+  "file": "modules/private-credit-screener.png",
+  "use": "Module card cover in the OS: Private Credit Deal Screener",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Private Credit Deal Screener': a commercial building inside a radar-like scanning circle with a grade badge shape (no letters). Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D07",
+  "group": "D-modules",
+  "file": "modules/renewal-check.png",
+  "use": "Module card cover in the OS: Renewal Check",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Renewal Check': a renewal letter envelope with a small payment gauge needle. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D08",
+  "group": "D-modules",
+  "file": "modules/renewal-shock-radar.png",
+  "use": "Module card cover in the OS: Renewal Shock Radar",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Renewal Shock Radar': a radar screen with a few blips shaped like houses, one pulsing amber. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D09",
+  "group": "D-modules",
+  "file": "modules/canada-rate-cycle-dashboard.png",
+  "use": "Module card cover in the OS: Canada's Rate Cycle 2015-2026",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Canada's Rate Cycle 2015-2026': a smooth wave-like rate curve rising and falling over a decade, drawn as a glowing ribbon. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D10",
+  "group": "D-modules",
+  "file": "modules/doc-quest.png",
+  "use": "Module card cover in the OS: Doc Quest",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Doc Quest': a treasure map path leading between documents, the next three steps glowing. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D11",
+  "group": "D-modules",
+  "file": "modules/benchmark-home-value.png",
+  "use": "Module card cover in the OS: Benchmark Home Value",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Benchmark Home Value': a street of houses with a soft heat-map glow over the roofs. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D12",
+  "group": "D-modules",
+  "file": "modules/canada-home-value.png",
+  "use": "Module card cover in the OS: Canada Home Value",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Canada Home Value': a map-like grid of neighbourhoods with small glowing house pins. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D13",
+  "group": "D-modules",
+  "file": "modules/canada-housing-affordability-index-1980-2026.png",
+  "use": "Module card cover in the OS: Canada Housing Affordability Index 1980-2026",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Canada Housing Affordability Index 1980-2026': a very long timeline ribbon with a house rising further and further out of reach. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D14",
+  "group": "D-modules",
+  "file": "modules/renewal-radar.png",
+  "use": "Module card cover in the OS: Renewal Radar",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Renewal Radar': a broker's desk with a wall of upcoming maturity calendars and a sweeping radar beam. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D15",
+  "group": "D-modules",
+  "file": "modules/canada-policy-rate-bond-yield-mortgage-rate.png",
+  "use": "Module card cover in the OS: Who Sets Canada's 5 Year Mortgage Rate?",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Who Sets Canada's 5 Year Mortgage Rate?': three stacked ribbons (policy rate, bond yield, mortgage rate) with gaps between them. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D16",
+  "group": "D-modules",
+  "file": "modules/canada-real-interest-rates-cpi-vs-policy-rate.png",
+  "use": "Module card cover in the OS: Real Interest Rates in Canada Since 2009",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Real Interest Rates in Canada Since 2009': two lines crossing, one for prices and one for rates, over a shopping basket. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D17",
+  "group": "D-modules",
+  "file": "modules/canada-renewal-shock-2020-2021-five-year-fixed.png",
+  "use": "Module card cover in the OS: Canada's Renewal Wave",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Canada's Renewal Wave': a large ocean wave made of small houses about to break on a shoreline. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D18",
+  "group": "D-modules",
+  "file": "modules/kaggle-boc-notebooks.png",
+  "use": "Module card cover in the OS: Bank of Canada notebooks",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Bank of Canada notebooks': open notebooks with charts spilling out as floating lines. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D19",
+  "group": "D-modules",
+  "file": "modules/quiet-charges.png",
+  "use": "Module card cover in the OS: Quiet Charges",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Quiet Charges': a bank statement with a few recurring lines softly glowing like tiny lanterns. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D20",
+  "group": "D-modules",
+  "file": "modules/shoebox.png",
+  "use": "Module card cover in the OS: Shoebox",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'Shoebox': an open shoebox full of receipts being sorted into labelled trays by beams of light. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "D21",
+  "group": "D-modules",
+  "file": "modules/renewal-check-pitch.png",
+  "use": "Module card cover in the OS: RenewalCheck pitch deck",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Cover illustration for the app 'RenewalCheck pitch deck': a sequence of ten floating presentation slides in a gentle arc. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "E01",
+  "group": "E-desks",
+  "file": "desks/commercial-cover.png",
+  "use": "Header image of /static/desks/commercial.html",
+  "size": "1792x1024, will be cropped to 1280x400 (keep the subject in the middle third, leave the left 40% calm for overlaid title text)",
+  "prompt": "Header illustration for the 'Commercial Lending Desk': a 24-unit mid-rise apartment building with a construction crane and a bridge arching to a second building. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1280x400 (keep the subject in the middle third, leave the left 40% calm for overlaid title text)."
+ },
+ {
+  "id": "E02",
+  "group": "E-desks",
+  "file": "desks/commercial-icon.png",
+  "use": "Desk link icon: Commercial Lending Desk",
+  "size": "1024x1024",
+  "prompt": "Icon of a 24-unit mid-rise apartment building with a construction crane and a bridge arching to a second building. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "E03",
+  "group": "E-desks",
+  "file": "desks/business-cover.png",
+  "use": "Header image of /static/desks/business.html",
+  "size": "1792x1024, will be cropped to 1280x400 (keep the subject in the middle third, leave the left 40% calm for overlaid title text)",
+  "prompt": "Header illustration for the 'Business Lending Desk': a small storefront with an invoice turning into coins and an equipment crate. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1280x400 (keep the subject in the middle third, leave the left 40% calm for overlaid title text)."
+ },
+ {
+  "id": "E04",
+  "group": "E-desks",
+  "file": "desks/business-icon.png",
+  "use": "Desk link icon: Business Lending Desk",
+  "size": "1024x1024",
+  "prompt": "Icon of a small storefront with an invoice turning into coins and an equipment crate. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "E05",
+  "group": "E-desks",
+  "file": "desks/income-cover.png",
+  "use": "Header image of /static/desks/income.html",
+  "size": "1792x1024, will be cropped to 1280x400 (keep the subject in the middle third, leave the left 40% calm for overlaid title text)",
+  "prompt": "Header illustration for the 'Income & Rental Qualification Desk': a pay stub, a rental duplex and a self-employed laptop balanced on a scale. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1280x400 (keep the subject in the middle third, leave the left 40% calm for overlaid title text)."
+ },
+ {
+  "id": "E06",
+  "group": "E-desks",
+  "file": "desks/income-icon.png",
+  "use": "Desk link icon: Income & Rental Qualification Desk",
+  "size": "1024x1024",
+  "prompt": "Icon of a pay stub, a rental duplex and a self-employed laptop balanced on a scale. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "E07",
+  "group": "E-desks",
+  "file": "desks/servicing-cover.png",
+  "use": "Header image of /static/desks/servicing.html",
+  "size": "1792x1024, will be cropped to 1280x400 (keep the subject in the middle third, leave the left 40% calm for overlaid title text)",
+  "prompt": "Header illustration for the 'Servicing Desk': a long amortization curve descending to zero with payment markers along it like stepping stones. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1280x400 (keep the subject in the middle third, leave the left 40% calm for overlaid title text)."
+ },
+ {
+  "id": "E08",
+  "group": "E-desks",
+  "file": "desks/servicing-icon.png",
+  "use": "Desk link icon: Servicing Desk",
+  "size": "1024x1024",
+  "prompt": "Icon of a long amortization curve descending to zero with payment markers along it like stepping stones. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "E09",
+  "group": "E-desks",
+  "file": "desks/disclosure-cover.png",
+  "use": "Header image of /static/desks/disclosure.html",
+  "size": "1792x1024, will be cropped to 1280x400 (keep the subject in the middle third, leave the left 40% calm for overlaid title text)",
+  "prompt": "Header illustration for the 'Disclosure & Compliance Desk': a disclosure document under a desk lamp with a shield and a calendar marked 21 days ahead (no numbers visible). Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1280x400 (keep the subject in the middle third, leave the left 40% calm for overlaid title text)."
+ },
+ {
+  "id": "E10",
+  "group": "E-desks",
+  "file": "desks/disclosure-icon.png",
+  "use": "Desk link icon: Disclosure & Compliance Desk",
+  "size": "1024x1024",
+  "prompt": "Icon of a disclosure document under a desk lamp with a shield and a calendar marked 21 days ahead (no numbers visible). Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F01",
+  "group": "F-rungs",
+  "file": "icons/rung-intake.png",
+  "use": "Ladder rung icon: intake",
+  "size": "1024x1024",
+  "prompt": "Icon of an envelope opening into a form. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F02",
+  "group": "F-rungs",
+  "file": "icons/rung-screening.png",
+  "use": "Ladder rung icon: screening",
+  "size": "1024x1024",
+  "prompt": "Icon of a person silhouette outline behind a shield, faceless. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F03",
+  "group": "F-rungs",
+  "file": "icons/rung-documents.png",
+  "use": "Ladder rung icon: documents",
+  "size": "1024x1024",
+  "prompt": "Icon of a stack of three documents with a paperclip. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F04",
+  "group": "F-rungs",
+  "file": "icons/rung-affordability.png",
+  "use": "Ladder rung icon: affordability",
+  "size": "1024x1024",
+  "prompt": "Icon of a balance scale with a house and coins. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F05",
+  "group": "F-rungs",
+  "file": "icons/rung-readiness.png",
+  "use": "Ladder rung icon: readiness",
+  "size": "1024x1024",
+  "prompt": "Icon of a traffic light with the green light on. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F06",
+  "group": "F-rungs",
+  "file": "icons/rung-insurance.png",
+  "use": "Ladder rung icon: insurance",
+  "size": "1024x1024",
+  "prompt": "Icon of an umbrella over a house. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F07",
+  "group": "F-rungs",
+  "file": "icons/rung-qualification.png",
+  "use": "Ladder rung icon: qualification",
+  "size": "1024x1024",
+  "prompt": "Icon of a pressure gauge with the needle in the green zone. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F08",
+  "group": "F-rungs",
+  "file": "icons/rung-crosscheck.png",
+  "use": "Ladder rung icon: crosscheck",
+  "size": "1024x1024",
+  "prompt": "Icon of three arrows meeting at one point. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F09",
+  "group": "F-rungs",
+  "file": "icons/rung-lender.png",
+  "use": "Ladder rung icon: lender",
+  "size": "1024x1024",
+  "prompt": "Icon of a building with columns (generic, no crest) and a handshake outline. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F10",
+  "group": "F-rungs",
+  "file": "icons/rung-property.png",
+  "use": "Ladder rung icon: property",
+  "size": "1024x1024",
+  "prompt": "Icon of a house with a price tag shape (no numbers). Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F11",
+  "group": "F-rungs",
+  "file": "icons/rung-closing.png",
+  "use": "Ladder rung icon: closing",
+  "size": "1024x1024",
+  "prompt": "Icon of a key turning in a lock. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F12",
+  "group": "F-rungs",
+  "file": "icons/rung-market.png",
+  "use": "Ladder rung icon: market",
+  "size": "1024x1024",
+  "prompt": "Icon of a line chart with a compass needle. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F13",
+  "group": "F-rungs",
+  "file": "icons/rung-exit_cost.png",
+  "use": "Ladder rung icon: exit_cost",
+  "size": "1024x1024",
+  "prompt": "Icon of a door with an exit arrow and a coin. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F14",
+  "group": "F-rungs",
+  "file": "icons/rung-renewal_outlook.png",
+  "use": "Ladder rung icon: renewal_outlook",
+  "size": "1024x1024",
+  "prompt": "Icon of a calendar with a looping arrow. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F15",
+  "group": "F-rungs",
+  "file": "icons/rung-commercial.png",
+  "use": "Ladder rung icon: commercial",
+  "size": "1024x1024",
+  "prompt": "Icon of an apartment building. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F16",
+  "group": "F-rungs",
+  "file": "icons/rung-compliance.png",
+  "use": "Ladder rung icon: compliance",
+  "size": "1024x1024",
+  "prompt": "Icon of a shield with a checkmark. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "F17",
+  "group": "F-rungs",
+  "file": "icons/rung-decision.png",
+  "use": "Ladder rung icon: decision",
+  "size": "1024x1024",
+  "prompt": "Icon of a gavel resting on a document. Icon style: single flat-but-dimensional icon, centered, on a pure transparent or plain #0d1726 square background, ink-navy and white shapes with one lime green (#76b900) accent, rounded geometry, consistent 3px stroke feel, no text, no letters, no logos. Square 1024x1024, the icon fills about 60% of the frame. Size: 1024x1024."
+ },
+ {
+  "id": "G01",
+  "group": "G-samples",
+  "file": "samples/oakville-semi.png",
+  "use": "Property photo on the sample-file card: Priya's file",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Photograph of a two-storey semi-detached brick house on a leafy Oakville street in autumn, maple trees. Style: realistic architectural photograph, overcast soft daylight, Southern Ontario, natural colours, shot at eye level with a 35mm lens, no people, no visible house numbers, street signs, licence plates or brand names, no text anywhere. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "G02",
+  "group": "G-samples",
+  "file": "samples/brampton-town.png",
+  "use": "Property photo on the sample-file card: Daniel's file",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Photograph of a newer three-storey freehold townhouse row in a Brampton subdivision. Style: realistic architectural photograph, overcast soft daylight, Southern Ontario, natural colours, shot at eye level with a 35mm lens, no people, no visible house numbers, street signs, licence plates or brand names, no text anywhere. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "G03",
+  "group": "G-samples",
+  "file": "samples/markham-house.png",
+  "use": "Property photo on the sample-file card: Wei's renewal",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Photograph of a detached two-storey family home in a Markham suburb, tidy front lawn. Style: realistic architectural photograph, overcast soft daylight, Southern Ontario, natural colours, shot at eye level with a 35mm lens, no people, no visible house numbers, street signs, licence plates or brand names, no text anywhere. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "G04",
+  "group": "G-samples",
+  "file": "samples/toronto-refi.png",
+  "use": "Property photo on the sample-file card: Marco's refinance",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Photograph of a semi-detached Victorian house on a Toronto street with a porch. Style: realistic architectural photograph, overcast soft daylight, Southern Ontario, natural colours, shot at eye level with a 35mm lens, no people, no visible house numbers, street signs, licence plates or brand names, no text anywhere. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "G05",
+  "group": "G-samples",
+  "file": "samples/hamilton-24-unit.png",
+  "use": "Property photo on the sample-file card: Hamilton commercial bridge loan",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Photograph of a 1960s 24-unit mid-rise brick apartment building in Hamilton with balconies. Style: realistic architectural photograph, overcast soft daylight, Southern Ontario, natural colours, shot at eye level with a 35mm lens, no people, no visible house numbers, street signs, licence plates or brand names, no text anywhere. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "G06",
+  "group": "G-samples",
+  "file": "samples/persona-priya.png",
+  "use": "Persona image on the sample-file card (priya, fictional)",
+  "size": "1024x1024",
+  "prompt": "Warm editorial illustration (not a photo) of a first-time buyer couple in their thirties looking at a laptop at a kitchen table, seen from behind; faces hidden or out of frame. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "G07",
+  "group": "G-samples",
+  "file": "samples/persona-daniel.png",
+  "use": "Persona image on the sample-file card (daniel, fictional)",
+  "size": "1024x1024",
+  "prompt": "Warm editorial illustration (not a photo) of a young buyer holding a set of keys, hands and keys only in focus; faces hidden or out of frame. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "G08",
+  "group": "G-samples",
+  "file": "samples/persona-wei.png",
+  "use": "Persona image on the sample-file card (wei, fictional)",
+  "size": "1024x1024",
+  "prompt": "Warm editorial illustration (not a photo) of an older homeowner reading a letter at a dining table, shot from over the shoulder, face not visible; faces hidden or out of frame. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "G09",
+  "group": "G-samples",
+  "file": "samples/persona-marco.png",
+  "use": "Persona image on the sample-file card (marco, fictional)",
+  "size": "1024x1024",
+  "prompt": "Warm editorial illustration (not a photo) of a homeowner on a front porch holding a coffee, cropped at the shoulders, face not visible; faces hidden or out of frame. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "G10",
+  "group": "G-samples",
+  "file": "samples/persona-harbourview.png",
+  "use": "Persona image on the sample-file card (harbourview, fictional)",
+  "size": "1024x1024",
+  "prompt": "Warm editorial illustration (not a photo) of a property manager walking past an apartment building entrance, back to camera; faces hidden or out of frame. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "G11",
+  "group": "G-samples",
+  "file": "docs/pay-stub.png",
+  "use": "Thumbnail for an uploaded document type: a pay stub",
+  "size": "1024x1024",
+  "prompt": "Overhead view of a pay stub lying on a desk; every line of text replaced by soft abstract grey bars so nothing is readable; a pen beside it. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "G12",
+  "group": "G-samples",
+  "file": "docs/t4.png",
+  "use": "Thumbnail for an uploaded document type: a tax slip",
+  "size": "1024x1024",
+  "prompt": "Overhead view of a tax slip lying on a desk; every line of text replaced by soft abstract grey bars so nothing is readable; a pen beside it. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "G13",
+  "group": "G-samples",
+  "file": "docs/renewal-letter.png",
+  "use": "Thumbnail for an uploaded document type: a bank renewal offer letter",
+  "size": "1024x1024",
+  "prompt": "Overhead view of a bank renewal offer letter lying on a desk; every line of text replaced by soft abstract grey bars so nothing is readable; a pen beside it. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "G14",
+  "group": "G-samples",
+  "file": "docs/bank-statement.png",
+  "use": "Thumbnail for an uploaded document type: a bank statement with columns of lines",
+  "size": "1024x1024",
+  "prompt": "Overhead view of a bank statement with columns of lines lying on a desk; every line of text replaced by soft abstract grey bars so nothing is readable; a pen beside it. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "G15",
+  "group": "G-samples",
+  "file": "docs/purchase-agreement.png",
+  "use": "Thumbnail for an uploaded document type: a purchase agreement with a signature line",
+  "size": "1024x1024",
+  "prompt": "Overhead view of a purchase agreement with a signature line lying on a desk; every line of text replaced by soft abstract grey bars so nothing is readable; a pen beside it. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "G16",
+  "group": "G-samples",
+  "file": "docs/discharge-statement.png",
+  "use": "Thumbnail for an uploaded document type: a mortgage payout statement",
+  "size": "1024x1024",
+  "prompt": "Overhead view of a mortgage payout statement lying on a desk; every line of text replaced by soft abstract grey bars so nothing is readable; a pen beside it. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "H01",
+  "group": "H-video",
+  "file": "video/title.png",
+  "use": "Opening title card (title text added in editing)",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Cinematic still for a product video: the glowing ladder from the banner, slow push-in composition, dark top third for text. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "H02",
+  "group": "H-video",
+  "file": "video/problem.png",
+  "use": "Scene: a broker juggling apps",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Cinematic still for a product video: a desk overflowing with twenty browser windows drawn as floating translucent panels, tangled light threads between them. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "H03",
+  "group": "H-video",
+  "file": "video/one-system.png",
+  "use": "Scene: one system",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Cinematic still for a product video: the same floating panels snapping into one tidy curved row along a ladder of light. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "H04",
+  "group": "H-video",
+  "file": "video/nemotron.png",
+  "use": "Scene: three Nemotron tiers",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Cinematic still for a product video: three crystals small, medium, large lighting up one after another along a beam. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "H05",
+  "group": "H-video",
+  "file": "video/crosscheck-bug.png",
+  "use": "Scene: the cross-check found a bug",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Cinematic still for a product video: two calculator beams that miss each other by a hair, a small amber spark at the gap. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "H06",
+  "group": "H-video",
+  "file": "video/commercial.png",
+  "use": "Scene: commercial bridge loan",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Cinematic still for a product video: a mid-rise apartment at night with a translucent bridge of light to a second building. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "H07",
+  "group": "H-video",
+  "file": "video/renewal.png",
+  "use": "Scene: renewal wave",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Cinematic still for a product video: a wave of small houses rising toward a calendar. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "H08",
+  "group": "H-video",
+  "file": "video/disclosure.png",
+  "use": "Scene: disclosure and compliance",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Cinematic still for a product video: a document sliding under a desk lamp with a shield glowing beside it. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "H09",
+  "group": "H-video",
+  "file": "video/serverless.png",
+  "use": "Scene: batch job on Nebius Serverless",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Cinematic still for a product video: small containers lifting off and processing a long row of files. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "H10",
+  "group": "H-video",
+  "file": "video/end-card.png",
+  "use": "End card (links added in editing)",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Cinematic still for a product video: the ladder from the banner seen from far away, calm, lots of dark space. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "H11",
+  "group": "H-video",
+  "file": "video/transition-1.png",
+  "use": "Transition background",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Abstract transition frame: slow amber to lime green light sweep. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "H12",
+  "group": "H-video",
+  "file": "video/transition-2.png",
+  "use": "Transition background",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Abstract transition frame: thin lime line drawing itself across black. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "H13",
+  "group": "H-video",
+  "file": "video/transition-3.png",
+  "use": "Transition background",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Abstract transition frame: grid of tiny squares lighting up left to right. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "H14",
+  "group": "H-video",
+  "file": "video/transition-4.png",
+  "use": "Transition background",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Abstract transition frame: soft particles forming a house outline. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "H15",
+  "group": "H-video",
+  "file": "video/transition-5.png",
+  "use": "Transition background",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Abstract transition frame: rings of light expanding from the centre. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "H16",
+  "group": "H-video",
+  "file": "video/transition-6.png",
+  "use": "Transition background",
+  "size": "1792x1024 (landscape 16:9)",
+  "prompt": "Abstract transition frame: a ladder rung sliding into place. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024 (landscape 16:9)."
+ },
+ {
+  "id": "I01",
+  "group": "I-states",
+  "file": "states/empty-ladder.png",
+  "use": "App empty ladder state",
+  "size": "1024x1024",
+  "prompt": "Small spot illustration of an empty ladder waiting in soft light, a single folder at its foot. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "I02",
+  "group": "I-states",
+  "file": "states/empty-book.png",
+  "use": "App empty book state",
+  "size": "1024x1024",
+  "prompt": "Small spot illustration of an empty filing tray with one envelope about to land in it. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "I03",
+  "group": "I-states",
+  "file": "states/loading.png",
+  "use": "App loading state",
+  "size": "1024x1024",
+  "prompt": "Small spot illustration of a small ladder whose rungs light up one by one. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "I04",
+  "group": "I-states",
+  "file": "states/offline.png",
+  "use": "App offline state",
+  "size": "1024x1024",
+  "prompt": "Small spot illustration of a ladder under a glass dome, calm, like a demo model. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "I05",
+  "group": "I-states",
+  "file": "states/error.png",
+  "use": "App error state",
+  "size": "1024x1024",
+  "prompt": "Small spot illustration of a ladder with one rung missing, a small spare rung resting nearby. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "I06",
+  "group": "I-states",
+  "file": "states/no-results.png",
+  "use": "App no results state",
+  "size": "1024x1024",
+  "prompt": "Small spot illustration of a magnifying glass over an empty desk. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "I07",
+  "group": "I-states",
+  "file": "states/success.png",
+  "use": "App success state",
+  "size": "1024x1024",
+  "prompt": "Small spot illustration of a front door opening with warm light spilling out. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "I08",
+  "group": "I-states",
+  "file": "states/restructure.png",
+  "use": "App restructure state",
+  "size": "1024x1024",
+  "prompt": "Small spot illustration of a ladder being rearranged by small hands of light, rungs repositioned. Style: clean editorial illustration on a warm off-white (#f3f5f8) background, ink-navy (#0d1726) line work and shapes, one small accent of lime green (#76b900), soft shadows, generous empty space. Strict rules: NO text, letters, numbers or words; NO logos or brand marks; NO real people. Size: 1024x1024."
+ },
+ {
+  "id": "J01",
+  "group": "J-gallery",
+  "file": "gallery/gallery-architecture.png",
+  "use": "Devpost gallery / social image: gallery-architecture",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Illustration of an exploded isometric view of a building with five floors, each floor a different layer of an app stack, light flowing upward. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "J02",
+  "group": "J-gallery",
+  "file": "gallery/gallery-modules.png",
+  "use": "Devpost gallery / social image: gallery-modules",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Illustration of twenty-one small glowing tiles arranged on a ladder like books on shelves. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "J03",
+  "group": "J-gallery",
+  "file": "gallery/gallery-desks.png",
+  "use": "Devpost gallery / social image: gallery-desks",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Illustration of five desks in a row in a dark office, each lit by its own lamp, each with a different small object. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "J04",
+  "group": "J-gallery",
+  "file": "gallery/gallery-data.png",
+  "use": "Devpost gallery / social image: gallery-data",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Illustration of a river of Bank of Canada style data lines flowing into a small house-shaped reservoir (no text). Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "J05",
+  "group": "J-gallery",
+  "file": "gallery/gallery-trust.png",
+  "use": "Devpost gallery / social image: gallery-trust",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Illustration of a scale of justice balanced with a calculator on one side and a document on the other. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "J06",
+  "group": "J-gallery",
+  "file": "gallery/linkedin-post.png",
+  "use": "Devpost gallery / social image: linkedin-post",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Illustration of the glowing ladder leaning on a house made of documents, square crop friendly. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ },
+ {
+  "id": "J07",
+  "group": "J-gallery",
+  "file": "gallery/x-post.png",
+  "use": "Devpost gallery / social image: x-post",
+  "size": "1792x1024, will be cropped to 1200x630",
+  "prompt": "Illustration of a single ladder rung glowing lime green in darkness, minimal. Style: refined editorial illustration for a Canadian fintech product, deep ink-navy (#0d1726 to #23354f) background, one bright accent of electric lime green (#76b900) used sparingly, warm amber (#e07a2f) as a secondary highlight, soft volumetric light, subtle paper grain, clean geometric shapes, calm and trustworthy. Strict rules: NO text, letters, numbers or words anywhere in the image; NO logos, brand marks or flags; NO real people or recognizable faces; NO university crests; not cartoonish, not stock-photo cheesy. Size: 1792x1024, will be cropped to 1200x630."
+ }
+]
