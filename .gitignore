@@ -9,3 +9,4 @@ smoke_report.json
 *.log
 .DS_Store
 demo/
+_site/

@@ -4,6 +4,8 @@
 
 [![tests](https://github.com/ALENZACODES/decision-ladder/actions/workflows/tests.yml/badge.svg)](https://github.com/ALENZACODES/decision-ladder/actions/workflows/tests.yml)
 
+**Live site: [alenzacodes.github.io/decision-ladder](https://alenzacodes.github.io/decision-ladder/)** (offline demo that runs in your browser, no sign-up)
+
 **Every stage of a Canadian mortgage, one system. Nemotron reasons; calculators decide.**
 
 Decision Ladder is an operating system for a Canadian mortgage file, from the first email to closing day, then to renewal five years later, and on to commercial deals. It runs **21 modules built from 20 of my own repositories** inside one app: 79,503 lines of their code (counted by the code itself, below), each with its own screen, calculators, notebooks or tests. An agent built on **NVIDIA Nemotron**, served by **Nebius Token Factory**, drives all of them.
@@ -130,6 +132,15 @@ The cross-check also surfaces real differences instead of hiding them:
 | **Inference** | Nebius Token Factory, OpenAI-compatible API | Standard-library client: tool calls, JSON mode, retries, `<think>` stripping, recovery of inline tool calls (Qwen3-Coder XML / `<TOOLCALL>`), model auto-resolution against `/v1/models`, per-model token and cost accounting |
 | **Hosting** | Nebius Serverless AI endpoint (`deploy/nebius/endpoint.sh`) | CPU only; Nemotron runs on Token Factory |
 | **Nightly renewal-book scan** | Nebius Serverless AI job (`deploy/nebius/job.sh`) | Billed only while it runs; writes a ranked call queue with Nano outreach drafts |
+
+## Live site
+
+**[alenzacodes.github.io/decision-ladder](https://alenzacodes.github.io/decision-ladder/)** is the whole Mortgage OS as a static GitHub Pages site, in offline demo mode:
+
+- **The same code runs in your browser.** The Python package runs under [Pyodide](https://pyodide.org), and the JavaScript apps' calculators load their own source files, as the Node bridge does on the server. On the five sample files, every ladder result matches the server's offline mode exactly.
+- **Every tab and desk works**, along with all 14 module apps. Renewal Radar is a FastAPI service, so it opens its own [live deployment](https://renewal-radar-nplp.onrender.com) in a new tab.
+- **No model or research calls.** Nemotron steps use the labelled offline stand-in and Tavily uses its fixtures, so nothing you type leaves the browser. For live Nemotron and Tavily, run the server with keys (below).
+- **How it's built:** `scripts/build_pages.py`, deployed by the `pages` workflow on every push to `main`. These build files came after the line counts above and aren't included in them.
 
 ## Quick start
 
