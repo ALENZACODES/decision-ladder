@@ -6,9 +6,9 @@
   "V39079": "business daily, 2009-04-21 onward",
   "STATIC_ATABLE_V39079": "end of month, used for 2000-01 to 2009-03"
  },
- "retrieved": "2026-10-10",
+ "retrieved": "2026-10-29",
  "latest_daily": {
-  "date": "2026-10-08",
+  "date": "2026-10-28",
   "rate": 2.25
  },
  "changes": [
@@ -428,6 +428,12 @@
    "date": "2025-10-30",
    "rate": 2.25,
    "precision": "day"
+  },
+  {
+   "date": "2026-10-29",
+   "rate": 2.5,
+   "precision": "day",
+   "note": "announced Oct 28, 2026, effective Oct 29 (Bank of Canada press release: https://www.bankofcanada.ca/2026/10/fad-press-release-2026-10-28/)"
   }
  ]
 }

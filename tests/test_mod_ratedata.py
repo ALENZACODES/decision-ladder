@@ -20,7 +20,7 @@ def test_modules_registered():
 
 def test_rate_spreads_latest_and_as_of():
     r = T.run("rate_spreads", {})
-    assert r["policy_rate"]["pct"] == 2.25 and r["goc_5yr_yield"]["pct"] == 3.53
+    assert r["policy_rate"]["pct"] == 2.5 and r["policy_rate"]["date"] == "2026-10-29" and r["goc_5yr_yield"]["pct"] == 3.53
     assert r["spreads"]["posted_minus_effective_pts"] == round(6.19 - 4.49, 2)
     past = T.run("rate_spreads", {"as_of": "2023-07-15"})
     assert past["policy_rate"]["date"] <= "2023-07-15" and "nowcast_5yr_effective" not in past

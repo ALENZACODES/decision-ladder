@@ -37,7 +37,7 @@ Priya emails her broker: a $1.1M semi in Oakville, $220K saved, a 4.19% offer fr
 | Underwriting | Cross-check | 5 independent engines | 4 of 4 quantities agree to the cent (see below) |
 | Property | Local prices | **Benchmark Home Value** | Oakville semi benchmark $1,185,000; her price is 7.2% below it |
 | Closing | Cash to close | **Cash to Close** | **Short $19,875** on closing day. Path to close: put $197,500 down, keeping cash for closing costs |
-| Market | Rates | Rate book (**Renewal Radar** data) + **Canada's Rate Cycle** | Policy rate 2.25%; this cycle's peak was 5% (2023-07) |
+| Market | Rates | Rate book (**Renewal Radar** data) + **Canada's Rate Cycle** | Policy rate 2.5% (Oct 29, 2026); this cycle's peak was 5% (2023-07) |
 | Servicing | Renewal outlook | **Renewal Shock Radar** | At +1 point in 5 years, her payment rises about 10.5% (moderate) |
 | Decision | Verdict | Decision Ladder | **RESTRUCTURE**, with a path to yes: lower the price, add down payment or income, or keep cash for closing |
 

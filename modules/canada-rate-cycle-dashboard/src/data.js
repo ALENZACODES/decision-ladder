@@ -141,5 +141,5 @@ const D = [
   {"m": "2026-07", "policy": 2.25, "cpi": 169.9, "inflation": 3.03, "mortgage": 6.09, "usdcad": 1.4107},
   {"m": "2026-08", "policy": 2.25, "cpi": 169.8, "inflation": 3.03, "mortgage": 6.09, "usdcad": 1.3898},
   {"m": "2026-09", "policy": 2.25, "cpi": null, "inflation": null, "mortgage": 6.09, "usdcad": 1.3962},
-  {"m": "2026-10", "policy": 2.25, "cpi": null, "inflation": null, "mortgage": 6.19, "usdcad": null}
+  {"m": "2026-10", "policy": 2.5, "cpi": null, "inflation": null, "mortgage": 6.19, "usdcad": null}
 ];
